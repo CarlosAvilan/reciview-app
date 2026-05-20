@@ -12,7 +12,8 @@ import androidx.compose.ui.unit.dp
 fun TextField(
     value: String,
     onValueChange: (String) -> Unit,
-    label: String,
+    label: String = "",
+    placeholder: String = "",
     modifier: Modifier = Modifier,
     trailingIcon: @Composable (() -> Unit)? = null,
     readOnly: Boolean = false,
@@ -21,15 +22,20 @@ fun TextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = { Text(label, color = Color.Gray) },
+        // Solo mostramos el label si no está vacío
+        label = if (label.isNotEmpty()) { { Text(label) } } else null,
+        // Agregamos el placeholder
+        placeholder = if (placeholder.isNotEmpty()) { { Text(placeholder, color = Color.Gray) } } else null,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = TextFieldDefaults.colors(
+        colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
             disabledContainerColor = Color.White,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
+            focusedBorderColor = Color(0xFFD1D5DB),
+            unfocusedBorderColor = Color(0xFFE5E7EB),
+            focusedLabelColor = Color(0xFF4F8CF6),
+            unfocusedLabelColor = Color.Gray
         ),
         trailingIcon = trailingIcon,
         readOnly = readOnly,
