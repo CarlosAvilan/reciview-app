@@ -47,7 +47,8 @@ fun ExpenseForm(
         TextField(
             value = establecimiento,
             onValueChange = onEstablecimientoChange,
-            label = "Ej: Starbucks, Coto..."
+            label = "",
+            placeholder = "Ej: Starbucks, Coto..."
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -57,7 +58,7 @@ fun ExpenseForm(
         TextField(
             value = if (categoria.isEmpty()) "Seleccionar categoría" else categoria,
             onValueChange = { },
-            label = "",
+            placeholder = "Seleccionar categoría",
             trailingIcon = {
                 Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
             },
@@ -72,7 +73,6 @@ fun ExpenseForm(
         TextField(
             value = fecha,
             onValueChange = { },
-            label = "",
             readOnly = true,
             modifier = Modifier.clickable { onFechaClick() }
         )
