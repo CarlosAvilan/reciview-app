@@ -15,11 +15,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import ar.edu.uade.capturarecibosapp.ui.screens.ConfirmacionScreen
+import ar.edu.uade.capturarecibosapp.ui.screens.WelcomeScreen
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
@@ -32,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
-    // Registramos el contrato para recibir la imagen del escáner
+    // Registrador para el resultado del escáner de Google
     private val scannerLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
@@ -43,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     val bitmap = loadBitmapFromUri(uri)
                     viewModel.procesarImagen(bitmap)
                 } catch (e: Exception) {
-                    Toast.makeText(this, "Error al cargar la imagen escaneada", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -61,13 +60,25 @@ class MainActivity : ComponentActivity() {
                     val ticket = viewModel.ticketDetectado
 
                     if (ticket == null) {
-                        // Pantalla de bienvenida con botón de escaneo
-                        ScanHomeScreen(
-                            isProcessing = viewModel.isProcessing,
-                            onScanClick = { startScan() }
-                        )
+                        // Mostramos el nuevo Dashboard de bienvenida
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            WelcomeScreen(
+                                userName = "Juan", // Podría venir de un perfil de usuario luego
+                                onScanClick = { startScan() }
+                            )
+
+                            // Overlay de carga si se está procesando el OCR
+                            if (viewModel.isProcessing) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                        }
                     } else {
-                        // Pantalla de confirmación y edición de datos
+                        // Pantalla de confirmación tras el escaneo
                         ConfirmacionScreen(
                             ticket = ticket,
                             onConfirm = { ticketEditado ->
@@ -96,7 +107,7 @@ class MainActivity : ComponentActivity() {
                 scannerLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "Error al iniciar el escáner: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -107,41 +118,6 @@ class MainActivity : ComponentActivity() {
         } else {
             @Suppress("DEPRECATION")
             MediaStore.Images.Media.getBitmap(contentResolver, uri)
-        }
-    }
-}
-
-@Composable
-fun ScanHomeScreen(isProcessing: Boolean, onScanClick: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (isProcessing) {
-            CircularProgressIndicator()
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("Analizando ticket...")
-        } else {
-            Text(
-                text = "ReciView",
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "Tu gestor de recibos inteligente",
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Spacer(modifier = Modifier.height(48.dp))
-            Button(
-                onClick = onScanClick,
-                modifier = Modifier
-                    .height(56.dp)
-                    .fillMaxWidth(0.7f),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text("Escanear Nuevo Ticket")
-            }
         }
     }
 }
