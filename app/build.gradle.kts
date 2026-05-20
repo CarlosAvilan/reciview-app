@@ -46,6 +46,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.vision.common)
     
+    // Iconos extendidos para Figma
+    implementation("androidx.compose.material:material-icons-extended")
+
     // CameraX
     val cameraxVersion = "1.3.0"
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
