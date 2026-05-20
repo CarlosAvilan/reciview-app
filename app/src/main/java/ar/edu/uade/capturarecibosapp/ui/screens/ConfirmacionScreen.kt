@@ -1,11 +1,15 @@
 package ar.edu.uade.capturarecibosapp.ui.screens
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import ar.edu.uade.capturarecibosapp.data.model.TicketData
+import ar.edu.uade.capturarecibosapp.ui.components.ExpenseForm
+import ar.edu.uade.capturarecibosapp.ui.components.TopBar
+import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 
 @Composable
 fun ConfirmacionScreen(
@@ -15,63 +19,49 @@ fun ConfirmacionScreen(
 ) {
     var comercio by remember { mutableStateOf(ticket.comercio) }
     var total by remember { mutableStateOf(ticket.total.toString()) }
-    var descripcion by remember { mutableStateOf("") }
+    var categoria by remember { mutableStateOf("") }
+    var fecha by remember { mutableStateOf("Hoy, 10 de Mayo") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Confirmar Datos del Ticket", style = MaterialTheme.typography.headlineMedium)
-
-        OutlinedTextField(
-            value = comercio,
-            onValueChange = { comercio = it },
-            label = { Text("Nombre del Comercio") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = total,
-            onValueChange = { total = it },
-            label = { Text("Total") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = descripcion,
-            onValueChange = { descripcion = it },
-            label = { Text("Descripción (Opcional)") },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 3
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                onClick = onCancel,
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text("Cancelar")
-            }
-            Button(
-                onClick = {
-                    onConfirm(
-                        ticket.copy(
-                            comercio = comercio,
-                            total = total.toDoubleOrNull() ?: 0.0,
-                            descripcion = descripcion
-                        )
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = "Confirmar Gasto",
+                onBackClick = onCancel
+            )
+        },
+        containerColor = Color(0xFFF5F5F5)
+    ) { paddingValues ->
+        ExpenseForm(
+            modifier = Modifier.padding(paddingValues),
+            monto = total,
+            onMontoChange = { total = it },
+            establecimiento = comercio,
+            onEstablecimientoChange = { comercio = it },
+            categoria = categoria,
+            onCategoriaClick = { /* Abrir selector de categoría */ },
+            fecha = fecha,
+            onFechaClick = { /* Abrir date picker */ },
+            buttonText = "Confirmar y Guardar",
+            onButtonClick = {
+                onConfirm(
+                    ticket.copy(
+                        comercio = comercio,
+                        total = total.toDoubleOrNull() ?: 0.0
                     )
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Guardar")
+                )
             }
-        }
+        )
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun ConfirmacionScreenPreview() {
+    ReciViewTheme {
+        ConfirmacionScreen(
+            ticket = TicketData(comercio = "Starbucks", total = 1200.0, "10 de mayo"),
+            onConfirm = {},
+            onCancel = {}
+        )
     }
 }
