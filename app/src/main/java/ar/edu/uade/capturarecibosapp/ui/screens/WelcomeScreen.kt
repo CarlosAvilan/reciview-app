@@ -1,12 +1,14 @@
 package ar.edu.uade.capturarecibosapp.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material3.*
@@ -26,8 +28,14 @@ fun WelcomeScreen(
     userName: String = "Juan",
     totalGastado: String = "$45.280,50",
     porcentajePresupuesto: Float = 0.75f,
-    onScanClick: () -> Unit
+    onScanClick: () -> Unit,
+    onCategoriesClick: () -> Unit
 ) {
+    val initials = userName.split(" ")
+        .filter { it.isNotBlank() }
+        .take(2)
+        .joinToString("") { it.take(1).uppercase() }
+
     Scaffold(
         bottomBar = {
             BottomBar(onScanClick = onScanClick)
@@ -70,7 +78,7 @@ fun WelcomeScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "JP",
+                            text = initials,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF4F8CF6)
                         )
@@ -107,7 +115,7 @@ fun WelcomeScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = Icons.Default.TrendingDown,
+                                imageVector = Icons.AutoMirrored.Filled.TrendingDown,
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(16.dp)
@@ -165,10 +173,14 @@ fun WelcomeScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    QuickActionItem(icon = Icons.Default.Add, label = "Manual")
-                    QuickActionItem(icon = Icons.Default.AttachMoney, label = "Gastos")
-                    QuickActionItem(icon = Icons.Default.BarChart, label = "Reportes")
-                    QuickActionItem(icon = Icons.Default.HelpOutline, label = "Ayuda")
+                    QuickActionItem(icon = Icons.Default.Add, label = "Manual", onClick = {})
+                    QuickActionItem(
+                        icon = Icons.Default.Category, 
+                        label = "Categorías", 
+                        onClick = onCategoriesClick
+                    )
+                    QuickActionItem(icon = Icons.Default.BarChart, label = "Reportes", onClick = {})
+                    QuickActionItem(icon = Icons.Default.HelpOutline, label = "Ayuda", onClick = {})
                 }
             }
 
@@ -195,8 +207,11 @@ fun WelcomeScreen(
 }
 
 @Composable
-fun QuickActionItem(icon: ImageVector, label: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+fun QuickActionItem(icon: ImageVector, label: String, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClick() }
+    ) {
         Box(
             modifier = Modifier
                 .size(60.dp)

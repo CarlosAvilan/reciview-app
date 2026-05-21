@@ -12,7 +12,7 @@ import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 
 @Composable
-fun ConfirmacionScreen(
+fun ConfirmationScreen(
     ticket: TicketData,
     onConfirm: (TicketData) -> Unit,
     onCancel: () -> Unit
@@ -56,9 +56,9 @@ fun ConfirmacionScreen(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ConfirmacionScreenPreview() {
+fun ConfirmationScreenPreview() {
     ReciViewTheme {
-        ConfirmacionScreen(
+        ConfirmationScreen(
             ticket = TicketData(comercio = "Starbucks", total = 1200.0, "10 de mayo"),
             onConfirm = {},
             onCancel = {}
