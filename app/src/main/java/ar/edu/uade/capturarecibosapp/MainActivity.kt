@@ -19,7 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
-import ar.edu.uade.capturarecibosapp.ui.screens.ConfirmacionScreen
+import ar.edu.uade.capturarecibosapp.ui.screens.ConfirmationScreen
 import ar.edu.uade.capturarecibosapp.ui.screens.EditCategoriesScreen
 import ar.edu.uade.capturarecibosapp.ui.screens.ExpensesCategoriesScreen
 import ar.edu.uade.capturarecibosapp.ui.screens.WelcomeScreen
@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
                     // Si hay un ticket detectado, mostramos la pantalla de confirmación (Flujo de Cámara)
                     if (ticket != null) {
-                        ConfirmacionScreen(
+                        ConfirmationScreen(
                             ticket = ticket,
                             onConfirm = { ticketEditado ->
                                 viewModel.confirmarYSubir(ticketEditado)
