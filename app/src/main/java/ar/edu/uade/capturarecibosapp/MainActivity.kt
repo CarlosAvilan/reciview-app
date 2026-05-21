@@ -15,9 +15,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
 import ar.edu.uade.capturarecibosapp.ui.screens.ConfirmacionScreen
+import ar.edu.uade.capturarecibosapp.ui.screens.EditCategoriesScreen
+import ar.edu.uade.capturarecibosapp.ui.screens.ExpensesCategoriesScreen
 import ar.edu.uade.capturarecibosapp.ui.screens.WelcomeScreen
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
@@ -57,28 +61,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    // Estados de navegación simples para el prototipo
+                    var currentScreen by remember { mutableStateOf("welcome") }
+                    var selectedCategory by remember { mutableStateOf<CategoryItem?>(null) }
+
                     val ticket = viewModel.ticketDetectado
 
-                    if (ticket == null) {
-                        // Mostramos el nuevo Dashboard de bienvenida
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            WelcomeScreen(
-                                userName = "Juan", // Podría venir de un perfil de usuario luego
-                                onScanClick = { startScan() }
-                            )
-
-                            // Overlay de carga si se está procesando el OCR
-                            if (viewModel.isProcessing) {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator()
-                                }
-                            }
-                        }
-                    } else {
-                        // Pantalla de confirmación tras el escaneo
+                    // Si hay un ticket detectado, mostramos la pantalla de confirmación (Flujo de Cámara)
+                    if (ticket != null) {
                         ConfirmacionScreen(
                             ticket = ticket,
                             onConfirm = { ticketEditado ->
@@ -87,6 +77,47 @@ class MainActivity : ComponentActivity() {
                             },
                             onCancel = { viewModel.cancelarCaptura() }
                         )
+                    } else {
+                        // Navegación entre las pantallas manuales
+                        when (currentScreen) {
+                            "welcome" -> {
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    WelcomeScreen(
+                                        userName = "Juan",
+                                        onScanClick = { startScan() },
+                                        onCategoriesClick = { currentScreen = "categories" }
+                                    )
+
+                                    if (viewModel.isProcessing) {
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator()
+                                        }
+                                    }
+                                }
+                            }
+                            "categories" -> {
+                                ExpensesCategoriesScreen(
+                                    onBackClick = { currentScreen = "welcome" },
+                                    onEditCategoryClick = { category ->
+                                        selectedCategory = category
+                                        currentScreen = "edit_category"
+                                    }
+                                )
+                            }
+                            "edit_category" -> {
+                                EditCategoriesScreen(
+                                    category = selectedCategory,
+                                    onBackClick = { currentScreen = "categories" },
+                                    onSaveClick = { _, _ ->
+                                        // Volvemos a la lista de categorías después de guardar
+                                        currentScreen = "categories"
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
