@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
@@ -75,7 +76,8 @@ fun LoginScreen(viewModel: LoginViewModel) {
                 ) {
                     Text(
                         text = "¿Olvidaste tu contraseña?",
-                        color = Color(0xFF4F46E5)
+                        color = Color(0xFF4F46E5),
+                        textDecoration = TextDecoration.Underline
                     )
                 }
             }
