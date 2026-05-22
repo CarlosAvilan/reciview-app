@@ -2,11 +2,20 @@ package ar.edu.uade.capturarecibosapp.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun TextField(
@@ -17,8 +26,14 @@ fun TextField(
     modifier: Modifier = Modifier,
     trailingIcon: @Composable (() -> Unit)? = null,
     readOnly: Boolean = false,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
+    isPassword: Boolean = false
 ) {
+
+    var passwordVisible by remember {
+        mutableStateOf(false)
+    }
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -28,6 +43,32 @@ fun TextField(
         placeholder = if (placeholder.isNotEmpty()) { { Text(placeholder, color = Color.Gray) } } else null,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
+        visualTransformation =
+            if (isPassword && !passwordVisible)
+                PasswordVisualTransformation()
+            else
+                VisualTransformation.None,
+        trailingIcon = {
+            if (isPassword) {
+                val icon =
+                    if (passwordVisible)
+                        Icons.Default.VisibilityOff
+                    else
+                        Icons.Default.Visibility
+                IconButton(
+                    onClick = {
+                        passwordVisible = !passwordVisible
+                    }
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null
+                    )
+                }
+            } else {
+                trailingIcon?.invoke()
+            }
+        },
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
@@ -37,7 +78,6 @@ fun TextField(
             focusedLabelColor = Color(0xFF4F8CF6),
             unfocusedLabelColor = Color.Gray
         ),
-        trailingIcon = trailingIcon,
         readOnly = readOnly,
         singleLine = singleLine
     )
