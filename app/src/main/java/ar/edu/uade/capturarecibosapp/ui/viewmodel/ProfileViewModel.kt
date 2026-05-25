@@ -16,7 +16,7 @@ class ProfileViewModel : ViewModel() {
         notificacionesEnabled = enabled
     }
 
-    fun cerrarSesion() {
-        // Lógica para cerrar sesión
+    fun cerrarSesion(onSuccess: () -> Unit) {
+        onSuccess()
     }
 }

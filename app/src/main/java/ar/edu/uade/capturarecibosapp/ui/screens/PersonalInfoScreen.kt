@@ -30,7 +30,10 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.PersonalInfoViewModel
 @Composable
 fun PersonalInfoScreen(
     viewModel: PersonalInfoViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onChangePasswordClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onDeleteAccountClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -128,7 +131,7 @@ fun PersonalInfoScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .clickable { /* Navegar a cambio de pass */ },
+                    .clickable { onChangePasswordClick() },
                 shape = RoundedCornerShape(12.dp),
                 color = Color(0xFFF9FAFB)
             ) {
@@ -153,13 +156,13 @@ fun PersonalInfoScreen(
             // Botones de acción
             Button(
                 text = "Guardar Cambios",
-                onClick = { viewModel.guardarCambios() }
+                onClick = { viewModel.guardarCambios(onSaveClick) }
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
-                onClick = { viewModel.eliminarCuenta() },
+                onClick = { viewModel.eliminarCuenta(onDeleteAccountClick) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -188,7 +191,10 @@ fun PersonalInfoScreenPreview() {
     ReciViewTheme {
         PersonalInfoScreen(
             viewModel = PersonalInfoViewModel(),
-            onBackClick = {}
+            onBackClick = {},
+            onChangePasswordClick = {},
+            onSaveClick = {},
+            onDeleteAccountClick = {}
         )
     }
 }

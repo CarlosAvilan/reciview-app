@@ -17,7 +17,8 @@ class LoginViewModel : ViewModel() {
         contrasenia = newValue
     }
 
-    fun login() {
-        // TODO
+    fun login(onSuccess: () -> Unit) {
+        // Lógica de login...
+        onSuccess()
     }
 }

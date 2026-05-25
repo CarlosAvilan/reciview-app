@@ -18,11 +18,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ar.edu.uade.capturarecibosapp.navigation.Screen
 
 @Composable
 fun BottomBar(
     currentRoute: String = "inicio",
-    onScanClick: () -> Unit
+    onScanClick: () -> Unit,
+    onNavigate: (String) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -39,29 +41,29 @@ fun BottomBar(
             BottomNavItem(
                 icon = Icons.Default.Home,
                 label = "Inicio",
-                selected = currentRoute == "inicio",
-                onClick = { /* Navegar a inicio */ }
+                selected = currentRoute == Screen.Welcome.route,
+                onClick = { onNavigate(Screen.Welcome.route) }
             )
             BottomNavItem(
                 icon = Icons.Default.AccountBalanceWallet,
                 label = "Gastos",
-                selected = currentRoute == "gastos",
-                onClick = { /* Navegar a gastos */ }
+                selected = currentRoute == Screen.MyExpenses.route,
+                onClick = { onNavigate(Screen.MyExpenses.route) }
             )
-            
+
             Spacer(Modifier.weight(1f))
 
             BottomNavItem(
                 icon = Icons.AutoMirrored.Filled.ReceiptLong,
                 label = "Tickets",
                 selected = currentRoute == "tickets",
-                onClick = { /* Navegar a tickets */ }
+                onClick = {  }
             )
             BottomNavItem(
                 icon = Icons.Default.Person,
                 label = "Perfil",
-                selected = currentRoute == "perfil",
-                onClick = { /* Navegar a perfil */ }
+                selected = currentRoute == Screen.Profile.route,
+                onClick = { onNavigate(Screen.Profile.route) }
             )
         }
 

@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -81,7 +80,7 @@ fun NewCategoryButton(onClick: () -> Unit) {
                 width = 1.dp,
                 color = Color(0xFF4F8CF6).copy(alpha = 0.5f),
                 shape = RoundedCornerShape(12.dp)
-                // Nota: Compose nativo no tiene "Dashed" simple en .border, 
+                // Nota: Compose nativo no tiene "Dashed" simple en .border,
                 // se suele usar un Canvas o un recurso XML si se requiere exactitud.
                 // Aquí usamos un borde sólido suave por consistencia técnica rápida.
             )
