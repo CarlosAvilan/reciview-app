@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
 import ar.edu.uade.capturarecibosapp.ui.components.SectionLabel
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.ProfileViewModel
@@ -34,7 +35,7 @@ fun ProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(40.dp))
-        
+
         Text(
             text = "Perfil",
             style = MaterialTheme.typography.titleLarge.copy(
@@ -90,19 +91,17 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // SECCIÓN PREFERENCIAS
-        Column(modifier = Modifier.fillMaxWidth()) {
-            SectionLabel(text = "PREFERENCIAS")
-            ProfileValueRow(label = "Presupuesto mensual", value = viewModel.presupuestoMensual)
-            Spacer(modifier = Modifier.height(8.dp))
-            ProfileValueRow(label = "Moneda", value = viewModel.moneda)
-            Spacer(modifier = Modifier.height(8.dp))
-            ProfileSwitchRow(
-                label = "Notificaciones",
-                checked = viewModel.notificacionesEnabled,
-                onCheckedChange = { viewModel.onNotificacionesToggle(it) }
-            )
-        }
+            // PREFERENCIAS
+            Column(modifier = Modifier.fillMaxWidth()) {
+                SectionLabel(text = "PREFERENCIAS")
+                ProfileValueRow(label = "Presupuesto mensual", value = viewModel.presupuestoMensual)
+                Spacer(modifier = Modifier.height(8.dp))
+                ProfileSwitchRow(
+                    label = "Notificaciones",
+                    checked = viewModel.notificacionesEnabled,
+                    onCheckedChange = { viewModel.onNotificacionesToggle(it) }
+                )
+            }
 
         Spacer(modifier = Modifier.weight(1f))
 
