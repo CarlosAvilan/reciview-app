@@ -22,7 +22,11 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun BottomBar(
     currentRoute: String = "inicio",
-    onScanClick: () -> Unit
+    onScanClick: () -> Unit,
+    onHomeClick: () -> Unit = {},
+    onExpensesClick: () -> Unit = {},
+    onTicketsClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -40,13 +44,13 @@ fun BottomBar(
                 icon = Icons.Default.Home,
                 label = "Inicio",
                 selected = currentRoute == "inicio",
-                onClick = { /* Navegar a inicio */ }
+                onClick = onHomeClick
             )
             BottomNavItem(
                 icon = Icons.Default.AccountBalanceWallet,
                 label = "Gastos",
                 selected = currentRoute == "gastos",
-                onClick = { /* Navegar a gastos */ }
+                onClick = onExpensesClick
             )
             
             Spacer(Modifier.weight(1f))
@@ -55,13 +59,13 @@ fun BottomBar(
                 icon = Icons.AutoMirrored.Filled.ReceiptLong,
                 label = "Tickets",
                 selected = currentRoute == "tickets",
-                onClick = { /* Navegar a tickets */ }
+                onClick = onTicketsClick
             )
             BottomNavItem(
                 icon = Icons.Default.Person,
                 label = "Perfil",
                 selected = currentRoute == "perfil",
-                onClick = { /* Navegar a perfil */ }
+                onClick = onProfileClick
             )
         }
 

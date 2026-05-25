@@ -14,7 +14,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 
 data class ExpenseItem(
     val imageUrl: Int,
@@ -41,16 +40,16 @@ fun ExpenseCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Contenedor de la foto (Carga desde URL)
-            AsyncImage(
-                model = transaction.imageUrl,
-                contentDescription = "Logo de ${transaction.title}",
+            // Contenedor de la foto (Placeholder)
+            Box(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFFF2F4F7)), // Fondo gris placeholder mientras carga
-                contentScale = ContentScale.Crop
-            )
+                    .background(Color(0xFFF2F4F7)),
+                contentAlignment = Alignment.Center
+            ) {
+                // Placeholder
+            }
 
             Spacer(modifier = Modifier.width(16.dp))
 
