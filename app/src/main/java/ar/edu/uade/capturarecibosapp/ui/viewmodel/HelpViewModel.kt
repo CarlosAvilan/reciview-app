@@ -38,7 +38,7 @@ class HelpViewModel : ViewModel() {
     var faqs = mutableStateListOf(
         FaqItem(
             "¿Cómo exporto mis gastos?",
-            "Podés exportar tus reportes mensuales entrando a la sección de Reportes. Al final de la pantalla seleccioná el formato (.PDF o .Excel) y hacé clic en Descargar. También podés enviarlos directamente por mail o compartirlos por WhatsApp."
+            "Podés exportar tus reportes mensuales entrando a la sección de Reportes. Al final de la pantalla seleccioná el formato (.PDF) y hacé clic en Descargar."
         ),
         FaqItem(
             "¿Mis datos están seguros?",
@@ -46,7 +46,7 @@ class HelpViewModel : ViewModel() {
         ),
         FaqItem(
             "¿Qué pasa si el ticket está borroso?",
-            "El sistema podría no reconocerlo correctamente. Te recomendamos volver a sacarle una foto con mejor luz."
+            "El sistema podría no reconocerlo correctamente.Te recomendamos volver a sacarle una foto con mejor luz o intentar una carga manual"
         ),
         FaqItem(
             "¿Puedo usar tickets de cualquier país?",

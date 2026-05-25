@@ -45,7 +45,7 @@ fun MyExpensesScreen(onScanClick: () -> Unit,
                      estadistica: String = "+ 25% vs enero"
                      ) {
 
-    // Datos mockeados según Figma
+
     val transacciones = listOf(
         ExpenseItem(
             imageUrl = R.drawable.logo_carrefour,

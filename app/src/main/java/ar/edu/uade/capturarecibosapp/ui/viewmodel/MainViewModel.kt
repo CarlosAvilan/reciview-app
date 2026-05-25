@@ -39,7 +39,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 Log.d("ReciView", "Subiendo: ${ticket.comercio}, Total: ${ticket.total}, Desc: ${ticket.descripcion}")
-                // Aquí iría la llamada a Retrofit
+                // Aca iría la llamada a Retrofit
                 // RetrofitClient.instance.enviarTicket(ticket)
                 
                 // Limpiamos el estado después de subir con éxito
