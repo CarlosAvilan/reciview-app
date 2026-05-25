@@ -22,7 +22,8 @@ class ChangePasswordViewModel : ViewModel (){
         nuevaContraseniaRepetida = newValue
     }
 
-    fun cambiarContrasenia() {
-        // TODO
+    fun cambiarContrasenia(onSuccess: () -> Unit) {
+        // lógica de cambio de contraseña
+        onSuccess()
     }
 }

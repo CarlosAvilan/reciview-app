@@ -18,11 +18,13 @@ class PersonalInfoViewModel : ViewModel() {
     fun onFechaNacimientoChange(newValue: String) { fechaNacimiento = newValue }
     fun onPaisChange(newValue: String) { paisResidencia = newValue }
 
-    fun guardarCambios() {
-        // Lógica para guardar cambios
+    fun guardarCambios(onSuccess: () -> Unit) {
+        // Lógica de guardado...
+        onSuccess()
     }
 
-    fun eliminarCuenta() {
-        // Lógica para eliminar cuenta
+    fun eliminarCuenta(onSuccess: () -> Unit) {
+        // Lógica para eliminar cuenta...
+        onSuccess()
     }
 }

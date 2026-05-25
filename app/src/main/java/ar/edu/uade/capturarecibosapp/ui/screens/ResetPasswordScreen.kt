@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,13 +21,21 @@ import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.ForgotPasswordStep
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.ForgotPasswordViewModel
 
 @Composable
 fun ResetPasswordScreen(
     viewModel: ForgotPasswordViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onPasswordReset: () -> Unit = {}
 ) {
+    LaunchedEffect(viewModel.currentStep) {
+        if (viewModel.currentStep == ForgotPasswordStep.SUCCESS) {
+            onPasswordReset()
+        }
+    }
+
     Scaffold(
         containerColor = Color.White
     ) { paddingValues ->

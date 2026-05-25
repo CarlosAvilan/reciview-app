@@ -16,15 +16,14 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
-import ar.edu.uade.capturarecibosapp.ui.screens.*
-import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import ar.edu.uade.capturarecibosapp.navigation.AppNavigation
+import ar.edu.uade.capturarecibosapp.navigation.Screen
+import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
+ import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
-import ar.edu.uade.capturarecibosapp.ui.viewmodel.ForgotPasswordViewModel
-import ar.edu.uade.capturarecibosapp.ui.viewmodel.ForgotPasswordStep
-import ar.edu.uade.capturarecibosapp.ui.viewmodel.LoginViewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER_MODE_FULL
@@ -34,8 +33,6 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
-    private val forgotPasswordViewModel: ForgotPasswordViewModel by viewModels()
-    private val loginViewModel: LoginViewModel by viewModels()
 
     // Registrador para el resultado del escáner de Google
     private val scannerLauncher = registerForActivityResult(
@@ -59,128 +56,44 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ReciViewTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    // Estados de navegación simples para el prototipo
-                    var currentScreen by remember { mutableStateOf("login") }
-                    var selectedCategory by remember { mutableStateOf<CategoryItem?>(null) }
+                val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
 
-                    val ticket = viewModel.ticketDetectado
+                // Determinamos si la pantalla actual debe mostrar la BottomBar
+                val showBottomBar = currentRoute in Screen.bottomBarScreens
 
-                    // Si hay un ticket detectado, mostramos la pantalla de confirmación (Flujo de Cámara)
-                    if (ticket != null) {
-                        ConfirmationScreen(
-                            ticket = ticket,
-                            onConfirm = { ticketEditado ->
-                                viewModel.confirmarYSubir(ticketEditado)
-                                Toast.makeText(this, "Ticket guardado", Toast.LENGTH_SHORT).show()
-                            },
-                            onCancel = { viewModel.cancelarCaptura() }
-                        )
-                    } else {
-                        // Navegación entre las pantallas manuales
-                        when (currentScreen) {
-                            "login" -> {
-                                LoginScreen(
-                                    viewModel = loginViewModel,
-                                    onForgotPasswordClick = { currentScreen = "forgot_password" },
-                                    onLoginSuccess = { currentScreen = "welcome" }
-                                )
-                            }
-                            "forgot_password" -> {
-                                when (forgotPasswordViewModel.currentStep) {
-                                    ForgotPasswordStep.EMAIL -> {
-                                        ForgotPasswordScreen(
-                                            viewModel = forgotPasswordViewModel,
-                                            onBackClick = { currentScreen = "login" }
-                                        )
-                                    }
-                                    ForgotPasswordStep.VERIFY_CODE -> {
-                                        VerifyCodeScreen(
-                                            viewModel = forgotPasswordViewModel,
-                                            onBackClick = { forgotPasswordViewModel.backToEmail() }
-                                        )
-                                    }
-                                    ForgotPasswordStep.NEW_PASSWORD -> {
-                                        ResetPasswordScreen(
-                                            viewModel = forgotPasswordViewModel,
-                                            onBackClick = { forgotPasswordViewModel.backToVerifyCode() }
-                                        )
-                                    }
-                                    ForgotPasswordStep.SUCCESS -> {
-                                        PasswordSuccessScreen(
-                                            onLoginClick = { 
-                                                currentScreen = "login"
-                                                // Reset ViewModel for next time
-                                                forgotPasswordViewModel.backToEmail()
-                                            }
-                                        )
-                                    }
+                // Efecto para navegar a confirmación cuando se detecta un ticket
+                LaunchedEffect(viewModel.ticketDetectado) {
+                    if (viewModel.ticketDetectado != null) {
+                        navController.navigate(Screen.Confirmation.route)
+                    }
+                }
+
+                Scaffold(
+                    bottomBar = {
+                        if (showBottomBar) {
+                            BottomBar(
+                                currentRoute = currentRoute ?: Screen.Welcome.route,
+                                onScanClick = { startScan() },
+                                onNavigate = { route ->
+                                    navController.navigate(route)
                                 }
-                            }
-                            "welcome" -> {
-                                Box(modifier = Modifier.fillMaxSize()) {
-                                    WelcomeScreen(
-                                        userName = "Juan",
-                                        onScanClick = { startScan() },
-                                        onCategoriesClick = { currentScreen = "categories" },
-                                        onReportsClick = { currentScreen = "reports" },
-                                        onHelpClick = { currentScreen = "help" },
-                                        onTicketsClick = { currentScreen = "tickets" },
-                                        onProfileClick = { /* Navegar a perfil si existiera una ruta */ },
-                                        onExpensesClick = { /* Navegar a gastos */ }
-                                    )
-
-                                    if (viewModel.isProcessing) {
-                                        Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            CircularProgressIndicator()
-                                        }
-                                    }
-                                }
-                            }
-                            "categories" -> {
-                                ExpensesCategoriesScreen(
-                                    onBackClick = { currentScreen = "welcome" },
-                                    onEditCategoryClick = { category ->
-                                        selectedCategory = category
-                                        currentScreen = "edit_category"
-                                    }
-                                )
-                            }
-                            "edit_category" -> {
-                                EditCategoriesScreen(
-                                    category = selectedCategory,
-                                    onBackClick = { currentScreen = "categories" },
-                                    onSaveClick = { _, _ ->
-                                        // Volvemos a la lista de categorías después de guardar
-                                        currentScreen = "categories"
-                                    }
-                                )
-                            }
-                            "reports" -> {
-                                ReportsScreen(
-                                    onBackClick = { currentScreen = "welcome" }
-                                )
-                            }
-                            "help" -> {
-                                HelpScreen(
-                                    onBackClick = { currentScreen = "welcome" }
-                                )
-                            }
-                            "tickets" -> {
-                                TicketsScreen(
-                                    onScanClick = { startScan() },
-                                    onHomeClick = { currentScreen = "welcome" },
-                                    onExpensesClick = { /* Navegar a gastos */ },
-                                    onProfileClick = { /* Navegar a perfil */ }
-                                )
-                            }
+                            )
                         }
+                    }
+                ) { innerPadding ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        AppNavigation(
+                            navController = navController,
+                            startScan = { startScan() },
+                            mainViewModel = viewModel
+                        )
                     }
                 }
             }

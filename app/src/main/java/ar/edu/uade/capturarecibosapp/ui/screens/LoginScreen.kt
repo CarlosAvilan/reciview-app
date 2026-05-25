@@ -1,6 +1,7 @@
 package ar.edu.uade.capturarecibosapp.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,9 +25,10 @@ import ar.edu.uade.capturarecibosapp.R
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel,
-    onForgotPasswordClick: () -> Unit = {},
-    onLoginSuccess: () -> Unit = {}
+    viewModel: LoginViewModel, 
+    onLoginRedirect: () -> Unit, 
+    onRegisterClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit = {}
 ) {
     Scaffold(
         containerColor = Color(0xFFF2F2F2)
@@ -90,7 +92,7 @@ fun LoginScreen(
 
             Button(
                 text = "Iniciar sesión",
-                onClick = { viewModel.login(onSuccess = onLoginSuccess) }
+                onClick = { viewModel.login(onSuccess = onLoginRedirect) }
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -104,7 +106,8 @@ fun LoginScreen(
                 Text(
                     text = " Regístrate",
                     color = Color(0xFF4F8CF6),
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable { onRegisterClick() }
                 )
             }
 
@@ -118,7 +121,9 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     ReciViewTheme {
         LoginScreen(
-            viewModel = LoginViewModel()
+            viewModel = LoginViewModel(),
+            onLoginRedirect = {},
+            onRegisterClick = {}
         )
     }
 }
