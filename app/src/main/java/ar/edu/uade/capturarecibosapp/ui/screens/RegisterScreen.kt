@@ -25,7 +25,7 @@ import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterViewModel
 
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel, onBackClick: () -> Unit) {
+fun RegisterScreen(viewModel: RegisterViewModel, onBackClick: () -> Unit, onRegisterClick: () -> Unit) {
     Scaffold(
         topBar = {
             TopBar(
@@ -89,6 +89,14 @@ fun RegisterScreen(viewModel: RegisterViewModel, onBackClick: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
 
             TextField(
+                value = viewModel.password,
+                onValueChange = { viewModel.onPasswordChange(it) },
+                label = "Contraseña"
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
                 value = viewModel.telefono,
                 onValueChange = { viewModel.onTelefonoChange(it) },
                 label = "Teléfono"
@@ -120,7 +128,7 @@ fun RegisterScreen(viewModel: RegisterViewModel, onBackClick: () -> Unit) {
 
             Button(
                 text = "Registrarme",
-                onClick = { viewModel.registrarse() }
+                onClick = { viewModel.registrarse(onRegisterClick) }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -134,7 +142,8 @@ fun RegisterScreenPreview() {
     ReciViewTheme {
         RegisterScreen(
             viewModel = RegisterViewModel(),
-            onBackClick = {}
+            onBackClick = {},
+            onRegisterClick = {}
         )
     }
 }

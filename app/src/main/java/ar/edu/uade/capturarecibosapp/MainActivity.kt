@@ -16,8 +16,12 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import ar.edu.uade.capturarecibosapp.navigation.AppNavigation
+import ar.edu.uade.capturarecibosapp.navigation.Screen
+import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
 import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
 import ar.edu.uade.capturarecibosapp.ui.screens.*
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
@@ -54,90 +58,44 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ReciViewTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    // Estados de navegación simples para el prototipo
-                    var currentScreen by remember { mutableStateOf("welcome") }
-                    var selectedCategory by remember { mutableStateOf<CategoryItem?>(null) }
+                val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
 
-                    val ticket = viewModel.ticketDetectado
+                // Determinamos si la pantalla actual debe mostrar la BottomBar
+                val showBottomBar = currentRoute in Screen.bottomBarScreens
 
-                    // Si hay un ticket detectado, mostramos la pantalla de confirmación (Flujo de Cámara)
-                    if (ticket != null) {
-                        ConfirmationScreen(
-                            ticket = ticket,
-                            onConfirm = { ticketEditado ->
-                                viewModel.confirmarYSubir(ticketEditado)
-                                Toast.makeText(this, "Ticket guardado", Toast.LENGTH_SHORT).show()
-                            },
-                            onCancel = { viewModel.cancelarCaptura() }
-                        )
-                    } else {
-                        // Navegación entre las pantallas manuales
-                        when (currentScreen) {
-                            "welcome" -> {
-                                Box(modifier = Modifier.fillMaxSize()) {
-                                    WelcomeScreen(
-                                        userName = "Juan",
-                                        onScanClick = { startScan() },
-                                        onCategoriesClick = { currentScreen = "categories" },
-                                        onReportsClick = { currentScreen = "reports" },
-                                        onHelpClick = { currentScreen = "help" },
-                                        onTicketsClick = { currentScreen = "tickets" },
-                                        onProfileClick = { /* Navegar a perfil si existiera una ruta */ },
-                                        onExpensesClick = { /* Navegar a gastos */ }
-                                    )
+                // Efecto para navegar a confirmación cuando se detecta un ticket
+                LaunchedEffect(viewModel.ticketDetectado) {
+                    if (viewModel.ticketDetectado != null) {
+                        navController.navigate(Screen.Confirmation.route)
+                    }
+                }
 
-                                    if (viewModel.isProcessing) {
-                                        Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            CircularProgressIndicator()
-                                        }
-                                    }
+                Scaffold(
+                    bottomBar = {
+                        if (showBottomBar) {
+                            BottomBar(
+                                currentRoute = currentRoute ?: Screen.Welcome.route,
+                                onScanClick = { startScan() },
+                                onNavigate = { route ->
+                                    navController.navigate(route)
                                 }
-                            }
-                            "categories" -> {
-                                ExpensesCategoriesScreen(
-                                    onBackClick = { currentScreen = "welcome" },
-                                    onEditCategoryClick = { category ->
-                                        selectedCategory = category
-                                        currentScreen = "edit_category"
-                                    }
-                                )
-                            }
-                            "edit_category" -> {
-                                EditCategoriesScreen(
-                                    category = selectedCategory,
-                                    onBackClick = { currentScreen = "categories" },
-                                    onSaveClick = { _, _ ->
-                                        // Volvemos a la lista de categorías después de guardar
-                                        currentScreen = "categories"
-                                    }
-                                )
-                            }
-                            "reports" -> {
-                                ReportsScreen(
-                                    onBackClick = { currentScreen = "welcome" }
-                                )
-                            }
-                            "help" -> {
-                                HelpScreen(
-                                    onBackClick = { currentScreen = "welcome" }
-                                )
-                            }
-                            "tickets" -> {
-                                TicketsScreen(
-                                    onScanClick = { startScan() },
-                                    onHomeClick = { currentScreen = "welcome" },
-                                    onExpensesClick = { /* Navegar a gastos */ },
-                                    onProfileClick = { /* Navegar a perfil */ }
-                                )
-                            }
+                            )
                         }
+                    }
+                ) { innerPadding ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        AppNavigation(
+                            navController = navController,
+                            startScan = { startScan() },
+                            mainViewModel = viewModel
+                        )
                     }
                 }
             }

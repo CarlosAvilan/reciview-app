@@ -12,12 +12,18 @@ class RegisterViewModel : ViewModel() {
     var fechaNacimiento by mutableStateOf("")
     var paisResidencia by mutableStateOf("")
 
+    var password by mutableStateOf("")
+
     fun onNombreChange(newValue: String) {
         nombreCompleto = newValue
     }
 
     fun onCorreoChange(newValue: String) {
         correoElectronico = newValue
+    }
+
+    fun onPasswordChange(newValue: String) {
+        password = newValue
     }
 
     fun onTelefonoChange(newValue: String) {
@@ -32,7 +38,8 @@ class RegisterViewModel : ViewModel() {
         paisResidencia = newValue
     }
 
-    fun registrarse() {
-        // Lógica de registro a implementar a futuro
+    fun registrarse(onSuccess: () -> Unit) {
+        // Lógica de registro...
+        onSuccess()
     }
 }

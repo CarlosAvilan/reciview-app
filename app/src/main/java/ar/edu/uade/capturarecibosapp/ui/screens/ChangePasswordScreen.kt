@@ -22,7 +22,7 @@ import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.ChangePasswordViewModel
 
 @Composable
-fun ChangePasswordScreen(viewModel: ChangePasswordViewModel, onBackClick: () -> Unit) {
+fun ChangePasswordScreen(viewModel: ChangePasswordViewModel, onBackClick: () -> Unit, onSaveClick: () -> Unit) {
 
     Scaffold(
         topBar = {
@@ -91,7 +91,7 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel, onBackClick: () -> 
 
             Button(
                 text = "Guardar cambios",
-                onClick = { viewModel.cambiarContrasenia() }
+                onClick = { viewModel.cambiarContrasenia(onSaveClick) }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -105,7 +105,8 @@ fun ChangePasswordScreenPreview() {
     ReciViewTheme {
         ChangePasswordScreen(
             viewModel = ChangePasswordViewModel(),
-            onBackClick = {}
+            onBackClick = {},
+            onSaveClick = {}
         )
     }
 }

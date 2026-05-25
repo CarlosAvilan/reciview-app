@@ -26,80 +26,70 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.ProfileViewModel
 fun ProfileScreen(
     viewModel: ProfileViewModel,
     onPersonalInfoClick: () -> Unit,
-    onScanClick: () -> Unit
+    onCloseSessionClick: () -> Unit
 ) {
-    Scaffold(
-        bottomBar = {
-            BottomBar(
-                currentRoute = "perfil",
-                onScanClick = onScanClick
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Text(
+            text = "Perfil",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
             )
-        },
-        containerColor = Color.White
-    ) { paddingValues ->
-        Column(
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Avatar
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .size(100.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFE0E7FF)),
+            contentAlignment = Alignment.Center
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-            
             Text(
-                text = "Perfil",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
-                )
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Avatar
-            Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFE0E7FF)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "JP",
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        color = Color(0xFF4F8CF6),
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = viewModel.nombre,
-                style = MaterialTheme.typography.headlineSmall.copy(
+                text = "JP",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    color = Color(0xFF4F8CF6),
                     fontWeight = FontWeight.Bold
                 )
             )
-            Text(
-                text = viewModel.email,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color.Gray
-                )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = viewModel.nombre,
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontWeight = FontWeight.Bold
             )
+        )
+        Text(
+            text = viewModel.email,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = Color.Gray
+            )
+        )
 
-            Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
-            // CUENTA
-            Column(modifier = Modifier.fillMaxWidth()) {
-                SectionLabel(text = "CUENTA")
-                ProfileOptionRow(
-                    text = "Información Personal",
-                    onClick = onPersonalInfoClick
-                )
-            }
+        // SECCIÓN CUENTA
+        Column(modifier = Modifier.fillMaxWidth()) {
+            SectionLabel(text = "CUENTA")
+            ProfileOptionRow(
+                text = "Información Personal",
+                onClick = onPersonalInfoClick
+            )
+        }
 
-            Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
             // PREFERENCIAS
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -113,30 +103,29 @@ fun ProfileScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(1f))
 
-            // Botón Cerrar Sesión
-            Button(
-                onClick = { viewModel.cerrarSesion() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFEBEE), // Rojo muy clarito
-                    contentColor = Color(0xFFEF5350)    // Rojo para el texto
+        // Botón Cerrar Sesión estilizado
+        Button(
+            onClick = { viewModel.cerrarSesion(onCloseSessionClick) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFFFEBEE),
+                contentColor = Color(0xFFEF5350)
+            )
+        ) {
+            Text(
+                text = "Cerrar Sesión",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
                 )
-            ) {
-                Text(
-                    text = "Cerrar Sesión",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
+            )
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -231,7 +220,7 @@ fun ProfileScreenPreview() {
         ProfileScreen(
             viewModel = ProfileViewModel(),
             onPersonalInfoClick = {},
-            onScanClick = {}
+            onCloseSessionClick = {}
         )
     }
 }
