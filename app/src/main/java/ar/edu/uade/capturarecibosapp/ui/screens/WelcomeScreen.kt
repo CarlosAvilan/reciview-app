@@ -8,11 +8,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +21,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ar.edu.uade.capturarecibosapp.R
+import ar.edu.uade.capturarecibosapp.ui.components.TicketDetailDialog
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.TicketItem
 
 @Composable
 fun WelcomeScreen(
@@ -29,174 +32,224 @@ fun WelcomeScreen(
     porcentajePresupuesto: Float = 0.75f,
     onCategoriesClick: () -> Unit,
     onManualClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onReportsClick: () -> Unit,
+    onHelpClick: () -> Unit
 ) {
+    var selectedTicket by remember { mutableStateOf<TicketItem?>(null) }
+
+    val recentTickets = remember {
+        listOf(
+            TicketItem(
+                id = 101,
+                commerce = "Carrefour",
+                date = "Hoy, 18:30",
+                amount = "$4.200",
+                category = "Alimentos",
+                description = "Compra semanal de supermercado"
+            ),
+            TicketItem(
+                id = 1,
+                commerce = "Shell",
+                date = "Ayer, 10:15",
+                amount = "$15.000",
+                category = "Combustible",
+                imageRes = R.drawable.ticket_shell, // Ahora reconoce el recurso
+                description = "Carga de combustible V-Power"
+            ),
+            TicketItem(
+                id = 102,
+                commerce = "Starbucks",
+                date = "08/05, 09:00",
+                amount = "$3.500",
+                category = "Gastronomía",
+                description = "Café Latte y Muffin"
+            )
+        )
+    }
+
     val initials = userName.split(" ")
         .filter { it.isNotBlank() }
         .take(2)
         .joinToString("") { it.take(1).uppercase() }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        item { Spacer(modifier = Modifier.height(16.dp)) }
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            item { Spacer(modifier = Modifier.height(16.dp)) }
 
-        // HEADER
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = "Hola, $userName 👋",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = "Bienvenido a ReciView",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                // Box del perfil (Avatar)
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFE0E7FF))
-                        .clickable { onProfileClick() }, // Agregamos el click aquí
-                    contentAlignment = Alignment.Center
+            // HEADER
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = initials,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4F8CF6)
-                    )
-                }
-            }
-        }
-
-        // SUMMARY CARD
-        item {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF4F8CF6))
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Total gastado en mayo",
-                        color = Color.White.copy(alpha = 0.8f),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = totalGastado,
-                        color = Color.White,
-                        style = MaterialTheme.typography.displaySmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.TrendingDown,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp)
+                    Column {
+                        Text(
+                            text = "Hola, $userName 👋",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
                         )
                         Text(
-                            text = " 5% menos que el mes pasado",
-                            color = Color.White,
-                            style = MaterialTheme.typography.labelSmall
+                            text = "Bienvenido a ReciView",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFE0E7FF))
+                            .clickable { onProfileClick() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = initials,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF4F8CF6)
                         )
                     }
                 }
             }
-        }
 
-        // PRESUPUESTO
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            // SUMMARY CARD
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF4F8CF6))
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Total gastado en mayo",
+                            color = Color.White.copy(alpha = 0.8f),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = totalGastado,
+                            color = Color.White,
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.TrendingDown,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = " 5% menos que el mes pasado",
+                                color = Color.White,
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    }
+                }
+            }
+
+            // PRESUPUESTO
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Tu Presupuesto Mensual",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text("Límite: $60.000", color = Color.Gray, fontSize = 14.sp)
+                                Text("${(porcentajePresupuesto * 100).toInt()}%", fontWeight = FontWeight.Bold)
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            LinearProgressIndicator(
+                                progress = { porcentajePresupuesto },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(8.dp)
+                                    .clip(CircleShape),
+                                color = Color(0xFF4F8CF6),
+                                trackColor = Color(0xFFE9ECEF)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // ACCIONES RÁPIDAS
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    QuickActionItem(icon = Icons.Default.Add, label = "Manual", onClick = onManualClick)
+                    QuickActionItem(
+                        icon = Icons.Default.Category,
+                        label = "Categorías",
+                        onClick = onCategoriesClick
+                    )
+                    QuickActionItem(
+                        icon = Icons.Default.BarChart,
+                        label = "Reportes",
+                        onClick = onReportsClick
+                    )
+                    QuickActionItem(
+                        icon = Icons.Default.HelpOutline,
+                        label = "Ayuda",
+                        onClick = onHelpClick
+                    )
+                }
+            }
+
+            // ACTIVIDAD RECIENTE
+            item {
                 Text(
-                    text = "Tu Presupuesto Mensual",
+                    text = "Actividad Reciente",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium
                 )
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("Límite: $60.000", color = Color.Gray, fontSize = 14.sp)
-                            Text("${(porcentajePresupuesto * 100).toInt()}%", fontWeight = FontWeight.Bold)
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        LinearProgressIndicator(
-                            progress = { porcentajePresupuesto },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(8.dp)
-                                .clip(CircleShape),
-                            color = Color(0xFF4F8CF6),
-                            trackColor = Color(0xFFE9ECEF)
-                        )
-                    }
-                }
             }
-        }
 
-        // ACCIONES RÁPIDAS
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                QuickActionItem(icon = Icons.Default.Add, label = "Manual", onClick = { onManualClick() })
-                QuickActionItem(
-                    icon = Icons.Default.Category, 
-                    label = "Categorías", 
-                    onClick = onCategoriesClick
+            items(recentTickets) { ticket ->
+                RecentActivityItem(
+                    ticket = ticket,
+                    onClick = { selectedTicket = ticket }
                 )
-                QuickActionItem(icon = Icons.Default.BarChart, label = "Reportes", onClick = {})
-                QuickActionItem(icon = Icons.Default.HelpOutline, label = "Ayuda", onClick = {})
             }
+
+            item { Spacer(modifier = Modifier.height(16.dp)) }
         }
 
-        // ACTIVIDAD RECIENTE
-        item {
-            Text(
-                text = "Actividad Reciente",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium
+        // Diálogo de detalle (Fuera de la lista pero dentro del Box)
+        selectedTicket?.let { ticket ->
+            TicketDetailDialog(
+                ticket = ticket,
+                onDismiss = { selectedTicket = null }
             )
         }
-
-        items(listOf(
-            Transaction("Carrefour", "Hoy, 18:30 • Alimentos", "$4.200"),
-            Transaction("Shell", "Ayer, 10:15 • Combustible", "$15.000"),
-            Transaction("Starbucks", "08/05, 09:00 • Café", "$3.500")
-        )) { transaction ->
-            RecentActivityItem(transaction)
-        }
-        
-        item { Spacer(modifier = Modifier.height(16.dp)) }
     }
 }
 
@@ -221,13 +274,18 @@ fun QuickActionItem(icon: ImageVector, label: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun RecentActivityItem(transaction: Transaction) {
+fun RecentActivityItem(
+    ticket: TicketItem,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -241,17 +299,27 @@ fun RecentActivityItem(transaction: Transaction) {
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFFF1F3F5))
-                )
+                        .background(Color(0xFFF1F3F5)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
+                        contentDescription = null,
+                        tint = Color(0xFF4F8CF6),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
-                    Text(text = transaction.name, fontWeight = FontWeight.Bold)
-                    Text(text = transaction.details, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+                    Text(text = ticket.commerce, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "${ticket.date} • ${ticket.category}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Gray
+                    )
                 }
             }
-            Text(text = transaction.amount, fontWeight = FontWeight.Bold)
+            Text(text = ticket.amount, fontWeight = FontWeight.Bold)
         }
     }
 }
-
-data class Transaction(val name: String, val details: String, val amount: String)

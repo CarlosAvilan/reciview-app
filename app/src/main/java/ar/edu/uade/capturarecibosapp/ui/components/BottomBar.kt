@@ -22,7 +22,7 @@ import ar.edu.uade.capturarecibosapp.navigation.Screen
 
 @Composable
 fun BottomBar(
-    currentRoute: String = "inicio",
+    currentRoute: String? = null,
     onScanClick: () -> Unit,
     onNavigate: (String) -> Unit
 ) {
@@ -50,14 +50,14 @@ fun BottomBar(
                 selected = currentRoute == Screen.MyExpenses.route,
                 onClick = { onNavigate(Screen.MyExpenses.route) }
             )
-
+            
             Spacer(Modifier.weight(1f))
 
             BottomNavItem(
                 icon = Icons.AutoMirrored.Filled.ReceiptLong,
                 label = "Tickets",
-                selected = currentRoute == "tickets",
-                onClick = {  }
+                selected = currentRoute == Screen.Tickets.route,
+                onClick = { onNavigate(Screen.Tickets.route) }
             )
             BottomNavItem(
                 icon = Icons.Default.Person,
