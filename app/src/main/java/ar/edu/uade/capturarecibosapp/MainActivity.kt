@@ -22,9 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import ar.edu.uade.capturarecibosapp.navigation.AppNavigation
 import ar.edu.uade.capturarecibosapp.navigation.Screen
 import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
-import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
-import ar.edu.uade.capturarecibosapp.ui.screens.*
-import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
+ import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG

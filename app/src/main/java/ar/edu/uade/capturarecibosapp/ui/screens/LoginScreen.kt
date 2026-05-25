@@ -24,7 +24,12 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.LoginViewModel
 import ar.edu.uade.capturarecibosapp.R
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel, onLoginRedirect: () -> Unit, onRegisterClick: () -> Unit) {
+fun LoginScreen(
+    viewModel: LoginViewModel, 
+    onLoginRedirect: () -> Unit, 
+    onRegisterClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit = {}
+) {
     Scaffold(
         containerColor = Color(0xFFF2F2F2)
     ) { paddingValues ->
@@ -73,7 +78,7 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginRedirect: () -> Unit, onRegist
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(
-                    onClick = { }
+                    onClick = onForgotPasswordClick
                 ) {
                     Text(
                         text = "¿Olvidaste tu contraseña?",
@@ -87,7 +92,7 @@ fun LoginScreen(viewModel: LoginViewModel, onLoginRedirect: () -> Unit, onRegist
 
             Button(
                 text = "Iniciar sesión",
-                onClick = { viewModel.login(onLoginRedirect) }
+                onClick = { viewModel.login(onSuccess = onLoginRedirect) }
             )
 
             Spacer(modifier = Modifier.height(12.dp))

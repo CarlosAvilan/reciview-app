@@ -17,6 +17,12 @@ sealed class Screen(val route: String) {
     object EditCategory : Screen("edit_category/{categoryId}") {
         fun createRoute(categoryId: String) = "edit_category/$categoryId"
     }
+    
+    // Recupero de contraseña
+    object ForgotPassword : Screen("forgot_password")
+    object VerifyCode : Screen("verify_code")
+    object ResetPassword : Screen("reset_password")
+    object PasswordSuccess : Screen("password_success")
 
     // Pantallas que llevan BottomBar
     companion object {

@@ -15,16 +15,54 @@ fun AppNavigation(
     startScan: () -> Unit,
     mainViewModel: MainViewModel
 ) {
+    val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
+
     NavHost(
         navController = navController,
-        startDestination = Screen.Welcome.route
+        startDestination = Screen.Login.route
     ) {
         composable(Screen.Login.route) {
             val loginViewModel: LoginViewModel = viewModel()
             LoginScreen(
                 viewModel = loginViewModel,
                 onLoginRedirect = { navController.navigate(Screen.Welcome.route) },
-                onRegisterClick = { navController.navigate(Screen.Register.route) }
+                onRegisterClick = { navController.navigate(Screen.Register.route) },
+                onForgotPasswordClick = { navController.navigate(Screen.ForgotPassword.route) }
+            )
+        }
+        
+        composable(Screen.ForgotPassword.route) {
+            ForgotPasswordScreen(
+                viewModel = forgotPasswordViewModel,
+                onBackClick = { navController.popBackStack() },
+                onCodeSent = { navController.navigate(Screen.VerifyCode.route) }
+            )
+        }
+
+        composable(Screen.VerifyCode.route) {
+            VerifyCodeScreen(
+                viewModel = forgotPasswordViewModel,
+                onBackClick = { navController.popBackStack() },
+                onCodeVerified = { navController.navigate(Screen.ResetPassword.route) }
+            )
+        }
+
+        composable(Screen.ResetPassword.route) {
+            ResetPasswordScreen(
+                viewModel = forgotPasswordViewModel,
+                onBackClick = { navController.popBackStack() },
+                onPasswordReset = { navController.navigate(Screen.PasswordSuccess.route) }
+            )
+        }
+
+        composable(Screen.PasswordSuccess.route) {
+            PasswordSuccessScreen(
+                onLoginClick = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                    forgotPasswordViewModel.backToEmail()
+                }
             )
         }
 
