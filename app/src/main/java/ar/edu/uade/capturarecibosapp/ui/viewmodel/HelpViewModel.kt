@@ -1,8 +1,12 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 
 data class FaqItem(
@@ -13,13 +17,22 @@ data class FaqItem(
 
 data class TipItem(
     val title: String,
-    val description: String
+    val description: String,
+    val icon: ImageVector
 )
 
 class HelpViewModel : ViewModel() {
     val tips = listOf(
-        TipItem("Usar buena iluminación", "Evita las sombras sobre el ticket."),
-        TipItem("Papel bien estirado", "Aplaná el ticket antes de la foto.")
+        TipItem(
+            "Usar buena iluminación", 
+            "Evita las sombras sobre el ticket.",
+            Icons.Default.Lightbulb
+        ),
+        TipItem(
+            "Papel bien estirado", 
+            "Aplaná el ticket antes de la foto.",
+            Icons.Default.ReceiptLong
+        )
     )
 
     var faqs = mutableStateListOf(

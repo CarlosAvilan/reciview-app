@@ -42,7 +42,7 @@ fun ReportsScreen(
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(280.dp),
+                    .height(300.dp),
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = MaterialTheme.colorScheme.surface
@@ -51,13 +51,14 @@ fun ReportsScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(24.dp)
+                        .padding(horizontal = 16.dp, vertical = 24.dp)
                 ) {
                     Text(
-                        text = "Evolución 2024",
+                        text = "Evolución 2026",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(horizontal = 8.dp)
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     
@@ -65,15 +66,16 @@ fun ReportsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.Bottom
                     ) {
                         val maxAmount = viewModel.monthlyEvolution.maxOf { it.amount }
                         viewModel.monthlyEvolution.forEach { report ->
                             BarItem(
                                 report = report,
-                                isSelected = report.month == "MAY",
-                                heightFactor = report.amount / maxAmount
+                                isSelected = viewModel.selectedReport == report,
+                                heightFactor = report.amount / maxAmount,
+                                onClick = { viewModel.onReportSelected(report) }
                             )
                         }
                     }
@@ -87,12 +89,12 @@ fun ReportsScreen(
             ) {
                 StatCard(
                     title = "Gasto Promedio",
-                    value = viewModel.averageCost,
+                    value = viewModel.selectedReport.averageCost,
                     modifier = Modifier.weight(1f)
                 )
                 StatCard(
                     title = "Día más activo",
-                    value = viewModel.mostActiveDay,
+                    value = viewModel.selectedReport.mostActiveDay,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -107,11 +109,11 @@ fun ReportsScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF1B2430) // Manteniendo el color oscuro del diseño original para el botón primario
+                    containerColor = Color(0xFF4B89F1)
                 )
             ) {
                 Text(
-                    text = "Descargar PDF del Mes",
+                    text = "Descargar PDF de ${viewModel.selectedReport.month}",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White,
                     fontWeight = FontWeight.Bold

@@ -7,24 +7,27 @@ import androidx.lifecycle.ViewModel
 
 data class MonthlyReport(
     val month: String,
-    val amount: Float
+    val amount: Float,
+    val averageCost: String,
+    val mostActiveDay: String
 )
 
 class ReportsViewModel : ViewModel() {
     var monthlyEvolution by mutableStateOf(
         listOf(
-            MonthlyReport("ENE", 1500f),
-            MonthlyReport("FEB", 2800f),
-            MonthlyReport("MAR", 3500f),
-            MonthlyReport("ABR", 4200f),
-            MonthlyReport("MAY", 5500f)
+            MonthlyReport("ENE", 1500f, "$1.200", "Lunes"),
+            MonthlyReport("FEB", 2800f, "$1.350", "Miércoles"),
+            MonthlyReport("MAR", 3500f, "$1.400", "Viernes"),
+            MonthlyReport("ABR", 4200f, "$1.380", "Jueves"),
+            MonthlyReport("MAY", 5500f, "$1.450", "Sábado")
         )
     )
         private set
 
-    var averageCost by mutableStateOf("$1.450")
+    var selectedReport by mutableStateOf(monthlyEvolution.last())
         private set
 
-    var mostActiveDay by mutableStateOf("Sábado")
-        private set
+    fun onReportSelected(report: MonthlyReport) {
+        selectedReport = report
+    }
 }

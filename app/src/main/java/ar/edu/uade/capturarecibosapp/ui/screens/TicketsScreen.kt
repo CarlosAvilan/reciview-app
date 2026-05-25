@@ -1,9 +1,11 @@
 package ar.edu.uade.capturarecibosapp.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -17,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
 import ar.edu.uade.capturarecibosapp.ui.components.TicketCard
+import ar.edu.uade.capturarecibosapp.ui.components.TicketDetailDialog
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.TicketsViewModel
 
@@ -77,41 +80,43 @@ fun TicketsScreen(
                     Icon(
                         Icons.Default.Search, 
                         contentDescription = null, 
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = Color(0xFF4F8CF6) // Usando el azul de la app
                     ) 
                 },
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = Color.Transparent
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White,
+                    unfocusedBorderColor = Color(0xFFE9ECEF),
+                    focusedBorderColor = Color(0xFF4F8CF6)
                 )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Categories
-            Row(
+            // Categories (Fixed layout with LazyRow)
+            LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(end = 24.dp)
             ) {
-                viewModel.categories.forEach { category ->
+                items(viewModel.categories) { category ->
                     val isSelected = viewModel.selectedCategory == category
                     FilterChip(
                         selected = isSelected,
                         onClick = { viewModel.selectedCategory = category },
                         label = { Text(category) },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            selectedContainerColor = Color(0xFF4F8CF6), // Azul de la app
+                            selectedLabelColor = Color.White,
+                            containerColor = Color.White,
+                            labelColor = Color.Gray
                         ),
                         border = FilterChipDefaults.filterChipBorder(
-                            borderColor = if (isSelected) Color.Transparent else MaterialTheme.colorScheme.outline,
+                            borderColor = if (isSelected) Color.Transparent else Color(0xFFE9ECEF),
                             enabled = true,
-                            selected = isSelected
+                            selected = isSelected,
+                            borderWidth = 1.dp
                         ),
                         shape = RoundedCornerShape(20.dp)
                     )
@@ -121,16 +126,33 @@ fun TicketsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Tickets Grid
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(viewModel.tickets) { ticket ->
-                    TicketCard(ticket)
+            if (viewModel.filteredTickets.isEmpty()) {
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                    Text("No se encontraron tickets", color = Color.Gray)
+                }
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(viewModel.filteredTickets) { ticket ->
+                        TicketCard(
+                            ticket = ticket,
+                            onClick = { viewModel.selectedTicket = ticket }
+                        )
+                    }
                 }
             }
+        }
+        
+        // Show Detail Dialog if a ticket is selected
+        viewModel.selectedTicket?.let { ticket ->
+            TicketDetailDialog(
+                ticket = ticket,
+                onDismiss = { viewModel.selectedTicket = null }
+            )
         }
     }
 }
