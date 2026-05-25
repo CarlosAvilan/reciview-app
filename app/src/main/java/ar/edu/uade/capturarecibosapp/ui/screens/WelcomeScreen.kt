@@ -29,7 +29,12 @@ fun WelcomeScreen(
     totalGastado: String = "$45.280,50",
     porcentajePresupuesto: Float = 0.75f,
     onScanClick: () -> Unit,
-    onCategoriesClick: () -> Unit
+    onCategoriesClick: () -> Unit,
+    onReportsClick: () -> Unit = {},
+    onHelpClick: () -> Unit = {},
+    onTicketsClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
+    onExpensesClick: () -> Unit = {}
 ) {
     val initials = userName.split(" ")
         .filter { it.isNotBlank() }
@@ -38,7 +43,13 @@ fun WelcomeScreen(
 
     Scaffold(
         bottomBar = {
-            BottomBar(onScanClick = onScanClick)
+            BottomBar(
+                onScanClick = onScanClick,
+                onHomeClick = {},
+                onExpensesClick = onExpensesClick,
+                onTicketsClick = onTicketsClick,
+                onProfileClick = onProfileClick
+            )
         },
         containerColor = Color(0xFFF8F9FA)
     ) { paddingValues ->
@@ -74,7 +85,8 @@ fun WelcomeScreen(
                         modifier = Modifier
                             .size(48.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFE9ECEF)),
+                            .background(Color(0xFFE9ECEF))
+                            .clickable { onProfileClick() },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -179,8 +191,16 @@ fun WelcomeScreen(
                         label = "Categorías", 
                         onClick = onCategoriesClick
                     )
-                    QuickActionItem(icon = Icons.Default.BarChart, label = "Reportes", onClick = {})
-                    QuickActionItem(icon = Icons.Default.HelpOutline, label = "Ayuda", onClick = {})
+                    QuickActionItem(
+                        icon = Icons.Default.BarChart, 
+                        label = "Reportes", 
+                        onClick = onReportsClick
+                    )
+                    QuickActionItem(
+                        icon = Icons.Default.HelpOutline, 
+                        label = "Ayuda", 
+                        onClick = onHelpClick
+                    )
                 }
             }
 

@@ -19,10 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
-import ar.edu.uade.capturarecibosapp.ui.screens.ConfirmationScreen
-import ar.edu.uade.capturarecibosapp.ui.screens.EditCategoriesScreen
-import ar.edu.uade.capturarecibosapp.ui.screens.ExpensesCategoriesScreen
-import ar.edu.uade.capturarecibosapp.ui.screens.WelcomeScreen
+import ar.edu.uade.capturarecibosapp.ui.screens.*
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
@@ -85,7 +82,12 @@ class MainActivity : ComponentActivity() {
                                     WelcomeScreen(
                                         userName = "Juan",
                                         onScanClick = { startScan() },
-                                        onCategoriesClick = { currentScreen = "categories" }
+                                        onCategoriesClick = { currentScreen = "categories" },
+                                        onReportsClick = { currentScreen = "reports" },
+                                        onHelpClick = { currentScreen = "help" },
+                                        onTicketsClick = { currentScreen = "tickets" },
+                                        onProfileClick = { /* Navegar a perfil si existiera una ruta */ },
+                                        onExpensesClick = { /* Navegar a gastos */ }
                                     )
 
                                     if (viewModel.isProcessing) {
@@ -115,6 +117,24 @@ class MainActivity : ComponentActivity() {
                                         // Volvemos a la lista de categorías después de guardar
                                         currentScreen = "categories"
                                     }
+                                )
+                            }
+                            "reports" -> {
+                                ReportsScreen(
+                                    onBackClick = { currentScreen = "welcome" }
+                                )
+                            }
+                            "help" -> {
+                                HelpScreen(
+                                    onBackClick = { currentScreen = "welcome" }
+                                )
+                            }
+                            "tickets" -> {
+                                TicketsScreen(
+                                    onScanClick = { startScan() },
+                                    onHomeClick = { currentScreen = "welcome" },
+                                    onExpensesClick = { /* Navegar a gastos */ },
+                                    onProfileClick = { /* Navegar a perfil */ }
                                 )
                             }
                         }
