@@ -106,8 +106,6 @@ fun ProfileScreen(
                 SectionLabel(text = "PREFERENCIAS")
                 ProfileValueRow(label = "Presupuesto mensual", value = viewModel.presupuestoMensual)
                 Spacer(modifier = Modifier.height(8.dp))
-                ProfileValueRow(label = "Moneda", value = viewModel.moneda)
-                Spacer(modifier = Modifier.height(8.dp))
                 ProfileSwitchRow(
                     label = "Notificaciones",
                     checked = viewModel.notificacionesEnabled,

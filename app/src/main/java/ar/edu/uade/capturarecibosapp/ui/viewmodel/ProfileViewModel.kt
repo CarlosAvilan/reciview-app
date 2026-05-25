@@ -9,7 +9,6 @@ class ProfileViewModel : ViewModel() {
     var nombre by mutableStateOf("Juan Pérez")
     var email by mutableStateOf("juan.perez@email.com")
     var presupuestoMensual by mutableStateOf("60.000,00")
-    var moneda by mutableStateOf("ARS ($)")
     var notificacionesEnabled by mutableStateOf(true)
 
     fun onNotificacionesToggle(enabled: Boolean) {
