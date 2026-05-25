@@ -22,6 +22,9 @@ import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
 import ar.edu.uade.capturarecibosapp.ui.screens.*
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.ForgotPasswordViewModel
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.ForgotPasswordStep
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.LoginViewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER_MODE_FULL
@@ -31,6 +34,8 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
+    private val forgotPasswordViewModel: ForgotPasswordViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
 
     // Registrador para el resultado del escáner de Google
     private val scannerLauncher = registerForActivityResult(
@@ -59,7 +64,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     // Estados de navegación simples para el prototipo
-                    var currentScreen by remember { mutableStateOf("welcome") }
+                    var currentScreen by remember { mutableStateOf("login") }
                     var selectedCategory by remember { mutableStateOf<CategoryItem?>(null) }
 
                     val ticket = viewModel.ticketDetectado
@@ -77,6 +82,44 @@ class MainActivity : ComponentActivity() {
                     } else {
                         // Navegación entre las pantallas manuales
                         when (currentScreen) {
+                            "login" -> {
+                                LoginScreen(
+                                    viewModel = loginViewModel,
+                                    onForgotPasswordClick = { currentScreen = "forgot_password" },
+                                    onLoginSuccess = { currentScreen = "welcome" }
+                                )
+                            }
+                            "forgot_password" -> {
+                                when (forgotPasswordViewModel.currentStep) {
+                                    ForgotPasswordStep.EMAIL -> {
+                                        ForgotPasswordScreen(
+                                            viewModel = forgotPasswordViewModel,
+                                            onBackClick = { currentScreen = "login" }
+                                        )
+                                    }
+                                    ForgotPasswordStep.VERIFY_CODE -> {
+                                        VerifyCodeScreen(
+                                            viewModel = forgotPasswordViewModel,
+                                            onBackClick = { forgotPasswordViewModel.backToEmail() }
+                                        )
+                                    }
+                                    ForgotPasswordStep.NEW_PASSWORD -> {
+                                        ResetPasswordScreen(
+                                            viewModel = forgotPasswordViewModel,
+                                            onBackClick = { forgotPasswordViewModel.backToVerifyCode() }
+                                        )
+                                    }
+                                    ForgotPasswordStep.SUCCESS -> {
+                                        PasswordSuccessScreen(
+                                            onLoginClick = { 
+                                                currentScreen = "login"
+                                                // Reset ViewModel for next time
+                                                forgotPasswordViewModel.backToEmail()
+                                            }
+                                        )
+                                    }
+                                }
+                            }
                             "welcome" -> {
                                 Box(modifier = Modifier.fillMaxSize()) {
                                     WelcomeScreen(
