@@ -78,6 +78,49 @@ fun AppNavigation(
             )
         }
 
+        composable(Screen.MyExpenses.route) {
+            MyExpensesScreen(
+                onCategoriesClick = { navController.navigate(Screen.Categories.route) },
+                onViewAllClick = { navController.navigate(Screen.Tickets.route) }
+            )
+        }
+
+        composable(Screen.ManualExpense.route) {
+            val manualViewModel: ManualExpenseViewModel = viewModel()
+            ManualExpenseScreen(
+                viewModel = manualViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // --- FLUJO RECUPERAR CONTRASEÑA ---
+        composable(Screen.ForgotPassword.route) {
+            val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
+            ForgotPasswordScreen(
+                viewModel = forgotPasswordViewModel,
+                onBackClick = { navController.popBackStack() },
+                onCodeSent = { navController.navigate(Screen.VerifyCode.route) }
+            )
+        }
+        composable(Screen.VerifyCode.route) {
+            val backStackEntry = remember(it) {
+                navController.getBackStackEntry(Screen.ForgotPassword.route)
+            }
+            val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel(backStackEntry)
+            VerifyCodeScreen(viewModel = forgotPasswordViewModel, onBackClick = { navController.popBackStack() }, onCodeVerified = { navController.navigate(Screen.ResetPassword.route) })
+        }
+        composable(Screen.ResetPassword.route) {
+            val backStackEntry = remember(it) {
+                navController.getBackStackEntry(Screen.VerifyCode.route)
+            }
+            val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel(backStackEntry)
+            ResetPasswordScreen(viewModel = forgotPasswordViewModel, onBackClick = { navController.popBackStack() }, onPasswordReset = { navController.navigate(Screen.PasswordSuccess.route) })
+        }
+        composable(Screen.PasswordSuccess.route) {
+            PasswordSuccessScreen(onLoginClick = { navController.navigate(Screen.Login.route) { popUpTo(Screen.Login.route) { inclusive = true } } })
+        }
+
+        // --- CATEGORÍAS ---
         composable(Screen.Categories.route) {
             ExpensesCategoriesScreen(
                 onBackClick = { navController.popBackStack() },
@@ -87,58 +130,62 @@ fun AppNavigation(
                 }
             )
         }
-
         composable(
             route = Screen.EditCategory.route,
             arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
         ) { backStackEntry ->
             val categoryId = backStackEntry.arguments?.getString("categoryId")
             val categoryToEdit = if (categoryId == "new" || categoryId == null) null else {
-                mockCategories.find { it.name.equals(categoryId, ignoreCase = true) }
+                mockCategories.find { it.name == categoryId }
             }
-
-            EditCategoriesScreen(
-                category = categoryToEdit,
-                onBackClick = { navController.popBackStack() },
-                onSaveClick = { _, _ -> navController.popBackStack() }
-            )
+            EditCategoriesScreen(category = categoryToEdit, onBackClick = { navController.popBackStack() }, onSaveClick = { _, _ -> navController.popBackStack() })
         }
 
+        // --- OTROS ---
         composable(Screen.Register.route) {
-            val registerViewModel: RegisterViewModel = viewModel()
-            RegisterScreen(
-                viewModel = registerViewModel,
-                onBackClick = { navController.popBackStack() },
-                onRegisterClick = { navController.navigate(Screen.Welcome.route) },
-                onTermsClick = { navController.navigate(Screen.TermsAndConditions.route) }
-            )
+            RegisterScreen(viewModel = viewModel(), onBackClick = { navController.popBackStack() }, onRegisterClick = { navController.navigate(Screen.Welcome.route) }, onTermsClick = { navController.navigate(Screen.TermsAndConditions.route) })
         }
-
-        composable(Screen.TermsAndConditions.route) {
-            val backStackEntry = remember(it) { navController.getBackStackEntry(Screen.Register.route) }
-            val registerViewModel: RegisterViewModel = viewModel(backStackEntry)
-            TermsAndConditionsScreen(viewModel = registerViewModel, onBackClick = { navController.popBackStack() })
-        }
-
         composable(Screen.Profile.route) {
-            ProfileScreen(
-                viewModel = viewModel(), 
-                onPersonalInfoClick = { navController.navigate(Screen.PersonalInfo.route) }, 
-                onCloseSessionClick = { navController.navigate(Screen.Login.route) }
-            )
+            ProfileScreen(viewModel = viewModel(), onPersonalInfoClick = { navController.navigate(Screen.PersonalInfo.route) }, onCloseSessionClick = { navController.navigate(Screen.Login.route) })
         }
-        
-        composable(Screen.Tickets.route) { TicketsScreen(viewModel = viewModel()) }
+        composable(Screen.Tickets.route) {
+            TicketsScreen(viewModel = viewModel())
+        }
+        composable(Screen.Reports.route) { ReportsScreen(onBackClick = { navController.popBackStack() }) }
+        composable(Screen.Help.route) { HelpScreen(onBackClick = { navController.popBackStack() }) }
 
         composable(Screen.Confirmation.route) {
             val ticket = mainViewModel.ticketDetectado
             if (ticket != null) {
                 ConfirmationScreen(
                     ticket = ticket,
-                    onConfirm = { mainViewModel.confirmarYSubir(it); navController.popBackStack() },
-                    onCancel = { mainViewModel.cancelarCaptura(); navController.popBackStack() }
+                    onConfirm = { ticketEditado ->
+                        mainViewModel.confirmarYSubir(ticketEditado) // Corregido: usamos ticketEditado
+                        navController.popBackStack()
+                    },
+                    onCancel = {
+                        mainViewModel.cancelarCaptura()
+                        navController.popBackStack()
+                    }
                 )
             }
+        }
+
+        composable(Screen.PersonalInfo.route) {
+            PersonalInfoScreen(
+                viewModel = viewModel(),
+                onBackClick = { navController.popBackStack() },
+                onChangePasswordClick = { navController.navigate(Screen.ChangePassword.route) },
+                onSaveClick = { navController.popBackStack() },
+                onDeleteAccountClick = { navController.navigate(Screen.Login.route) }
+            )
+        }
+        composable(Screen.ChangePassword.route) {
+            ChangePasswordScreen(
+                viewModel = viewModel(),
+                onBackClick = { navController.popBackStack() },
+                onSaveClick = { navController.popBackStack() }
+            )
         }
     }
 }
