@@ -173,8 +173,9 @@ fun AppNavigation(
         }
 
         composable(Screen.PersonalInfo.route) {
+            val personalViewModel: PersonalInfoViewModel = viewModel()
             PersonalInfoScreen(
-                viewModel = viewModel(),
+                viewModel = personalViewModel,
                 onBackClick = { navController.popBackStack() },
                 onChangePasswordClick = { navController.navigate(Screen.ChangePassword.route) },
                 onSaveClick = { navController.popBackStack() },
@@ -182,8 +183,9 @@ fun AppNavigation(
             )
         }
         composable(Screen.ChangePassword.route) {
+            val changePasswordViewModel: ChangePasswordViewModel = viewModel()
             ChangePasswordScreen(
-                viewModel = viewModel(),
+                viewModel = changePasswordViewModel,
                 onBackClick = { navController.popBackStack() },
                 onSaveClick = { navController.popBackStack() }
             )
