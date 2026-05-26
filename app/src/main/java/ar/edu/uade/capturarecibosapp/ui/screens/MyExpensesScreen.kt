@@ -39,7 +39,8 @@ import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 fun MyExpensesScreen(
     totalGastado: String = "$45.280,50",
     estadistica: String = "+ 25% vs enero",
-    onCategoriesClick: () -> Unit
+    onCategoriesClick: () -> Unit,
+    onViewAllClick: () -> Unit // Nuevo parámetro
 ) {
     // Datos mockeados según Figma
     val transacciones = listOf(
@@ -152,7 +153,7 @@ fun MyExpensesScreen(
                     text = "Ver todo",
                     color = Color(0xFF4F46E5),
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.clickable() { /* Ver todo */ }
+                    modifier = Modifier.clickable { onViewAllClick() } // Vinculamos el click
                 )
             }
         }
@@ -203,7 +204,8 @@ fun MyExpensesScreen(
 fun MyExpensesScreenPreview() {
     ReciViewTheme {
         MyExpensesScreen(
-            onCategoriesClick = {}
+            onCategoriesClick = {},
+            onViewAllClick = {}
         )
     }
 }

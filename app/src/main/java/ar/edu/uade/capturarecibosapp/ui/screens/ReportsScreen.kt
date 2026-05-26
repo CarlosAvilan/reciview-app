@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,12 +17,17 @@ import ar.edu.uade.capturarecibosapp.ui.components.StatCard
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.ReportsViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun ReportsScreen(
     viewModel: ReportsViewModel = ReportsViewModel(),
     onBackClick: () -> Unit
 ) {
+    // 1. Estado para el mensaje emergente (Snackbar)
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             TopBar(
@@ -29,6 +36,8 @@ fun ReportsScreen(
                 containerColor = MaterialTheme.colorScheme.surface
             )
         },
+        // 2. Vinculamos el host del Snackbar al Scaffold
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
@@ -103,7 +112,15 @@ fun ReportsScreen(
 
             // Download Button
             Button(
-                onClick = { /* Descargar PDF */ },
+                onClick = { 
+                    // 3. Mostramos el mensaje al hacer click
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "Se ha descargado el archivo",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
