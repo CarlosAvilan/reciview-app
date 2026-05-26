@@ -2,7 +2,9 @@ package ar.edu.uade.capturarecibosapp.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -28,7 +30,7 @@ fun ForgotPasswordScreen(
     onBackClick: () -> Unit,
     onCodeSent: () -> Unit = {}
 ) {
-    // Observe state to navigate
+    // Escuchar el cambio de estado para navegar
     LaunchedEffect(viewModel.currentStep) {
         if (viewModel.currentStep == ForgotPasswordStep.VERIFY_CODE) {
             onCodeSent()
@@ -42,7 +44,8 @@ fun ForgotPasswordScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()), // Habilitar scroll por si aparece el teclado
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -97,10 +100,11 @@ fun ForgotPasswordScreen(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
 
+            // CORRECCIÓN: Usamos 'label' en lugar de 'placeholder'
             TextField(
                 value = viewModel.email,
                 onValueChange = { viewModel.onEmailChange(it) },
-                placeholder = "ejemplo@uade.edu.ar"
+                label = "ejemplo@uade.edu.ar"
             )
 
             if (viewModel.errorMessage != null) {
@@ -120,8 +124,6 @@ fun ForgotPasswordScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-
         }
     }
 }

@@ -30,7 +30,10 @@ fun ManualExpenseScreen(viewModel: ManualExpenseViewModel, onBackClick: () -> Un
             fecha = viewModel.fecha,
             onFechaClick = { /* Abrir date picker */ },
             buttonText = "Guardar Gasto",
-            onButtonClick = { viewModel.guardarGasto() }
+            onButtonClick = { 
+                viewModel.guardarGasto()
+                onBackClick() // Navegamos de vuelta tras guardar
+            }
         )
     }
 }
