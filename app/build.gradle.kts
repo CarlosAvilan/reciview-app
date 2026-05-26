@@ -48,6 +48,9 @@ dependencies {
     implementation(libs.vision.common)
     implementation("io.coil-kt:coil-compose:2.6.0")
     
+    // SplashScreen API
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     // Iconos extendidos para Figma
     implementation("androidx.compose.material:material-icons-extended")
 

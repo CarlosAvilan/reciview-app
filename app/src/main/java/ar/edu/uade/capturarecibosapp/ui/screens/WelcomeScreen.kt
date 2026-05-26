@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.filled.*
@@ -34,7 +35,8 @@ fun WelcomeScreen(
     onManualClick: () -> Unit,
     onProfileClick: () -> Unit,
     onReportsClick: () -> Unit,
-    onHelpClick: () -> Unit
+    onHelpClick: () -> Unit,
+    onScanClick: () -> Unit
 ) {
     var selectedTicket by remember { mutableStateOf<TicketItem?>(null) }
 
@@ -54,7 +56,7 @@ fun WelcomeScreen(
                 date = "Ayer, 10:15",
                 amount = "$15.000",
                 category = "Combustible",
-                imageRes = R.drawable.ticket_shell, // Ahora reconoce el recurso
+                imageRes = R.drawable.ticket_shell,
                 description = "Carga de combustible V-Power"
             ),
             TicketItem(
@@ -73,7 +75,11 @@ fun WelcomeScreen(
         .take(2)
         .joinToString("") { it.take(1).uppercase() }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF8F9FA))
+    ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -217,7 +223,7 @@ fun WelcomeScreen(
                         onClick = onReportsClick
                     )
                     QuickActionItem(
-                        icon = Icons.Default.HelpOutline,
+                        icon = Icons.AutoMirrored.Filled.HelpOutline,
                         label = "Ayuda",
                         onClick = onHelpClick
                     )
@@ -243,7 +249,7 @@ fun WelcomeScreen(
             item { Spacer(modifier = Modifier.height(16.dp)) }
         }
 
-        // Diálogo de detalle (Fuera de la lista pero dentro del Box)
+        // Diálogo de detalle
         selectedTicket?.let { ticket ->
             TicketDetailDialog(
                 ticket = ticket,
