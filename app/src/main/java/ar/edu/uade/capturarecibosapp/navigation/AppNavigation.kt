@@ -20,7 +20,7 @@ fun AppNavigation(
 ) {
     val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
 
-    // Lista mock centralizada
+    // Lista mock centralizada para asegurar consistencia en la navegación
     val mockCategories = listOf(
         CategoryItem("🍔", "Comida y Bebida", 18500.0, 25000.0),
         CategoryItem("🚗", "Transporte", 12200.0, 15000.0),
@@ -66,10 +66,17 @@ fun AppNavigation(
                 userName = "Juan",
                 onCategoriesClick = { navController.navigate(Screen.Categories.route) },
                 onProfileClick = { navController.navigate(Screen.Profile.route) },
-                onManualClick = { navController.navigate(Screen.ManualExpense.route) }, // Vínculo verificado
+                onManualClick = { navController.navigate(Screen.ManualExpense.route) },
                 onReportsClick = { navController.navigate(Screen.Reports.route) },
                 onHelpClick = { navController.navigate(Screen.Help.route) },
                 onScanClick = startScan
+            )
+        }
+
+        composable(Screen.MyExpenses.route) {
+            MyExpensesScreen(
+                onCategoriesClick = { navController.navigate(Screen.Categories.route) },
+                onViewAllClick = { navController.navigate(Screen.Tickets.route) }
             )
         }
 
@@ -127,14 +134,44 @@ fun AppNavigation(
         composable(Screen.Profile.route) {
             ProfileScreen(viewModel = viewModel(), onPersonalInfoClick = { navController.navigate(Screen.PersonalInfo.route) }, onCloseSessionClick = { navController.navigate(Screen.Login.route) })
         }
-        composable(Screen.Tickets.route) { TicketsScreen(viewModel = viewModel()) }
+        composable(Screen.Tickets.route) { 
+            TicketsScreen(viewModel = viewModel()) 
+        }
         composable(Screen.Reports.route) { ReportsScreen(onBackClick = { navController.popBackStack() }) }
         composable(Screen.Help.route) { HelpScreen(onBackClick = { navController.popBackStack() }) }
+        
         composable(Screen.Confirmation.route) {
             val ticket = mainViewModel.ticketDetectado
             if (ticket != null) {
-                ConfirmationScreen(ticket = ticket, onConfirm = { mainViewModel.confirmarYSubir(it); navController.popBackStack() }, onCancel = { mainViewModel.cancelarCaptura(); navController.popBackStack() })
+                ConfirmationScreen(
+                    ticket = ticket, 
+                    onConfirm = { ticketEditado -> 
+                        mainViewModel.confirmarYSubir(ticketEditado) // Corregido: usamos ticketEditado
+                        navController.popBackStack() 
+                    }, 
+                    onCancel = { 
+                        mainViewModel.cancelarCaptura()
+                        navController.popBackStack() 
+                    }
+                )
             }
+        }
+
+        composable(Screen.PersonalInfo.route) { 
+            PersonalInfoScreen(
+                viewModel = viewModel(), 
+                onBackClick = { navController.popBackStack() },
+                onChangePasswordClick = { navController.navigate(Screen.ChangePassword.route) },
+                onSaveClick = { navController.popBackStack() },
+                onDeleteAccountClick = { navController.navigate(Screen.Login.route) }
+            )
+        }
+        composable(Screen.ChangePassword.route) { 
+            ChangePasswordScreen(
+                viewModel = viewModel(), 
+                onBackClick = { navController.popBackStack() },
+                onSaveClick = { navController.popBackStack() }
+            )
         }
     }
 }
