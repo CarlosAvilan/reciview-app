@@ -127,17 +127,24 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // País de residencia
-            Box {
+            // País de nacimiento
+            Box(modifier = Modifier.fillMaxWidth()) {
                 TextField(
-                    value = viewModel.paisResidencia,
+                    value = viewModel.paisNacimiento,
                     onValueChange = { },
-                    label = "País de residencia",
+                    label = "País de nacimiento",
                     trailingIcon = {
                         Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
                     },
                     readOnly = true,
                     modifier = Modifier.clickable { showCountryDropdown = true }
+                )
+
+                // Capa invisible encima del TextField para capturar el click de forma más robusta
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clickable { showCountryDropdown = true }
                 )
 
                 DropdownMenu(
@@ -229,8 +236,9 @@ fun RegisterScreen(
 @Composable
 fun RegisterScreenPreview() {
     ReciViewTheme {
+        val viewModel = remember { RegisterViewModel() }
         RegisterScreen(
-            viewModel = RegisterViewModel(),
+            viewModel = viewModel,
             onBackClick = {},
             onRegisterClick = {},
             onTermsClick = {}

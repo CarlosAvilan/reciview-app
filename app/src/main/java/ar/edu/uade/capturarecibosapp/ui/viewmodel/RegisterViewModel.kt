@@ -10,8 +10,7 @@ class RegisterViewModel : ViewModel() {
     var correoElectronico by mutableStateOf("")
     var telefono by mutableStateOf("")
     var fechaNacimiento by mutableStateOf("")
-    var paisResidencia by mutableStateOf("")
-
+    var paisNacimiento by mutableStateOf("")
     var password by mutableStateOf("")
 
     var terminosAceptados by mutableStateOf(false)
@@ -39,7 +38,7 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun onPaisChange(newValue: String) {
-        paisResidencia = newValue
+        paisNacimiento = newValue
     }
 
     fun onTerminosAceptadosChange(newValue: Boolean) {
