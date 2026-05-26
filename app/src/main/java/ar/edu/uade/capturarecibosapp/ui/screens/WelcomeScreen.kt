@@ -22,15 +22,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ar.edu.uade.capturarecibosapp.R
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.TicketDetailDialog
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.TicketItem
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.WelcomeViewModel
 
 @Composable
 fun WelcomeScreen(
-    userName: String = "Juan",
-    totalGastado: String = "$45.280,50",
-    porcentajePresupuesto: Float = 0.75f,
+    viewModel: WelcomeViewModel = viewModel(),
     onCategoriesClick: () -> Unit,
     onManualClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -38,37 +37,13 @@ fun WelcomeScreen(
     onHelpClick: () -> Unit,
     onScanClick: () -> Unit
 ) {
-    var selectedTicket by remember { mutableStateOf<TicketItem?>(null) }
+    // Obtenemos el estado desde el ViewModel
+    val userName = viewModel.userName
+    val totalSpent = viewModel.totalSpent
+    val budgetPercentage = viewModel.budgetPercentage
+    val recentTickets = viewModel.recentTickets
 
-    val recentTickets = remember {
-        listOf(
-            TicketItem(
-                id = 101,
-                commerce = "Carrefour",
-                date = "Hoy, 18:30",
-                amount = "$4.200",
-                category = "Alimentos",
-                description = "Compra semanal de supermercado"
-            ),
-            TicketItem(
-                id = 1,
-                commerce = "Shell",
-                date = "Ayer, 10:15",
-                amount = "$15.000",
-                category = "Combustible",
-                imageRes = R.drawable.ticket_shell,
-                description = "Carga de combustible V-Power"
-            ),
-            TicketItem(
-                id = 102,
-                commerce = "Starbucks",
-                date = "08/05, 09:00",
-                amount = "$3.500",
-                category = "Gastronomía",
-                description = "Café Latte y Muffin"
-            )
-        )
-    }
+    var selectedTicket by remember { mutableStateOf<TicketItem?>(null) }
 
     val initials = userName.split(" ")
         .filter { it.isNotBlank() }
@@ -90,144 +65,31 @@ fun WelcomeScreen(
 
             // HEADER
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            text = "Hola, $userName 👋",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.Gray
-                        )
-                        Text(
-                            text = "Bienvenido a ReciView",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFFE0E7FF))
-                            .clickable { onProfileClick() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = initials,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF4F8CF6)
-                        )
-                    }
-                }
+                WelcomeHeader(
+                    userName = userName,
+                    initials = initials,
+                    onProfileClick = onProfileClick
+                )
             }
 
             // SUMMARY CARD
             item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF4F8CF6))
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(24.dp),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "Total gastado en mayo",
-                            color = Color.White.copy(alpha = 0.8f),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Text(
-                            text = totalGastado,
-                            color = Color.White,
-                            style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.TrendingDown,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Text(
-                                text = " 5% menos que el mes pasado",
-                                color = Color.White,
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        }
-                    }
-                }
+                TotalSpentCard(totalSpent = totalSpent)
             }
 
             // PRESUPUESTO
             item {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Tu Presupuesto Mensual",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.cardElevation(2.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text("Límite: $60.000", color = Color.Gray, fontSize = 14.sp)
-                                Text("${(porcentajePresupuesto * 100).toInt()}%", fontWeight = FontWeight.Bold)
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            LinearProgressIndicator(
-                                progress = { porcentajePresupuesto },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(8.dp)
-                                    .clip(CircleShape),
-                                color = Color(0xFF4F8CF6),
-                                trackColor = Color(0xFFE9ECEF)
-                            )
-                        }
-                    }
-                }
+                BudgetProgressCard(budgetPercentage = budgetPercentage)
             }
 
             // ACCIONES RÁPIDAS
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    QuickActionItem(icon = Icons.Default.Add, label = "Manual", onClick = onManualClick)
-                    QuickActionItem(
-                        icon = Icons.Default.Category,
-                        label = "Categorías",
-                        onClick = onCategoriesClick
-                    )
-                    QuickActionItem(
-                        icon = Icons.Default.BarChart,
-                        label = "Reportes",
-                        onClick = onReportsClick
-                    )
-                    QuickActionItem(
-                        icon = Icons.AutoMirrored.Filled.HelpOutline,
-                        label = "Ayuda",
-                        onClick = onHelpClick
-                    )
-                }
+                QuickActionsRow(
+                    onManualClick = onManualClick,
+                    onCategoriesClick = onCategoriesClick,
+                    onReportsClick = onReportsClick,
+                    onHelpClick = onHelpClick
+                )
             }
 
             // ACTIVIDAD RECIENTE
@@ -256,6 +118,157 @@ fun WelcomeScreen(
                 onDismiss = { selectedTicket = null }
             )
         }
+    }
+}
+
+@Composable
+private fun WelcomeHeader(
+    userName: String,
+    initials: String,
+    onProfileClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(
+                text = "Hola, $userName 👋",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.Gray
+            )
+            Text(
+                text = "Bienvenido a ReciView",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFE0E7FF))
+                .clickable { onProfileClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = initials,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF4F8CF6)
+            )
+        }
+    }
+}
+
+@Composable
+private fun TotalSpentCard(totalSpent: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(160.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF4F8CF6))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Total gastado en mayo",
+                color = Color.White.copy(alpha = 0.8f),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = totalSpent,
+                color = Color.White,
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.TrendingDown,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = " 5% menos que el mes pasado",
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun BudgetProgressCard(budgetPercentage: Float) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = "Tu Presupuesto Mensual",
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleMedium
+        )
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(2.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Límite: $60.000", color = Color.Gray, fontSize = 14.sp)
+                    Text("${(budgetPercentage * 100).toInt()}%", fontWeight = FontWeight.Bold)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                LinearProgressIndicator(
+                    progress = { budgetPercentage },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(CircleShape),
+                    color = Color(0xFF4F8CF6),
+                    trackColor = Color(0xFFE9ECEF)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuickActionsRow(
+    onManualClick: () -> Unit,
+    onCategoriesClick: () -> Unit,
+    onReportsClick: () -> Unit,
+    onHelpClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        QuickActionItem(icon = Icons.Default.Add, label = "Manual", onClick = onManualClick)
+        QuickActionItem(
+            icon = Icons.Default.Category,
+            label = "Categorías",
+            onClick = onCategoriesClick
+        )
+        QuickActionItem(
+            icon = Icons.Default.BarChart,
+            label = "Reportes",
+            onClick = onReportsClick
+        )
+        QuickActionItem(
+            icon = Icons.AutoMirrored.Filled.HelpOutline,
+            label = "Ayuda",
+            onClick = onHelpClick
+        )
     }
 }
 

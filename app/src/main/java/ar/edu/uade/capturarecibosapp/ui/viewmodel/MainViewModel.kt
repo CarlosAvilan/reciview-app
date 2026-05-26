@@ -40,7 +40,7 @@ class MainViewModel : ViewModel() {
                 Log.d("ReciView", "Subiendo: ${ticket.comercio}, Total: ${ticket.total}, Desc: ${ticket.descripcion}")
                 // Aca iría la llamada a Retrofit
                 // RetrofitClient.instance.enviarTicket(ticket)
-                
+
                 // Limpiamos el estado después de subir con éxito
                 ticketDetectado = null
             } catch (e: Exception) {
