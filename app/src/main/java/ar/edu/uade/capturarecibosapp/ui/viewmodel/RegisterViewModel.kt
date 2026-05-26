@@ -14,6 +14,10 @@ class RegisterViewModel : ViewModel() {
 
     var password by mutableStateOf("")
 
+    var terminosAceptados by mutableStateOf(false)
+    var permisosCamaraAceptados by mutableStateOf(false)
+    var haLeidoTerminos by mutableStateOf(false)
+
     fun onNombreChange(newValue: String) {
         nombreCompleto = newValue
     }
@@ -38,8 +42,19 @@ class RegisterViewModel : ViewModel() {
         paisResidencia = newValue
     }
 
+    fun onTerminosAceptadosChange(newValue: Boolean) {
+        terminosAceptados = newValue
+    }
+
+    fun onPermisosCamaraAceptadosChange(newValue: Boolean) {
+        permisosCamaraAceptados = newValue
+    }
+
+    fun marcarTerminosComoLeidos() {
+        haLeidoTerminos = true
+    }
+
     fun registrarse(onSuccess: () -> Unit) {
-        // Lógica de registro...
         onSuccess()
     }
 }

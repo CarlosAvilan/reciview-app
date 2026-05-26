@@ -1,6 +1,7 @@
 package ar.edu.uade.capturarecibosapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -108,7 +109,19 @@ fun AppNavigation(
             RegisterScreen(
                 viewModel = registerViewModel,
                 onBackClick = { navController.popBackStack() },
-                onRegisterClick = { navController.navigate(Screen.Welcome.route) }
+                onRegisterClick = { navController.navigate(Screen.Welcome.route) },
+                onTermsClick = { navController.navigate(Screen.TermsAndConditions.route) }
+            )
+        }
+
+        composable(Screen.TermsAndConditions.route) {
+            val backStackEntry = remember(it) {
+                navController.getBackStackEntry(Screen.Register.route)
+            }
+            val registerViewModel: RegisterViewModel = viewModel(backStackEntry)
+            TermsAndConditionsScreen(
+                viewModel = registerViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 
