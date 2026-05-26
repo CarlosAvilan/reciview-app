@@ -2,6 +2,7 @@ package ar.edu.uade.capturarecibosapp.navigation
 
 sealed class Screen(val route: String) {
     object Splash : Screen("splash")
+    object Tutorial : Screen("tutorial")
     object Welcome : Screen("welcome")
     object Login : Screen("login")
     object Register : Screen("register")
