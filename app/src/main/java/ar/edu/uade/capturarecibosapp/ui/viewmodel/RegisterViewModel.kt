@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 class RegisterViewModel : ViewModel() {
     var nombreCompleto by mutableStateOf("")
     var correoElectronico by mutableStateOf("")
-    var telefono by mutableStateOf("")
     var fechaNacimiento by mutableStateOf("")
     var paisNacimiento by mutableStateOf("")
     var password by mutableStateOf("")
@@ -27,10 +26,6 @@ class RegisterViewModel : ViewModel() {
 
     fun onPasswordChange(newValue: String) {
         password = newValue
-    }
-
-    fun onTelefonoChange(newValue: String) {
-        telefono = newValue
     }
 
     fun onFechaNacimientoChange(newValue: String) {

@@ -18,7 +18,6 @@ class LoginViewModel : ViewModel() {
     }
 
     fun login(onSuccess: () -> Unit) {
-        // Mocked login for testing: allows login if fields are not empty
         if (correoElectronico.isNotEmpty() && contrasenia.isNotEmpty()) {
             onSuccess()
         }

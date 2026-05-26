@@ -1,6 +1,7 @@
 package ar.edu.uade.capturarecibosapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -18,9 +19,13 @@ fun AppNavigation(
     startScan: () -> Unit,
     mainViewModel: MainViewModel
 ) {
-    val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
+    // Lógica de navegación centralizada en el componente de navegación (SRP)
+    LaunchedEffect(mainViewModel.ticketDetectado) {
+        if (mainViewModel.ticketDetectado != null) {
+            navController.navigate(Screen.Confirmation.route)
+        }
+    }
 
-    // Lista mock centralizada para asegurar consistencia en la navegación
     val mockCategories = listOf(
         CategoryItem("🍔", "Comida y Bebida", 18500.0, 25000.0),
         CategoryItem("🚗", "Transporte", 12200.0, 15000.0),
@@ -88,11 +93,7 @@ fun AppNavigation(
             arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
         ) { backStackEntry ->
             val categoryId = backStackEntry.arguments?.getString("categoryId")
-            
-            // Buscamos la categoría. Si el ID es "new", mandamos null para modo Creación.
-            val categoryToEdit = if (categoryId == "new" || categoryId == null) {
-                null
-            } else {
+            val categoryToEdit = if (categoryId == "new" || categoryId == null) null else {
                 mockCategories.find { it.name.equals(categoryId, ignoreCase = true) }
             }
 
@@ -114,16 +115,9 @@ fun AppNavigation(
         }
 
         composable(Screen.TermsAndConditions.route) {
-            // Obtenemos el ViewModel de la pantalla de Registro para compartir el estado
-            val backStackEntry = remember(it) {
-                navController.getBackStackEntry(Screen.Register.route)
-            }
+            val backStackEntry = remember(it) { navController.getBackStackEntry(Screen.Register.route) }
             val registerViewModel: RegisterViewModel = viewModel(backStackEntry)
-            
-            TermsAndConditionsScreen(
-                viewModel = registerViewModel,
-                onBackClick = { navController.popBackStack() }
-            )
+            TermsAndConditionsScreen(viewModel = registerViewModel, onBackClick = { navController.popBackStack() })
         }
 
         composable(Screen.Profile.route) {
