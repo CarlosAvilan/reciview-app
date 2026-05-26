@@ -1,5 +1,6 @@
 package ar.edu.uade.capturarecibosapp.domain
 
+import android.graphics.Bitmap
 import android.util.Log
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
@@ -12,7 +13,8 @@ import java.util.Locale
 
 class OcrManager {
 
-    fun analizarRecibo(image: InputImage, onResult: (TicketData) -> Unit) {
+    fun analizarRecibo(bitmap: Bitmap, onResult: (TicketData) -> Unit) {
+        val image = InputImage.fromBitmap(bitmap, 0)
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
         recognizer.process(image)

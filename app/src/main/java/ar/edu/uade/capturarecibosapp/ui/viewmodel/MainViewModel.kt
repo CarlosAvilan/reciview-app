@@ -26,9 +26,8 @@ class MainViewModel : ViewModel() {
 
     fun procesarImagen(bitmap: Bitmap) {
         isProcessing = true
-        val image = InputImage.fromBitmap(bitmap, 0)
 
-        ocrManager.analizarRecibo(image) { ticket ->
+        ocrManager.analizarRecibo(bitmap) { ticket ->
             Log.d("ReciView", "OCR finalizado: ${ticket.comercio}")
             ticketDetectado = ticket
             isProcessing = false
