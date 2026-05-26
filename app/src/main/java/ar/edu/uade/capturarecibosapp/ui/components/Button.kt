@@ -18,7 +18,8 @@ fun Button(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = Color(0xFF4F8CF6)
+    containerColor: Color = Color(0xFF4F8CF6),
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,
@@ -28,7 +29,8 @@ fun Button(
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor
-        )
+        ),
+        enabled = enabled
     ) {
         Text(
             text = text,

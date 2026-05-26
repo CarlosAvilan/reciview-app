@@ -10,9 +10,12 @@ class RegisterViewModel : ViewModel() {
     var correoElectronico by mutableStateOf("")
     var telefono by mutableStateOf("")
     var fechaNacimiento by mutableStateOf("")
-    var paisResidencia by mutableStateOf("")
-
+    var paisNacimiento by mutableStateOf("")
     var password by mutableStateOf("")
+
+    var terminosAceptados by mutableStateOf(false)
+    var permisosCamaraAceptados by mutableStateOf(false)
+    var haLeidoTerminos by mutableStateOf(false)
 
     fun onNombreChange(newValue: String) {
         nombreCompleto = newValue
@@ -35,11 +38,22 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun onPaisChange(newValue: String) {
-        paisResidencia = newValue
+        paisNacimiento = newValue
+    }
+
+    fun onTerminosAceptadosChange(newValue: Boolean) {
+        terminosAceptados = newValue
+    }
+
+    fun onPermisosCamaraAceptadosChange(newValue: Boolean) {
+        permisosCamaraAceptados = newValue
+    }
+
+    fun marcarTerminosComoLeidos() {
+        haLeidoTerminos = true
     }
 
     fun registrarse(onSuccess: () -> Unit) {
-        // Lógica de registro...
         onSuccess()
     }
 }

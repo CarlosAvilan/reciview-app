@@ -7,17 +7,24 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
 import ar.edu.uade.capturarecibosapp.ui.components.Button
@@ -25,7 +32,15 @@ import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterViewModel
 
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel, onBackClick: () -> Unit, onRegisterClick: () -> Unit) {
+fun RegisterScreen(
+    viewModel: RegisterViewModel,
+    onBackClick: () -> Unit,
+    onRegisterClick: () -> Unit,
+    onTermsClick: () -> Unit
+) {
+    var showCountryDropdown by remember { mutableStateOf(false) }
+    val countries = listOf("Argentina", "Brasil", "Chile", "Uruguay", "Colombia", "México")
+
     Scaffold(
         topBar = {
             TopBar(
@@ -112,23 +127,104 @@ fun RegisterScreen(viewModel: RegisterViewModel, onBackClick: () -> Unit, onRegi
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // País de residencia
-            TextField(
-                value = viewModel.paisResidencia,
-                onValueChange = { viewModel.onPaisChange(it) },
-                label = "País de residencia",
-                trailingIcon = {
-                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
-                },
-                readOnly = true,
-                modifier = Modifier.clickable { /* Mostrar dropdown */ }
-            )
+            // País de nacimiento
+            Box(modifier = Modifier.fillMaxWidth()) {
+                TextField(
+                    value = viewModel.paisNacimiento,
+                    onValueChange = { },
+                    label = "País de nacimiento",
+                    trailingIcon = {
+                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
+                    },
+                    readOnly = true,
+                    modifier = Modifier.clickable { showCountryDropdown = true }
+                )
+
+                // Capa invisible encima del TextField para capturar el click de forma más robusta
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clickable { showCountryDropdown = true }
+                )
+
+                DropdownMenu(
+                    expanded = showCountryDropdown,
+                    onDismissRequest = { showCountryDropdown = false },
+                    modifier = Modifier.fillMaxWidth(0.8f)
+                ) {
+                    countries.forEach { country ->
+                        DropdownMenuItem(
+                            text = { Text(country) },
+                            onClick = {
+                                viewModel.onPaisChange(country)
+                                showCountryDropdown = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Términos y Condiciones
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Start
+            ) {
+                val annotatedString = buildAnnotatedString {
+                    append("Por favor, lea y acepte los ")
+                    pushStringAnnotation(tag = "terms", annotation = "terms")
+                    withStyle(style = SpanStyle(
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4F46E5),
+                        textDecoration = TextDecoration.Underline
+                    )) {
+                        append("Términos y Condiciones")
+                    }
+                    pop()
+                    append(" antes de continuar")
+                }
+
+                Text(
+                    text = annotatedString,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.clickable {
+                        annotatedString.getStringAnnotations(tag = "terms", start = 0, end = annotatedString.length)
+                            .firstOrNull()?.let {
+                                onTermsClick()
+                            }
+                    }
+                )
+
+                if (viewModel.haLeidoTerminos) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = Color(0xFF10B981),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Términos aceptados",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFF10B981)
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 text = "Registrarme",
-                onClick = { viewModel.registrarse(onRegisterClick) }
+                onClick = { viewModel.registrarse(onRegisterClick) },
+                enabled = viewModel.haLeidoTerminos
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -140,10 +236,12 @@ fun RegisterScreen(viewModel: RegisterViewModel, onBackClick: () -> Unit, onRegi
 @Composable
 fun RegisterScreenPreview() {
     ReciViewTheme {
+        val viewModel = remember { RegisterViewModel() }
         RegisterScreen(
-            viewModel = RegisterViewModel(),
+            viewModel = viewModel,
             onBackClick = {},
-            onRegisterClick = {}
+            onRegisterClick = {},
+            onTermsClick = {}
         )
     }
 }
