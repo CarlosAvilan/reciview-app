@@ -2,7 +2,6 @@ package ar.edu.uade.capturarecibosapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,8 +18,19 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = Screen.Splash.route // Ahora iniciamos en la Splash
     ) {
+        // Nueva ruta para la Splash Screen
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                onNavigateNext = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Screen.Login.route) {
             val loginViewModel: LoginViewModel = viewModel()
             LoginScreen(
@@ -73,7 +83,8 @@ fun AppNavigation(
                 onProfileClick = { navController.navigate(Screen.Profile.route) },
                 onManualClick = { navController.navigate(Screen.ManualExpense.route) },
                 onReportsClick = { navController.navigate(Screen.Reports.route) },
-                onHelpClick = { navController.navigate(Screen.Help.route) }
+                onHelpClick = { navController.navigate(Screen.Help.route) },
+                onScanClick = startScan
             )
         }
 

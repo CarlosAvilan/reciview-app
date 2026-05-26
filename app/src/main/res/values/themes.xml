@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- Tema base de la aplicación -->
     <style name="Theme.ReciView" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Tema para la Splash Screen (API de AndroidX) -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/blue_primary</item>
+        <!-- Usamos el nuevo drawable con margen para evitar recortes -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_inset</item>
+        <item name="postSplashScreenTheme">@style/Theme.ReciView</item>
+    </style>
 </resources>

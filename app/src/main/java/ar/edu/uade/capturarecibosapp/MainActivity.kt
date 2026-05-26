@@ -16,13 +16,15 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ar.edu.uade.capturarecibosapp.navigation.AppNavigation
 import ar.edu.uade.capturarecibosapp.navigation.Screen
 import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
- import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
+import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
@@ -34,7 +36,6 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
-    // Registrador para el resultado del escáner de Google
     private val scannerLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
@@ -52,6 +53,9 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Iniciamos la SplashScreen de AndroidX antes de super.onCreate
+        installSplashScreen()
+        
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -60,10 +64,9 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
 
-                // Determinamos si la pantalla actual debe mostrar la BottomBar
                 val showBottomBar = currentRoute in Screen.bottomBarScreens
 
-                // Efecto para navegar a confirmación cuando se detecta un ticket
+                // Navegación automática a confirmación si se detecta un ticket
                 LaunchedEffect(viewModel.ticketDetectado) {
                     if (viewModel.ticketDetectado != null) {
                         navController.navigate(Screen.Confirmation.route)
