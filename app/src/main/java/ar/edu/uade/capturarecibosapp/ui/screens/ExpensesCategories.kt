@@ -16,22 +16,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.CategoryCard
 import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.CategoriesViewModel
 
 @Composable
 fun ExpensesCategoriesScreen(
+    viewModel: CategoriesViewModel = viewModel(),
     onBackClick: () -> Unit,
     onEditCategoryClick: (CategoryItem?) -> Unit
 ) {
-    // Datos mockeados según la imagen de Figma
-    val categories = listOf(
-        CategoryItem("🍔", "Comida y Bebida", 18500.0, 25000.0),
-        CategoryItem("🚗", "Transporte", 12200.0, 15000.0),
-        CategoryItem("💡", "Servicios y Hogar", 9800.0, 8000.0) // Supera presupuesto (Rojo)
-    )
+    val categories = viewModel.categories
 
     Scaffold(
         topBar = {
@@ -59,7 +57,7 @@ fun ExpensesCategoriesScreen(
                 )
             }
 
-            // Botón "+ Nueva Categoría" con estilo de borde punteado
+            // Botón "+ Nueva Categoría"
             item {
                 NewCategoryButton(onClick = { onEditCategoryClick(null) })
             }
@@ -71,7 +69,6 @@ fun ExpensesCategoriesScreen(
 
 @Composable
 fun NewCategoryButton(onClick: () -> Unit) {
-    // Usamos un Box con un borde personalizado para simular el estilo punteado de Figma
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,9 +77,6 @@ fun NewCategoryButton(onClick: () -> Unit) {
                 width = 1.dp,
                 color = Color(0xFF4F8CF6).copy(alpha = 0.5f),
                 shape = RoundedCornerShape(12.dp)
-                // Nota: Compose nativo no tiene "Dashed" simple en .border,
-                // se suele usar un Canvas o un recurso XML si se requiere exactitud.
-                // Aquí usamos un borde sólido suave por consistencia técnica rápida.
             )
             .background(Color.White.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
             .clickable { onClick() },
