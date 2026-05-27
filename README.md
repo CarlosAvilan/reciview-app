@@ -15,8 +15,8 @@ Aplicación móvil desarrollada en **Kotlin** y **Jetpack Compose** para la gest
 * **Arquitectura:** MVVM + Repository Pattern.
 
 ## Links Relevantes del Proyecto
-*Figma: figma.com/design/UGaNGMN3RpYT0Ih5KdzVsn/TPO-Desarrollo-de-Apps--ReciView-?node-id=20-195&t=ouQJbVBb5mHUp9tv-0
+Figma: figma.com/design/UGaNGMN3RpYT0Ih5KdzVsn/TPO-Desarrollo-de-Apps--ReciView-?node-id=20-195&t=ouQJbVBb5mHUp9tv-0
 
-*Documentación: https://docs.google.com/document/d/1l8IyWbx-SBBoKI04OLQZTpOVLu7QRUr6EeBFRE1e2PE/edit?usp=sharing
+Documentación: https://docs.google.com/document/d/1l8IyWbx-SBBoKI04OLQZTpOVLu7QRUr6EeBFRE1e2PE/edit?usp=sharing
 
 
