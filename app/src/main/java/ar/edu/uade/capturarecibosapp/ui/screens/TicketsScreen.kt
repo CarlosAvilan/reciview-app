@@ -124,7 +124,10 @@ fun TicketsScreen(
             ) {
                 items(viewModel.filteredTickets) { ticket ->
                     TicketCard(
-                        ticket = ticket,
+                        commerce = ticket.commerce,
+                        date = ticket.date,
+                        amount = ticket.amount,
+                        imageRes = ticket.imageRes,
                         onClick = { viewModel.selectedTicket = ticket }
                     )
                 }
@@ -135,7 +138,12 @@ fun TicketsScreen(
     // Show Detail Dialog if a ticket is selected
     viewModel.selectedTicket?.let { ticket ->
         TicketDetailDialog(
-            ticket = ticket,
+            commerce = ticket.commerce,
+            date = ticket.date,
+            amount = ticket.amount,
+            category = ticket.category,
+            description = ticket.description,
+            imageRes = ticket.imageRes,
             onDismiss = { viewModel.selectedTicket = null }
         )
     }

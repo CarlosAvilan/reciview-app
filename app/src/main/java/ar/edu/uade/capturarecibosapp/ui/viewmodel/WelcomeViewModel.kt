@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import ar.edu.uade.capturarecibosapp.R
+import ar.edu.uade.capturarecibosapp.data.model.TicketItem
 
 class WelcomeViewModel : ViewModel() {
     var userName by mutableStateOf("Juan")

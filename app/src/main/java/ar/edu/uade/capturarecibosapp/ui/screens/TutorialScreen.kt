@@ -11,16 +11,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.ui.components.Button
-import ar.edu.uade.capturarecibosapp.ui.viewmodel.TutorialPageData
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.TutorialViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ar.edu.uade.capturarecibosapp.data.model.TutorialPageData
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

@@ -1,7 +1,6 @@
 package ar.edu.uade.capturarecibosapp.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -9,8 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,7 +22,11 @@ data class ExpenseItem(
 
 @Composable
 fun ExpenseCard(
-    transaction: ExpenseItem
+    title: String,
+    date: String,
+    category: String,
+    amount: Double,
+    imageRes: Int? = null
 ) {
     Card(
         modifier = Modifier
@@ -61,14 +62,14 @@ fun ExpenseCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = transaction.title,
+                    text = title,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${transaction.date} • ${transaction.category}",
+                    text = "$date • $category",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
@@ -76,7 +77,7 @@ fun ExpenseCard(
 
             // Monto a la derecha
             Text(
-                text = "$${String.format("%,.0f", transaction.amount).replace(',', '.')}",
+                text = "$${String.format("%,.0f", amount).replace(',', '.')}",
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp

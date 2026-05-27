@@ -3,15 +3,10 @@ package ar.edu.uade.capturarecibosapp.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.R
+import ar.edu.uade.capturarecibosapp.data.model.TutorialPageData
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-
-data class TutorialPageData(
-    val title: String,
-    val description: String,
-    val imageRes: Int
-)
 
 class TutorialViewModel : ViewModel() {
 

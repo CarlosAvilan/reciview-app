@@ -4,13 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-
-data class MonthlyReport(
-    val month: String,
-    val amount: Float,
-    val averageCost: String,
-    val mostActiveDay: String
-)
+import ar.edu.uade.capturarecibosapp.data.model.MonthlyReport
 
 class ReportsViewModel : ViewModel() {
     var monthlyEvolution by mutableStateOf(

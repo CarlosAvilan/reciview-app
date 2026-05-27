@@ -55,12 +55,6 @@ fun ReciViewApp(
 
     val showBottomBar = currentRoute in Screen.bottomBarScreens
 
-    LaunchedEffect(viewModel.ticketDetectado) {
-        if (viewModel.ticketDetectado != null) {
-            navController.navigate(Screen.Confirmation.route)
-        }
-    }
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
@@ -78,11 +72,10 @@ fun ReciViewApp(
         Box(modifier = Modifier.padding(innerPadding)) {
             AppNavigation(
                 navController = navController,
-                startScan = onScanClick,
                 mainViewModel = viewModel
             )
 
-            // --- CORRECCIÓN: El cargador persiste hasta que la navegación se completa ---
+            // El cargador persiste hasta que la navegación se completa
             val isNavigatingToConfirm = viewModel.ticketDetectado != null && currentRoute != Screen.Confirmation.route
             
             if (viewModel.isProcessing || isNavigatingToConfirm) {
