@@ -20,7 +20,7 @@ fun AppNavigation(
 ) {
     val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
 
-    // Lista mock centralizada para asegurar consistencia en la navegación
+    // Lista mock centralizada
     val mockCategories = listOf(
         CategoryItem("🍔", "Comida y Bebida", 18500.0, 25000.0),
         CategoryItem("🚗", "Transporte", 12200.0, 15000.0),
@@ -79,11 +79,18 @@ fun AppNavigation(
             )
         }
 
+        // --- CARGA MANUAL CON PANTALLA DE ÉXITO ---
         composable(Screen.ManualExpense.route) {
             val manualViewModel: ManualExpenseViewModel = viewModel()
             ManualExpenseScreen(
                 viewModel = manualViewModel,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onSaveSuccess = {
+                    navController.navigate(Screen.TicketRegistered.route) {
+                        // Limpiamos la pantalla manual de la pila para no volver a ella con el botón atrás
+                        popUpTo(Screen.Welcome.route) { inclusive = false }
+                    }
+                }
             )
         }
 
@@ -142,14 +149,13 @@ fun AppNavigation(
                 navController.getBackStackEntry(Screen.Register.route)
             }
             val registerViewModel: RegisterViewModel = viewModel(backStackEntry)
-            
             TermsAndConditionsScreen(
                 viewModel = registerViewModel,
                 onBackClick = { navController.popBackStack() }
             )
         }
 
-        // --- ÉXITO REGISTRO TICKET ---
+        // --- PANTALLA DE ÉXITO (COMPARTIDA) ---
         composable(Screen.TicketRegistered.route) {
             TicketRegisteredScreen(
                 onHomeClick = {
@@ -175,7 +181,6 @@ fun AppNavigation(
                     ticket = ticket,
                     onConfirm = { ticketEditado ->
                         mainViewModel.confirmarYSubir(ticketEditado)
-                        // Navegamos a la pantalla de éxito
                         navController.navigate(Screen.TicketRegistered.route) {
                             popUpTo(Screen.Welcome.route) { inclusive = false }
                         }
@@ -194,6 +199,5 @@ fun AppNavigation(
         composable(Screen.ChangePassword.route) { 
             ChangePasswordScreen(viewModel = viewModel(), onBackClick = { navController.popBackStack() }, onSaveClick = { navController.popBackStack() } )
         }
-        composable(Screen.MyExpenses.route) { MyExpensesScreen(onCategoriesClick = { navController.navigate(Screen.Categories.route) }, onViewAllClick = { navController.navigate(Screen.Tickets.route) }) }
     }
 }
