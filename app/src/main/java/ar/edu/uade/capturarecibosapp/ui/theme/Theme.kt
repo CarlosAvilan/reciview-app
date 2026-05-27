@@ -1,8 +1,8 @@
 package ar.edu.uade.capturarecibosapp.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -11,6 +11,10 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+
+// Extensiones para colores personalizados que no están en el ColorScheme estándar de Material3
+val ColorScheme.success: Color get() = SuccessGreen
+val ColorScheme.onSuccess: Color get() = Color.White
 
 private val DarkColorScheme = darkColorScheme(
     primary = BluePrimary,
@@ -51,7 +55,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun ReciViewTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Desactivado para mantener consistencia de marca
+    dynamicColor: Boolean = false, // Desactivado para mantener consistencia de diseño
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

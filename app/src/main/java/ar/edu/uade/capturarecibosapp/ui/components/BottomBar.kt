@@ -27,16 +27,14 @@ fun BottomBar(
     onNavigate: (String) -> Unit
 ) {
     Box(
+        contentAlignment = Alignment.BottomCenter,
         modifier = Modifier
             .fillMaxWidth()
-            .height(90.dp)
             .background(Color.Transparent)
     ) {
         NavigationBar(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            tonalElevation = 8.dp,
-            modifier = Modifier.align(Alignment.BottomCenter).height(70.dp)
         ) {
             BottomNavItem(
                 icon = Icons.Default.Home,
@@ -67,33 +65,36 @@ fun BottomBar(
             )
         }
 
-        FloatingActionButton(
-            onClick = onScanClick,
-            shape = CircleShape,
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .size(64.dp)
-                .offset(y = (-10).dp),
-            elevation = FloatingActionButtonDefaults.elevation(8.dp)
+                .offset(y = (-32).dp)
         ) {
-            Icon(
-                imageVector = Icons.Default.PhotoCamera,
-                contentDescription = "Escanear",
-                modifier = Modifier.size(28.dp)
+            FloatingActionButton(
+                onClick = onScanClick,
+                shape = CircleShape,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .size(60.dp),
+                elevation = FloatingActionButtonDefaults.elevation(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PhotoCamera,
+                    contentDescription = "Escanear",
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "ESCANEAR",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
             )
         }
-        
-        Text(
-            text = "ESCANEAR",
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 8.dp)
-        )
     }
 }
 

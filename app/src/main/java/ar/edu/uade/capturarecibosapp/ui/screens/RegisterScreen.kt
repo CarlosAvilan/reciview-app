@@ -112,14 +112,6 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             TextField(
-                value = viewModel.telefono,
-                onValueChange = { viewModel.onTelefonoChange(it) },
-                label = "Teléfono"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextField(
                 value = viewModel.fechaNacimiento,
                 onValueChange = { viewModel.onFechaNacimientoChange(it) },
                 label = "Fecha de nacimiento"
