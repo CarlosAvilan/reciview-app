@@ -19,7 +19,7 @@ fun TipItemRow(tip: TipItem) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = Color.White // Forzamos blanco puro
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Row(
@@ -32,13 +32,13 @@ fun TipItemRow(tip: TipItem) {
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFF1F3F5)), // Fondo suave neutral
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = tip.icon,
                     contentDescription = null,
-                    tint = Color(0xFF4F8CF6), // Azul de la marca
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
             }

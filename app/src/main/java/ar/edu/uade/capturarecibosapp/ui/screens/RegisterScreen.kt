@@ -48,7 +48,7 @@ fun RegisterScreen(
                 onBackClick = onBackClick
             )
         },
-        containerColor = Color(0xFFF8F9FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -65,21 +65,21 @@ fun RegisterScreen(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE9F2FF)),
+                    .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = null,
                     modifier = Modifier.size(60.dp),
-                    tint = Color(0xFF4F8CF6)
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
             TextButton(onClick = { /* Cambiar foto */ }) {
                 Text(
                     "Cambiar foto",
-                    color = Color(0xFF4F8CF6),
+                    color = MaterialTheme.colorScheme.primary,
                     textDecoration = TextDecoration.Underline
                 )
             }
@@ -134,7 +134,7 @@ fun RegisterScreen(
                     onValueChange = { },
                     label = "País de residencia",
                     trailingIcon = {
-                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
+                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     },
                     readOnly = true,
                     modifier = Modifier.clickable { showCountryDropdown = true }
@@ -146,11 +146,11 @@ fun RegisterScreen(
                 DropdownMenu(
                     expanded = showCountryDropdown,
                     onDismissRequest = { showCountryDropdown = false },
-                    modifier = Modifier.fillMaxWidth(0.8f)
+                    modifier = Modifier.fillMaxWidth(0.8f).background(MaterialTheme.colorScheme.surface)
                 ) {
                     countries.forEach { country ->
                         DropdownMenuItem(
-                            text = { Text(country) },
+                            text = { Text(country, color = MaterialTheme.colorScheme.onSurface) },
                             onClick = {
                                 viewModel.onPaisChange(country)
                                 showCountryDropdown = false
@@ -168,19 +168,19 @@ fun RegisterScreen(
                 horizontalAlignment = Alignment.Start
             ) {
                 val annotatedString = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.Gray)) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
                         append("Por favor, lea y acepte los ")
                     }
                     pushStringAnnotation(tag = "terms", annotation = "navigate")
                     withStyle(style = SpanStyle(
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4F8CF6),
+                        color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     )) {
                         append("Términos y Condiciones")
                     }
                     pop()
-                    withStyle(style = SpanStyle(color = Color.Gray)) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
                         append(" antes de continuar")
                     }
                 }

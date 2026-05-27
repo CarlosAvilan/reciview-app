@@ -1,10 +1,10 @@
 package ar.edu.uade.capturarecibosapp.ui.screens
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import ar.edu.uade.capturarecibosapp.data.model.TicketData
 import ar.edu.uade.capturarecibosapp.ui.components.ExpenseForm
@@ -29,7 +29,7 @@ fun ConfirmationScreen(
                 onBackClick = onCancel
             )
         },
-        containerColor = Color(0xFFF5F5F5)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         ExpenseForm(
             modifier = Modifier.padding(paddingValues),

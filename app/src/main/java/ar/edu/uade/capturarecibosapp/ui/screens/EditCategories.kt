@@ -31,7 +31,7 @@ fun EditCategoriesScreen(
                 onBackClick = onBackClick
             )
         },
-        containerColor = Color(0xFFF8F9FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -49,9 +49,10 @@ fun EditCategoriesScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF4F8CF6),
-                    unfocusedBorderColor = Color.LightGray,
-                    focusedLabelColor = Color(0xFF4F8CF6)
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    cursorColor = MaterialTheme.colorScheme.primary
                 )
             )
 
@@ -64,9 +65,10 @@ fun EditCategoriesScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF4F8CF6),
-                    unfocusedBorderColor = Color.LightGray,
-                    focusedLabelColor = Color(0xFF4F8CF6)
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    cursorColor = MaterialTheme.colorScheme.primary
                 )
             )
 
@@ -86,14 +88,14 @@ fun EditCategoriesScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFEBEE)
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer
                 )
             ) {
                 Text(
                     text = "Cancelar",
                     style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE53935)
+                        fontWeight = FontWeight.Bold
                     )
                 )
             }

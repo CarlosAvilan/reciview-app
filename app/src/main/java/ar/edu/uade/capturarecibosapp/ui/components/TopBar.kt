@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.sp
 fun TopBar(
     title: String,
     onBackClick: () -> Unit,
-    containerColor: Color = Color(0xFFF5F5F5)
+    containerColor: Color? = null
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -22,19 +22,21 @@ fun TopBar(
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
-                )
+                ),
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Volver"
+                    contentDescription = "Volver",
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = containerColor
+            containerColor = containerColor ?: MaterialTheme.colorScheme.background
         )
     )
 }

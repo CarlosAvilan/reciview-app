@@ -1,5 +1,6 @@
 package ar.edu.uade.capturarecibosapp.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -17,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
 import ar.edu.uade.capturarecibosapp.ui.components.TicketCard
 import ar.edu.uade.capturarecibosapp.ui.components.TicketDetailDialog
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
@@ -30,6 +30,7 @@ fun TicketsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -62,15 +63,17 @@ fun TicketsScreen(
                 Icon(
                     Icons.Default.Search,
                     contentDescription = null,
-                    tint = Color(0xFF4F8CF6) // Usando el azul de la app
+                    tint = MaterialTheme.colorScheme.primary
                 )
             },
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color.White,
-                focusedContainerColor = Color.White,
-                unfocusedBorderColor = Color(0xFFE9ECEF),
-                focusedBorderColor = Color(0xFF4F8CF6)
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
             )
         )
 
@@ -89,13 +92,13 @@ fun TicketsScreen(
                     onClick = { viewModel.selectedCategory = category },
                     label = { Text(category) },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF4F8CF6), // Azul de la app
-                        selectedLabelColor = Color.White,
-                        containerColor = Color.White,
-                        labelColor = Color.Gray
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     border = FilterChipDefaults.filterChipBorder(
-                        borderColor = if (isSelected) Color.Transparent else Color(0xFFE9ECEF),
+                        borderColor = if (isSelected) Color.Transparent else MaterialTheme.colorScheme.outline,
                         enabled = true,
                         selected = isSelected,
                         borderWidth = 1.dp
@@ -110,7 +113,7 @@ fun TicketsScreen(
         // Tickets Grid
         if (viewModel.filteredTickets.isEmpty()) {
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                Text("No se encontraron tickets", color = Color.Gray)
+                Text("No se encontraron tickets", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
             LazyVerticalGrid(

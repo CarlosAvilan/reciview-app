@@ -42,7 +42,7 @@ fun PersonalInfoScreen(
                 onBackClick = onBackClick
             )
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -66,13 +66,13 @@ fun PersonalInfoScreen(
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFE0E7FF)),
+                        .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "JP",
                         style = MaterialTheme.typography.headlineMedium.copy(
-                            color = Color(0xFF4F8CF6),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.Bold
                         )
                     )
@@ -117,7 +117,7 @@ fun PersonalInfoScreen(
                 onValueChange = { viewModel.onPaisChange(it) },
                 label = "País de residencia",
                 trailingIcon = {
-                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
+                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 },
                 readOnly = true,
                 modifier = Modifier.clickable { /* Abrir selector */ }
@@ -133,7 +133,7 @@ fun PersonalInfoScreen(
                     .height(56.dp)
                     .clickable { onChangePasswordClick() },
                 shape = RoundedCornerShape(12.dp),
-                color = Color(0xFFF9FAFB)
+                color = MaterialTheme.colorScheme.surfaceVariant
             ) {
                 Row(
                     modifier = Modifier
@@ -142,11 +142,15 @@ fun PersonalInfoScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "Cambiar contraseña", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        text = "Cambiar contraseña", 
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = Color.Gray
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -168,8 +172,8 @@ fun PersonalInfoScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFEBEE),
-                    contentColor = Color(0xFFEF5350)
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer
                 )
             ) {
                 Text(

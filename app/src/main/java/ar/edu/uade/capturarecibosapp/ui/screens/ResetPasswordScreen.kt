@@ -37,7 +37,7 @@ fun ResetPasswordScreen(
     }
 
     Scaffold(
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -58,12 +58,13 @@ fun ResetPasswordScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFF3F4F6))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Volver",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -76,13 +77,14 @@ fun ResetPasswordScreen(
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp
                 ),
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "Ingresá tu nueva clave de acceso.",
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -94,7 +96,7 @@ fun ResetPasswordScreen(
                 text = "Nueva Contraseña",
                 style = MaterialTheme.typography.titleSmall.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF374151)
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
@@ -111,7 +113,7 @@ fun ResetPasswordScreen(
                 text = "Re-ingresar Nueva Contraseña",
                 style = MaterialTheme.typography.titleSmall.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF374151)
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
@@ -124,7 +126,7 @@ fun ResetPasswordScreen(
             if (viewModel.errorMessage != null) {
                 Text(
                     text = viewModel.errorMessage!!,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 16.dp).fillMaxWidth()
                 )

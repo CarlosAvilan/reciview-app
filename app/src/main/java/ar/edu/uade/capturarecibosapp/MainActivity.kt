@@ -62,6 +62,7 @@ fun ReciViewApp(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             if (showBottomBar) {
                 BottomBar(
@@ -94,7 +95,7 @@ fun ReciViewApp(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        CircularProgressIndicator(color = Color.White)
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Analizando ticket...",

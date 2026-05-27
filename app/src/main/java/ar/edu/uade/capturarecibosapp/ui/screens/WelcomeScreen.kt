@@ -2,6 +2,7 @@ package ar.edu.uade.capturarecibosapp.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -53,7 +53,7 @@ fun WelcomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -97,7 +97,8 @@ fun WelcomeScreen(
                 Text(
                     text = "Actividad Reciente",
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 
@@ -136,26 +137,27 @@ private fun WelcomeHeader(
             Text(
                 text = "Hola, $userName 👋",
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = "Bienvenido a ReciView",
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         Box(
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFE0E7FF))
+                .background(MaterialTheme.colorScheme.primaryContainer)
                 .clickable { onProfileClick() },
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = initials,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF4F8CF6)
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
     }
@@ -168,7 +170,7 @@ private fun TotalSpentCard(totalSpent: String) {
             .fillMaxWidth()
             .height(160.dp),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF4F8CF6))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
         Column(
             modifier = Modifier
@@ -178,12 +180,12 @@ private fun TotalSpentCard(totalSpent: String) {
         ) {
             Text(
                 text = "Total gastado en mayo",
-                color = Color.White.copy(alpha = 0.8f),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
                 text = totalSpent,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold
             )
@@ -192,12 +194,12 @@ private fun TotalSpentCard(totalSpent: String) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.TrendingDown,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
                     text = " 5% menos que el mes pasado",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelSmall
                 )
             }
@@ -211,11 +213,12 @@ private fun BudgetProgressCard(budgetPercentage: Float) {
         Text(
             text = "Tu Presupuesto Mensual",
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
@@ -224,8 +227,8 @@ private fun BudgetProgressCard(budgetPercentage: Float) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Límite: $60.000", color = Color.Gray, fontSize = 14.sp)
-                    Text("${(budgetPercentage * 100).toInt()}%", fontWeight = FontWeight.Bold)
+                    Text("Límite: $60.000", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                    Text("${(budgetPercentage * 100).toInt()}%", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 LinearProgressIndicator(
@@ -234,8 +237,8 @@ private fun BudgetProgressCard(budgetPercentage: Float) {
                         .fillMaxWidth()
                         .height(8.dp)
                         .clip(CircleShape),
-                    color = Color(0xFF4F8CF6),
-                    trackColor = Color(0xFFE9ECEF)
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
         }
@@ -282,13 +285,13 @@ fun QuickActionItem(icon: ImageVector, label: String, onClick: () -> Unit) {
             modifier = Modifier
                 .size(60.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.White),
+                .background(MaterialTheme.colorScheme.surface),
             contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = icon, contentDescription = label, tint = Color(0xFF4F8CF6))
+            Icon(imageVector = icon, contentDescription = label, tint = MaterialTheme.colorScheme.primary)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+        Text(text = label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -302,7 +305,7 @@ fun RecentActivityItem(
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
@@ -318,27 +321,27 @@ fun RecentActivityItem(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFFF1F3F5)),
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
                         contentDescription = null,
-                        tint = Color(0xFF4F8CF6),
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
-                    Text(text = ticket.commerce, fontWeight = FontWeight.Bold)
+                    Text(text = ticket.commerce, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Text(
                         text = "${ticket.date} • ${ticket.category}",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
-            Text(text = ticket.amount, fontWeight = FontWeight.Bold)
+            Text(text = ticket.amount, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         }
     }
 }

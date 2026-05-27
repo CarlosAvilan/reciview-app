@@ -126,13 +126,13 @@ fun ReportsScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4B89F1)
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Text(
                     text = "Descargar PDF de ${viewModel.selectedReport.month}",
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
             }
