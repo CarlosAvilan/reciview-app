@@ -17,14 +17,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.R
-import kotlinx.coroutines.delay
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.SplashViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun SplashScreen(onNavigateNext: () -> Unit) {
-    // Simulamos una carga de 2 segundos antes de pasar a la siguiente pantalla (Login)
+fun SplashScreen(
+    viewModel: SplashViewModel = viewModel(),
+    onNavigateNext: () -> Unit
+) {
+    // Observamos el evento de navegación desde el ViewModel
     LaunchedEffect(Unit) {
-        delay(2000) 
-        onNavigateNext()
+        viewModel.navigateToNext.collectLatest {
+            onNavigateNext()
+        }
     }
 
     Box(
@@ -39,16 +45,15 @@ fun SplashScreen(onNavigateNext: () -> Unit) {
         ) {
             // Recuadro blanco central refinado
             Surface(
-                modifier = Modifier.size(200.dp), // Reducido un poco para mayor elegancia
+                modifier = Modifier.size(200.dp),
                 shape = RoundedCornerShape(28.dp),
                 color = Color.White,
                 shadowElevation = 10.dp
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.padding(32.dp) // Más margen interno para que el logo no toque los bordes
+                    modifier = Modifier.padding(32.dp)
                 ) {
-                    // Usamos el archivo logo.jpg
                     Image(
                         painter = painterResource(id = R.drawable.logo),
                         contentDescription = "Logo ReciView",
@@ -59,10 +64,9 @@ fun SplashScreen(onNavigateNext: () -> Unit) {
             
             Spacer(modifier = Modifier.height(32.dp))
             
-            // Eslogan debajo del recuadro
             Text(
-                text = "Gestor Inteligente de Gastos",
-                color = Color.White.copy(alpha = 0.9f),
+                text = "Tu gestor inteligente de gastos",
+                color = Color.White,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium
             )
