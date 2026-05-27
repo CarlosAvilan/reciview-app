@@ -7,8 +7,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,38 +17,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ar.edu.uade.capturarecibosapp.R
 import ar.edu.uade.capturarecibosapp.ui.components.Button
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.TutorialPageData
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.TutorialViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-data class TutorialPageData(
-    val title: String,
-    val description: String,
-    val imageRes: Int
-)
-
 @Composable
-fun TutorialScreen(onFinish: () -> Unit) {
-    val pages = listOf(
-        TutorialPageData(
-            title = "Captura Instantánea",
-            description = "Digitalizá tus tickets físicos en segundos usando la cámara de tu celular.",
-            imageRes = R.drawable.tutorial1
-        ),
-        TutorialPageData(
-            title = "Extracción Inteligente",
-            description = "Nuestro sistema procesa el texto automáticamente para identificar el comercio y el monto total sin que tengas que tipear de más.",
-            imageRes = R.drawable.tutorial2
-        ),
-        TutorialPageData(
-            title = "Control de Gastos",
-            description = "Visualizá tus consumos mediante gráficos y mantené tus finanzas al día, incluso si te quedás sin conexión a internet.",
-            imageRes = R.drawable.tutorial3
-        )
-    )
-
+fun TutorialScreen(
+    viewModel: TutorialViewModel = viewModel(),
+    onFinish: () -> Unit
+) {
+    val pages = viewModel.pages
     val pagerState = rememberPagerState(pageCount = { pages.size })
     val scope = rememberCoroutineScope()
+
+    // Escuchamos el evento de navegación desde el ViewModel
+    LaunchedEffect(Unit) {
+        viewModel.navigateToLogin.collectLatest {
+            onFinish()
+        }
+    }
 
     Scaffold(
         containerColor = Color(0xFFF8F9FA)
@@ -59,19 +48,19 @@ fun TutorialScreen(onFinish: () -> Unit) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Botón Saltar en la parte superior
+            // Botón Saltar en la parte superior (le avisa al ViewModel)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 contentAlignment = Alignment.TopEnd
             ) {
-                TextButton(onClick = onFinish) {
+                TextButton(onClick = { viewModel.onTutorialFinished() }) {
                     Text(text = "Saltar", color = Color.Gray)
                 }
             }
 
-            // Pager central
+            // Pager central que obtiene los datos del ViewModel
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
@@ -89,10 +78,8 @@ fun TutorialScreen(onFinish: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(32.dp)
             ) {
-                // Dots (Indicadores de página)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                // Dots dinámicos
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     repeat(pages.size) { index ->
                         val isSelected = pagerState.currentPage == index
                         Box(
@@ -104,13 +91,13 @@ fun TutorialScreen(onFinish: () -> Unit) {
                     }
                 }
 
-                // Botón principal dinámico
+                // Botón principal con lógica compartida
                 val isLastPage = pagerState.currentPage == pages.size - 1
                 Button(
                     text = if (isLastPage) "Comenzar" else "Siguiente",
                     onClick = {
                         if (isLastPage) {
-                            onFinish()
+                            viewModel.onTutorialFinished()
                         } else {
                             scope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
@@ -132,7 +119,6 @@ fun TutorialPageContent(page: TutorialPageData) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Ilustración en círculo
         Box(
             modifier = Modifier
                 .size(240.dp)

@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -16,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.runtime.remember
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -48,7 +48,7 @@ fun RegisterScreen(
                 onBackClick = onBackClick
             )
         },
-        containerColor = Color(0xFFF5F5F5)
+        containerColor = Color(0xFFF8F9FA)
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -65,28 +65,27 @@ fun RegisterScreen(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE0E7FF)),
+                    .background(Color(0xFFE9F2FF)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = null,
                     modifier = Modifier.size(60.dp),
-                    tint = Color(0xFF4F46E5)
+                    tint = Color(0xFF4F8CF6)
                 )
             }
 
             TextButton(onClick = { /* Cambiar foto */ }) {
                 Text(
                     "Cambiar foto",
-                    color = Color(0xFF4F46E5),
+                    color = Color(0xFF4F8CF6),
                     textDecoration = TextDecoration.Underline
                 )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Campos de texto usando los nuevos componentes reutilizables
             TextField(
                 value = viewModel.nombreCompleto,
                 onValueChange = { viewModel.onNombreChange(it) },
@@ -106,7 +105,16 @@ fun RegisterScreen(
             TextField(
                 value = viewModel.password,
                 onValueChange = { viewModel.onPasswordChange(it) },
-                label = "Contraseña"
+                label = "Contraseña",
+                isPassword = true
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
+                value = viewModel.telefono,
+                onValueChange = { viewModel.onTelefonoChange(it) },
+                label = "Teléfono"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -119,25 +127,21 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // País de nacimiento
+            // País de residencia
             Box(modifier = Modifier.fillMaxWidth()) {
                 TextField(
                     value = viewModel.paisNacimiento,
                     onValueChange = { },
-                    label = "País de nacimiento",
+                    label = "País de residencia",
                     trailingIcon = {
                         Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
                     },
                     readOnly = true,
                     modifier = Modifier.clickable { showCountryDropdown = true }
                 )
-
-                // Capa invisible encima del TextField para capturar el click de forma más robusta
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .clickable { showCountryDropdown = true }
-                )
+                
+                // Overlay para asegurar el click en el campo readOnly
+                Box(modifier = Modifier.matchParentSize().clickable { showCountryDropdown = true })
 
                 DropdownMenu(
                     expanded = showCountryDropdown,
@@ -158,30 +162,34 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Términos y Condiciones
+            // Términos y Condiciones con ClickableText
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ) {
                 val annotatedString = buildAnnotatedString {
-                    append("Por favor, lea y acepte los ")
-                    pushStringAnnotation(tag = "terms", annotation = "terms")
+                    withStyle(style = SpanStyle(color = Color.Gray)) {
+                        append("Por favor, lea y acepte los ")
+                    }
+                    pushStringAnnotation(tag = "terms", annotation = "navigate")
                     withStyle(style = SpanStyle(
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4F46E5),
+                        color = Color(0xFF4F8CF6),
                         textDecoration = TextDecoration.Underline
                     )) {
                         append("Términos y Condiciones")
                     }
                     pop()
-                    append(" antes de continuar")
+                    withStyle(style = SpanStyle(color = Color.Gray)) {
+                        append(" antes de continuar")
+                    }
                 }
 
-                Text(
+                ClickableText(
                     text = annotatedString,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.clickable {
-                        annotatedString.getStringAnnotations(tag = "terms", start = 0, end = annotatedString.length)
+                    onClick = { offset ->
+                        annotatedString.getStringAnnotations(tag = "terms", start = offset, end = offset)
                             .firstOrNull()?.let {
                                 onTermsClick()
                             }

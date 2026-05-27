@@ -7,7 +7,10 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -22,7 +25,6 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
-    // El gestor del escáner requiere el contexto de la Activity para registrar el launcher.
     private val scannerManager = ScannerManager(this) { bitmap ->
         viewModel.procesarImagen(bitmap)
     }
@@ -33,7 +35,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ReciViewTheme {
-                // Delegamos la estructura de la aplicación a un Composable independiente.
                 ReciViewApp(
                     viewModel = viewModel,
                     onScanClick = { scannerManager.triggerScan() }
@@ -43,9 +44,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-/**
- * Composable raíz que define la estructura visual de la aplicación (Shell UI).
- */
 @Composable
 fun ReciViewApp(
     viewModel: MainViewModel,
@@ -56,6 +54,12 @@ fun ReciViewApp(
     val currentRoute = navBackStackEntry?.destination?.route
 
     val showBottomBar = currentRoute in Screen.bottomBarScreens
+
+    LaunchedEffect(viewModel.ticketDetectado) {
+        if (viewModel.ticketDetectado != null) {
+            navController.navigate(Screen.Confirmation.route)
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -70,17 +74,36 @@ fun ReciViewApp(
             }
         }
     ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        Box(modifier = Modifier.padding(innerPadding)) {
             AppNavigation(
                 navController = navController,
                 startScan = onScanClick,
                 mainViewModel = viewModel
             )
+
+            // --- CORRECCIÓN: El cargador persiste hasta que la navegación se completa ---
+            val isNavigatingToConfirm = viewModel.ticketDetectado != null && currentRoute != Screen.Confirmation.route
+            
+            if (viewModel.isProcessing || isNavigatingToConfirm) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.Black.copy(alpha = 0.6f)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(color = Color.White)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Analizando ticket...",
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
+            }
         }
     }
 }
