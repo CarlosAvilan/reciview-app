@@ -5,13 +5,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -31,7 +31,7 @@ fun LoginScreen(
     onForgotPasswordClick: () -> Unit = {}
 ) {
     Scaffold(
-        containerColor = Color(0xFFF2F2F2)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -55,7 +55,7 @@ fun LoginScreen(
 
             Text(
                 text = "Tu gestor de recibos inteligente",
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -82,7 +82,7 @@ fun LoginScreen(
                 ) {
                     Text(
                         text = "¿Olvidaste tu contraseña?",
-                        color = Color(0xFF4F46E5),
+                        color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     )
                 }
@@ -100,12 +100,12 @@ fun LoginScreen(
             Row {
                 Text(
                     text = "¿No tienes una cuenta?",
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
                     text = " Regístrate",
-                    color = Color(0xFF4F8CF6),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { onRegisterClick() }
                 )

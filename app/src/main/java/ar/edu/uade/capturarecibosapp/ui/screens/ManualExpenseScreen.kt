@@ -21,7 +21,7 @@ fun ManualExpenseScreen(
         topBar = {
             TopBar(title = "Cargar Gasto Manual", onBackClick = onBackClick)
         },
-        containerColor = Color(0xFFF5F5F5)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         ExpenseForm(
             modifier = Modifier.padding(paddingValues),

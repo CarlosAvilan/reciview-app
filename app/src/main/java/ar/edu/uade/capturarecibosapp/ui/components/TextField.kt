@@ -40,7 +40,7 @@ fun TextField(
         // Solo mostramos el label si no está vacío
         label = if (label.isNotEmpty()) { { Text(label) } } else null,
         // Agregamos el placeholder
-        placeholder = if (placeholder.isNotEmpty()) { { Text(placeholder, color = Color.Gray) } } else null,
+        placeholder = if (placeholder.isNotEmpty()) { { Text(placeholder) } } else null,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         visualTransformation =
@@ -62,7 +62,8 @@ fun TextField(
                 ) {
                     Icon(
                         imageVector = icon,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             } else {
@@ -70,13 +71,17 @@ fun TextField(
             }
         },
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            disabledContainerColor = Color.White,
-            focusedBorderColor = Color(0xFFD1D5DB),
-            unfocusedBorderColor = Color(0xFFE5E7EB),
-            focusedLabelColor = Color(0xFF4F8CF6),
-            unfocusedLabelColor = Color.Gray
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
         ),
         readOnly = readOnly,
         singleLine = singleLine

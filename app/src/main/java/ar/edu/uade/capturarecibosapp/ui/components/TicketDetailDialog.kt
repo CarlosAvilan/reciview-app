@@ -30,7 +30,7 @@ fun TicketDetailDialog(
                 .fillMaxWidth()
                 .padding(16.dp),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -41,7 +41,8 @@ fun TicketDetailDialog(
                 Text(
                     text = "Detalle del Ticket",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -65,19 +66,27 @@ fun TicketDetailDialog(
                 DetailRow(label = "Categoría", value = ticket.category)
                 DetailRow(label = "Descripción", value = ticket.description.ifEmpty { "Sin descripción" })
                 
-                Divider(modifier = Modifier.padding(vertical = 16.dp), color = Color(0xFFF1F3F5))
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "TOTAL", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text(
+                        text = "TOTAL",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                     Text(
                         text = ticket.amount, 
                         fontWeight = FontWeight.Bold, 
                         fontSize = 22.sp,
-                        color = Color(0xFF4F8CF6)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 
@@ -87,9 +96,9 @@ fun TicketDetailDialog(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F8CF6))
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("Cerrar", color = Color.White)
+                    Text("Cerrar", color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
         }
@@ -104,7 +113,12 @@ fun DetailRow(label: String, value: String) {
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = label, color = Color.Gray, fontSize = 14.sp)
-        Text(text = value, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+        Text(text = label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+        Text(
+            text = value,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }

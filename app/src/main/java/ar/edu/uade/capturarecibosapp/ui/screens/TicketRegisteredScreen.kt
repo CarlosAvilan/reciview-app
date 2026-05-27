@@ -24,7 +24,7 @@ fun TicketRegisteredScreen(
     onHomeClick: () -> Unit
 ) {
     Scaffold(
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -39,21 +39,21 @@ fun TicketRegisteredScreen(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE8F5E9)),
+                    .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
                     modifier = Modifier
                         .size(70.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF4CAF50)),
+                        .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
                         modifier = Modifier.size(40.dp),
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -66,6 +66,7 @@ fun TicketRegisteredScreen(
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp
                 ),
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
 
@@ -74,9 +75,9 @@ fun TicketRegisteredScreen(
             Text(
                 text = "Tu ticket ha sido registrado correctamente.",
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color.Gray,
                     fontSize = 16.sp
                 ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 

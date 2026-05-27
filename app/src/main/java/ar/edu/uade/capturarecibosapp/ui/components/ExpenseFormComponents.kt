@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.sp
 fun SectionLabel(text: String) {
     Text(
         text = text,
-        color = Color(0xFF6B7280),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontWeight = FontWeight.Bold,
         fontSize = 12.sp,
         modifier = Modifier.padding(bottom = 8.dp)
@@ -27,7 +27,7 @@ fun AmountCard(value: String) {
     Surface(
         modifier = Modifier.fillMaxWidth().height(90.dp),
         shape = RoundedCornerShape(16.dp),
-        color = Color.White
+        color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
@@ -36,14 +36,14 @@ fun AmountCard(value: String) {
             Text(
                 text = "$ ",
                 style = MaterialTheme.typography.displaySmall.copy(
-                    color = Color(0xFF4F8CF6),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             )
             Text(
                 text = value,
                 style = MaterialTheme.typography.displaySmall.copy(
-                    color = Color(0xFF4F8CF6),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             )

@@ -33,7 +33,7 @@ fun TermsAndConditionsScreen(
                 onBackClick = onBackClick
             )
         },
-        containerColor = Color(0xFFF8FAFC)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -48,16 +48,16 @@ fun TermsAndConditionsScreen(
             Text(
                 text = "Políticas y Privacidad",
                 style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1E293B)
+                    fontWeight = FontWeight.Bold
                 ),
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "Por favor lee y acepta las condiciones para continuar",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
@@ -69,8 +69,8 @@ fun TermsAndConditionsScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(16.dp))
-                    .background(Color.White, RoundedCornerShape(16.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                     .padding(20.dp)
             ) {
                 Column {
@@ -101,12 +101,12 @@ fun TermsAndConditionsScreen(
                 Checkbox(
                     checked = viewModel.terminosAceptados,
                     onCheckedChange = { viewModel.onTerminosAceptadosChange(it) },
-                    colors = CheckboxDefaults.colors(checkedColor = Color(0xFF4F46E5))
+                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
                 )
                 Text(
                     text = "Acepto los Términos de Servicio y Privacidad.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF475569)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -119,12 +119,12 @@ fun TermsAndConditionsScreen(
                 Checkbox(
                     checked = viewModel.permisosCamaraAceptados,
                     onCheckedChange = { viewModel.onPermisosCamaraAceptadosChange(it) },
-                    colors = CheckboxDefaults.colors(checkedColor = Color(0xFF4F46E5))
+                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
                 )
                 Text(
                     text = "Permito el uso de la cámara para escaneo.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF475569)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -137,8 +137,7 @@ fun TermsAndConditionsScreen(
                     viewModel.marcarTerminosComoLeidos()
                     onBackClick()
                 },
-                enabled = viewModel.terminosAceptados && viewModel.permisosCamaraAceptados,
-                containerColor = Color(0xFF2563EB)
+                enabled = viewModel.terminosAceptados && viewModel.permisosCamaraAceptados
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -152,14 +151,14 @@ private fun TermItem(title: String, description: String) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleSmall.copy(
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1E293B)
-            )
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = description,
             style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFF64748B),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp)
         )
     }

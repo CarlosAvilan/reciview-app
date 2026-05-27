@@ -30,8 +30,11 @@ fun ExpenseCard(
     Card(
         modifier = Modifier
             .fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp), // Esquinas bien redondeadas como el diseño
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
@@ -45,7 +48,7 @@ fun ExpenseCard(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFFF2F4F7)),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 // Placeholder
@@ -59,14 +62,14 @@ fun ExpenseCard(
             ) {
                 Text(
                     text = transaction.title,
-                    color = Color(0xFF1A2536), // Azul oscuro/grisáceo de la imagen
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${transaction.date} • ${transaction.category}",
-                    color = Color(0xFF6B7A99), // Gris intermedio para el subtítulo
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
             }
@@ -74,7 +77,7 @@ fun ExpenseCard(
             // Monto a la derecha
             Text(
                 text = "$${String.format("%,.0f", transaction.amount).replace(',', '.')}",
-                color = Color(0xFF1A2536),
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )

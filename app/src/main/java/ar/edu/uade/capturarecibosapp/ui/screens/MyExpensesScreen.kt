@@ -1,5 +1,6 @@
 package ar.edu.uade.capturarecibosapp.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,7 +41,7 @@ fun MyExpensesScreen(
     totalGastado: String = "$45.280,50",
     estadistica: String = "+ 25% vs enero",
     onCategoriesClick: () -> Unit,
-    onViewAllClick: () -> Unit // Nuevo parámetro
+    onViewAllClick: () -> Unit
 ) {
     // Datos mockeados según Figma
     val transacciones = listOf(
@@ -70,6 +71,7 @@ fun MyExpensesScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -82,7 +84,7 @@ fun MyExpensesScreen(
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp
                 ),
-                color = Color(0xFF1A2536)
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
 
@@ -93,7 +95,7 @@ fun MyExpensesScreen(
                     .fillMaxWidth()
                     .height(140.dp),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF4F8CF6))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Column(
                     modifier = Modifier
@@ -103,14 +105,14 @@ fun MyExpensesScreen(
                 ) {
                     Text(
                         text = "Gasto Total del Mes",
-                        color = Color.White.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
                         text = totalGastado,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -121,14 +123,14 @@ fun MyExpensesScreen(
                         label = {
                             Text(
                                 text = estadistica,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
                         },
                         shape = CircleShape,
                         colors = SuggestionChipDefaults.suggestionChipColors(
-                            containerColor = Color.White.copy(alpha = 0.2f)
+                            containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
                         ),
                         border = null
                     )
@@ -147,13 +149,13 @@ fun MyExpensesScreen(
                     text = "Tickets Recientes",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF1A2536)
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "Ver todo",
-                    color = Color(0xFF4F46E5),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.clickable { onViewAllClick() } // Vinculamos el click
+                    modifier = Modifier.clickable { onViewAllClick() }
                 )
             }
         }
@@ -169,7 +171,7 @@ fun MyExpensesScreen(
                     .fillMaxWidth()
                     .clickable { onCategoriesClick() },
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F4FA))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Row(
                     modifier = Modifier
@@ -181,13 +183,13 @@ fun MyExpensesScreen(
                     Text(
                         text = "Gastos por categoría",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color(0xFF6484E4),
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = Color(0xFF6484E4)
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }

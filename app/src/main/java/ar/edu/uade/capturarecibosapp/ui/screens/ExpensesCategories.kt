@@ -38,7 +38,7 @@ fun ExpensesCategoriesScreen(
                 onBackClick = onBackClick
             )
         },
-        containerColor = Color(0xFFF8F9FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -75,16 +75,16 @@ fun NewCategoryButton(onClick: () -> Unit) {
             .height(56.dp)
             .border(
                 width = 1.dp,
-                color = Color(0xFF4F8CF6).copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                 shape = RoundedCornerShape(12.dp)
             )
-            .background(Color.White.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = "+ Nueva Categoria",
-            color = Color(0xFF4F8CF6),
+            color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp
         )

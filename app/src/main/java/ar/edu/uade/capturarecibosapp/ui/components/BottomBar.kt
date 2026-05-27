@@ -33,8 +33,8 @@ fun BottomBar(
             .background(Color.Transparent)
     ) {
         NavigationBar(
-            containerColor = Color.White,
-            contentColor = Color.Gray,
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             tonalElevation = 8.dp,
             modifier = Modifier.align(Alignment.BottomCenter).height(70.dp)
         ) {
@@ -70,8 +70,8 @@ fun BottomBar(
         FloatingActionButton(
             onClick = onScanClick,
             shape = CircleShape,
-            containerColor = Color(0xFF4F8CF6),
-            contentColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .size(64.dp)
@@ -89,7 +89,7 @@ fun BottomBar(
             text = "ESCANEAR",
             fontSize = 10.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF4F8CF6),
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 8.dp)
@@ -111,14 +111,14 @@ fun RowScope.BottomNavItem(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = if (selected) Color(0xFF4F8CF6) else Color.Gray
+                tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
         label = {
             Text(
                 text = label,
                 fontSize = 12.sp,
-                color = if (selected) Color(0xFF4F8CF6) else Color.Gray
+                color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
         colors = NavigationBarItemDefaults.colors(

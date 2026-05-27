@@ -5,13 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,7 +36,7 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF4F8CF6)), // Azul oficial
+            .background(MaterialTheme.colorScheme.primary),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -47,7 +47,7 @@ fun SplashScreen(
             Surface(
                 modifier = Modifier.size(200.dp),
                 shape = RoundedCornerShape(28.dp),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.surface,
                 shadowElevation = 10.dp
             ) {
                 Box(
@@ -66,7 +66,7 @@ fun SplashScreen(
             
             Text(
                 text = "Tu gestor inteligente de gastos",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -78,7 +78,7 @@ fun SplashScreen(
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 80.dp)
                 .size(40.dp),
-            color = Color.White.copy(alpha = 0.7f),
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
             strokeWidth = 3.dp
         )
     }

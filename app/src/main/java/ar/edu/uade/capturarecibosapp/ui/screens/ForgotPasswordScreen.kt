@@ -38,14 +38,14 @@ fun ForgotPasswordScreen(
     }
 
     Scaffold(
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState()), // Habilitar scroll por si aparece el teclado
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -60,12 +60,13 @@ fun ForgotPasswordScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFF3F4F6))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Volver",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -78,13 +79,14 @@ fun ForgotPasswordScreen(
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp
                 ),
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "Ingresá tu mail para enviarte un código de seguridad.",
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -95,12 +97,11 @@ fun ForgotPasswordScreen(
                 text = "Correo Electrónico",
                 style = MaterialTheme.typography.titleSmall.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF374151)
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
 
-            // CORRECCIÓN: Usamos 'label' en lugar de 'placeholder'
             TextField(
                 value = viewModel.email,
                 onValueChange = { viewModel.onEmailChange(it) },
@@ -110,7 +111,7 @@ fun ForgotPasswordScreen(
             if (viewModel.errorMessage != null) {
                 Text(
                     text = viewModel.errorMessage!!,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 8.dp).fillMaxWidth()
                 )

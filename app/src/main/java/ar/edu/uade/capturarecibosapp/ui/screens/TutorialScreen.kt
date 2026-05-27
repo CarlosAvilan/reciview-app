@@ -41,7 +41,7 @@ fun TutorialScreen(
     }
 
     Scaffold(
-        containerColor = Color(0xFFF8F9FA)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -56,7 +56,7 @@ fun TutorialScreen(
                 contentAlignment = Alignment.TopEnd
             ) {
                 TextButton(onClick = { viewModel.onTutorialFinished() }) {
-                    Text(text = "Saltar", color = Color.Gray)
+                    Text(text = "Saltar", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -86,7 +86,10 @@ fun TutorialScreen(
                             modifier = Modifier
                                 .size(10.dp)
                                 .clip(CircleShape)
-                                .background(if (isSelected) Color(0xFF4F8CF6) else Color(0xFFE9ECEF))
+                                .background(
+                                    if (isSelected) MaterialTheme.colorScheme.primary 
+                                    else MaterialTheme.colorScheme.surfaceVariant
+                                )
                         )
                     }
                 }
@@ -123,7 +126,7 @@ fun TutorialPageContent(page: TutorialPageData) {
             modifier = Modifier
                 .size(240.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFE9F2FF)),
+                .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -139,6 +142,7 @@ fun TutorialPageContent(page: TutorialPageData) {
             text = page.title,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
 
@@ -147,7 +151,7 @@ fun TutorialPageContent(page: TutorialPageData) {
         Text(
             text = page.description,
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             lineHeight = 24.sp
         )

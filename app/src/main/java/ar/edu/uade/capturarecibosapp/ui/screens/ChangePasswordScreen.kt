@@ -31,7 +31,7 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel, onBackClick: () -> 
                 onBackClick = onBackClick
             )
         },
-        containerColor = Color(0xFFF5F5F5)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -48,14 +48,14 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel, onBackClick: () -> 
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE0E7FF)),
+                    .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Shield,
                     contentDescription = null,
                     modifier = Modifier.size(60.dp),
-                    tint = Color(0xFF4F46E5)
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 

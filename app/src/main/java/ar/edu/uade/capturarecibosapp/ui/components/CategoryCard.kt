@@ -28,7 +28,7 @@ fun CategoryCard(
     onClick: () -> Unit
 ) {
     val isOverBudget = category.spent > category.budget
-    val accentColor = if (isOverBudget) Color(0xFFE53935) else Color(0xFF4F8CF6)
+    val accentColor = if (isOverBudget) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
     val progress = (category.spent / category.budget).coerceIn(0.0, 1.0).toFloat()
 
     Card(
@@ -36,7 +36,7 @@ fun CategoryCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -55,7 +55,8 @@ fun CategoryCard(
                     Text(
                         text = category.name,
                         fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 
@@ -78,7 +79,7 @@ fun CategoryCard(
                     .height(8.dp)
                     .clip(CircleShape),
                 color = accentColor,
-                trackColor = Color(0xFFE9ECEF)
+                trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
         }
     }

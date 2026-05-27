@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
 import ar.edu.uade.capturarecibosapp.ui.components.SectionLabel
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.ProfileViewModel
@@ -31,6 +30,7 @@ fun ProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -41,7 +41,8 @@ fun ProfileScreen(
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
-            )
+            ),
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -51,13 +52,13 @@ fun ProfileScreen(
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFE0E7FF)),
+                .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "JP",
                 style = MaterialTheme.typography.headlineLarge.copy(
-                    color = Color(0xFF4F8CF6),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -69,12 +70,13 @@ fun ProfileScreen(
             text = viewModel.nombre,
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold
-            )
+            ),
+            color = MaterialTheme.colorScheme.onBackground
         )
         Text(
             text = viewModel.email,
             style = MaterialTheme.typography.bodyMedium.copy(
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
 
@@ -113,8 +115,8 @@ fun ProfileScreen(
                 .height(56.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFFEBEE),
-                contentColor = Color(0xFFEF5350)
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
         ) {
             Text(
@@ -137,7 +139,7 @@ fun ProfileOptionRow(text: String, onClick: () -> Unit) {
             .height(56.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        color = Color(0xFFF9FAFB)
+        color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Row(
             modifier = Modifier
@@ -146,11 +148,15 @@ fun ProfileOptionRow(text: String, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = text, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = text, 
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = Color.Gray
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -163,7 +169,7 @@ fun ProfileValueRow(label: String, value: String) {
             .fillMaxWidth()
             .height(56.dp),
         shape = RoundedCornerShape(12.dp),
-        color = Color(0xFFF9FAFB)
+        color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Row(
             modifier = Modifier
@@ -172,11 +178,15 @@ fun ProfileValueRow(label: String, value: String) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = label, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = label, 
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color(0xFF4F8CF6),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -191,7 +201,7 @@ fun ProfileSwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean)
             .fillMaxWidth()
             .height(56.dp),
         shape = RoundedCornerShape(12.dp),
-        color = Color(0xFFF9FAFB)
+        color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Row(
             modifier = Modifier
@@ -200,13 +210,19 @@ fun ProfileSwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean)
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = label, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = label, 
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
             Switch(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = Color(0xFF4F8CF6)
+                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             )
         }
