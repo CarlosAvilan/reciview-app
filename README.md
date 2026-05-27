@@ -1,4 +1,4 @@
-# Registro de Compras App - Grupo XX
+# Registro de Compras App - Grupo ReciView
 
 ## Integrantes
 * **Avilán, Carlos** - Legajo: 1190123
