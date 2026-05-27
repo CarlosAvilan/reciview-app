@@ -142,9 +142,21 @@ fun AppNavigation(
                 navController.getBackStackEntry(Screen.Register.route)
             }
             val registerViewModel: RegisterViewModel = viewModel(backStackEntry)
+            
             TermsAndConditionsScreen(
                 viewModel = registerViewModel,
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // --- ÉXITO REGISTRO TICKET ---
+        composable(Screen.TicketRegistered.route) {
+            TicketRegisteredScreen(
+                onHomeClick = {
+                    navController.navigate(Screen.Welcome.route) {
+                        popUpTo(Screen.Welcome.route) { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -155,10 +167,24 @@ fun AppNavigation(
         composable(Screen.Tickets.route) { TicketsScreen(viewModel = viewModel()) }
         composable(Screen.Reports.route) { ReportsScreen(onBackClick = { navController.popBackStack() }) }
         composable(Screen.Help.route) { HelpScreen(onBackClick = { navController.popBackStack() }) }
+
         composable(Screen.Confirmation.route) {
             val ticket = mainViewModel.ticketDetectado
             if (ticket != null) {
-                ConfirmationScreen(ticket = ticket, onConfirm = { ticketEditado -> mainViewModel.confirmarYSubir(ticketEditado); navController.popBackStack() }, onCancel = { mainViewModel.cancelarCaptura(); navController.popBackStack() })
+                ConfirmationScreen(
+                    ticket = ticket,
+                    onConfirm = { ticketEditado ->
+                        mainViewModel.confirmarYSubir(ticketEditado)
+                        // Navegamos a la pantalla de éxito
+                        navController.navigate(Screen.TicketRegistered.route) {
+                            popUpTo(Screen.Welcome.route) { inclusive = false }
+                        }
+                    },
+                    onCancel = {
+                        mainViewModel.cancelarCaptura()
+                        navController.popBackStack()
+                    }
+                )
             }
         }
         
@@ -168,5 +194,6 @@ fun AppNavigation(
         composable(Screen.ChangePassword.route) { 
             ChangePasswordScreen(viewModel = viewModel(), onBackClick = { navController.popBackStack() }, onSaveClick = { navController.popBackStack() } )
         }
+        composable(Screen.MyExpenses.route) { MyExpensesScreen(onCategoriesClick = { navController.navigate(Screen.Categories.route) }, onViewAllClick = { navController.navigate(Screen.Tickets.route) }) }
     }
 }
