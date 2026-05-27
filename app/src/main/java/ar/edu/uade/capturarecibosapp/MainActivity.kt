@@ -72,11 +72,10 @@ fun ReciViewApp(
         Box(modifier = Modifier.padding(innerPadding)) {
             AppNavigation(
                 navController = navController,
-                startScan = onScanClick,
                 mainViewModel = viewModel
             )
 
-            // --- CORRECCIÓN: El cargador persiste hasta que la navegación se completa ---
+            // El cargador persiste hasta que la navegación se completa
             val isNavigatingToConfirm = viewModel.ticketDetectado != null && currentRoute != Screen.Confirmation.route
             
             if (viewModel.isProcessing || isNavigatingToConfirm) {

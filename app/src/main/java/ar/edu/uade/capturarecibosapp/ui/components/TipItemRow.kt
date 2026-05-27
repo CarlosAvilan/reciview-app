@@ -9,12 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import ar.edu.uade.capturarecibosapp.ui.viewmodel.TipItem
 
 @Composable
-fun TipItemRow(tip: TipItem) {
+fun TipItemRow(
+    title: String,
+    description: String,
+    icon: ImageVector
+) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -36,7 +39,7 @@ fun TipItemRow(tip: TipItem) {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = tip.icon,
+                    imageVector = icon,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
@@ -45,12 +48,12 @@ fun TipItemRow(tip: TipItem) {
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(
-                    text = tip.title, 
+                    text = title, 
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = tip.description, 
+                    text = description,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

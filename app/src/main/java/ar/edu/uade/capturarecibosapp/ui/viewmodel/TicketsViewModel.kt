@@ -6,16 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import ar.edu.uade.capturarecibosapp.R
-
-data class TicketItem(
-    val id: Int,
-    val commerce: String,
-    val date: String,
-    val amount: String,
-    val category: String = "Otros",
-    val imageRes: Int? = null,
-    val description: String = ""
-)
+import ar.edu.uade.capturarecibosapp.data.model.TicketItem
 
 class TicketsViewModel : ViewModel() {
     var searchQuery by mutableStateOf("")

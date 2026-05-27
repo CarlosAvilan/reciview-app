@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,7 +58,11 @@ fun HelpScreen(
             }
 
             itemsIndexed(viewModel.tips) { _, tip ->
-                TipItemRow(tip)
+                TipItemRow(
+                    title = tip.title,
+                    description = tip.description,
+                    icon = tip.icon
+                )
             }
 
             // FAQ Section
@@ -74,7 +77,9 @@ fun HelpScreen(
 
             itemsIndexed(viewModel.faqs) { index, faq ->
                 FaqItemRow(
-                    faq = faq,
+                    question = faq.question,
+                    answer = faq.answer,
+                    isExpanded = faq.isExpanded,
                     onClick = { viewModel.toggleFaq(index) }
                 )
             }

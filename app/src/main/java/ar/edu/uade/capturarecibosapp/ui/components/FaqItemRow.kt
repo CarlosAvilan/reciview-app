@@ -14,10 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ar.edu.uade.capturarecibosapp.ui.viewmodel.FaqItem
 
 @Composable
-fun FaqItemRow(faq: FaqItem, onClick: () -> Unit) {
+fun FaqItemRow(
+    question: String,
+    answer: String,
+    isExpanded: Boolean,
+    onClick: () -> Unit
+) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -34,22 +38,22 @@ fun FaqItemRow(faq: FaqItem, onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = faq.question,
+                    text = question,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.weight(1f)
                 )
                 Icon(
-                    imageVector = if (faq.isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            AnimatedVisibility(visible = faq.isExpanded) {
+            AnimatedVisibility(visible = isExpanded) {
                 Column {
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = faq.answer,
+                        text = answer,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 20.sp

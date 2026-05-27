@@ -8,18 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
+import ar.edu.uade.capturarecibosapp.data.model.FaqItem
+import ar.edu.uade.capturarecibosapp.data.model.TipItem
 
-data class FaqItem(
-    val question: String,
-    val answer: String,
-    var isExpanded: Boolean = false
-)
-
-data class TipItem(
-    val title: String,
-    val description: String,
-    val icon: ImageVector
-)
 
 class HelpViewModel : ViewModel() {
     val tips = listOf(

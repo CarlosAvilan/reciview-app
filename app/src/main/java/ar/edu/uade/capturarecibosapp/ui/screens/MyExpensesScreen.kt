@@ -2,27 +2,14 @@ package ar.edu.uade.capturarecibosapp.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.SuggestionChipDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,42 +18,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ar.edu.uade.capturarecibosapp.R
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.ExpenseCard
-import ar.edu.uade.capturarecibosapp.ui.components.ExpenseItem
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.MyExpensesViewModel
 
 @Composable
 fun MyExpensesScreen(
-    totalGastado: String = "$45.280,50",
-    estadistica: String = "+ 25% vs enero",
+    viewModel: MyExpensesViewModel = viewModel(),
     onCategoriesClick: () -> Unit,
     onViewAllClick: () -> Unit
 ) {
-    // Datos mockeados según Figma
-    val transacciones = listOf(
-        ExpenseItem(
-            imageUrl = R.drawable.logo_carrefour,
-            title = "Carrefour Market",
-            date = "Hoy, 14:20",
-            category = "Alimentos",
-            amount = 12400.0
-        ),
-        ExpenseItem(
-            imageUrl = R.drawable.logo_uber,
-            title = "Uber Trip",
-            date = "Ayer, 21:15",
-            category = "Transporte",
-            amount = 5500.0
-        ),
-        ExpenseItem(
-            imageUrl = R.drawable.logo_edesur,
-            title = "Edesur",
-            date = "18 May, 09:30",
-            category = "Servicios",
-            amount = 9800.0
-        )
-    )
+    val totalGastado = viewModel.totalSpent
+    val estadistica = viewModel.statistics
+    val transacciones = viewModel.transactions
 
     LazyColumn(
         modifier = Modifier
@@ -162,7 +127,7 @@ fun MyExpensesScreen(
 
         // Lista dinámica de tarjetas de gastos
         items(transacciones) { transaccion ->
-            ExpenseCard(transaction = transaccion)
+            ExpenseCard(transaccion.title, transaccion.date, transaccion.category, transaccion.amount, transaccion.imageUrl)
         }
 
         item {

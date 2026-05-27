@@ -2,7 +2,6 @@ package ar.edu.uade.capturarecibosapp.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,8 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ar.edu.uade.capturarecibosapp.data.model.TicketItem
 import ar.edu.uade.capturarecibosapp.ui.components.TicketDetailDialog
-import ar.edu.uade.capturarecibosapp.ui.viewmodel.TicketItem
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.WelcomeViewModel
 
 @Composable
@@ -35,7 +34,6 @@ fun WelcomeScreen(
     onProfileClick: () -> Unit,
     onReportsClick: () -> Unit,
     onHelpClick: () -> Unit,
-    onScanClick: () -> Unit
 ) {
     // Obtenemos el estado desde el ViewModel
     val userName = viewModel.userName
@@ -103,8 +101,12 @@ fun WelcomeScreen(
             }
 
             items(recentTickets) { ticket ->
+                // Siguiendo SOLID: Pasamos parámetros puros en lugar del objeto TicketItem
                 RecentActivityItem(
-                    ticket = ticket,
+                    commerce = ticket.commerce,
+                    date = ticket.date,
+                    category = ticket.category,
+                    amount = ticket.amount,
                     onClick = { selectedTicket = ticket }
                 )
             }
@@ -112,10 +114,15 @@ fun WelcomeScreen(
             item { Spacer(modifier = Modifier.height(16.dp)) }
         }
 
-        // Diálogo de detalle
+        // Diálogo de detalle - Actualizado para usar parámetros puros
         selectedTicket?.let { ticket ->
             TicketDetailDialog(
-                ticket = ticket,
+                commerce = ticket.commerce,
+                date = ticket.date,
+                amount = ticket.amount,
+                category = ticket.category,
+                description = ticket.description,
+                imageRes = ticket.imageRes,
                 onDismiss = { selectedTicket = null }
             )
         }
@@ -297,7 +304,10 @@ fun QuickActionItem(icon: ImageVector, label: String, onClick: () -> Unit) {
 
 @Composable
 fun RecentActivityItem(
-    ticket: TicketItem,
+    commerce: String,
+    date: String,
+    category: String,
+    amount: String,
     onClick: () -> Unit
 ) {
     Card(
@@ -333,15 +343,15 @@ fun RecentActivityItem(
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
-                    Text(text = ticket.commerce, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                    Text(text = commerce, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Text(
-                        text = "${ticket.date} • ${ticket.category}",
+                        text = "$date • $category",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
-            Text(text = ticket.amount, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+            Text(text = amount, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         }
     }
 }

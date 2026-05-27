@@ -15,11 +15,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ar.edu.uade.capturarecibosapp.ui.viewmodel.TicketItem
 
 @Composable
 fun TicketCard(
-    ticket: TicketItem,
+    commerce: String,
+    date: String,
+    amount: String,
+    imageRes: Int?,
     onClick: () -> Unit = {}
 ) {
     Column(
@@ -36,10 +38,10 @@ fun TicketCard(
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
-            if (ticket.imageRes != null) {
+            if (imageRes != null) {
                 Image(
-                    painter = painterResource(id = ticket.imageRes),
-                    contentDescription = ticket.commerce,
+                    painter = painterResource(id = imageRes),
+                    contentDescription = commerce,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
@@ -53,13 +55,13 @@ fun TicketCard(
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = ticket.commerce, 
+            text = commerce, 
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = "${ticket.date} • ${ticket.amount}", 
+            text = "$date • $amount",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

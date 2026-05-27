@@ -10,18 +10,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import ar.edu.uade.capturarecibosapp.ui.viewmodel.TicketItem
 
 @Composable
 fun TicketDetailDialog(
-    ticket: TicketItem,
+    commerce: String,
+    date: String,
+    amount: String,
+    category: String,
+    description: String,
+    imageRes: Int?,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -47,9 +50,9 @@ fun TicketDetailDialog(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                if (ticket.imageRes != null) {
+                if (imageRes != null) {
                     Image(
-                        painter = painterResource(id = ticket.imageRes),
+                        painter = painterResource(id = imageRes),
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -61,10 +64,10 @@ fun TicketDetailDialog(
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
-                DetailRow(label = "Comercio", value = ticket.commerce)
-                DetailRow(label = "Fecha", value = ticket.date)
-                DetailRow(label = "Categoría", value = ticket.category)
-                DetailRow(label = "Descripción", value = ticket.description.ifEmpty { "Sin descripción" })
+                DetailRow(label = "Comercio", value = commerce)
+                DetailRow(label = "Fecha", value = date)
+                DetailRow(label = "Categoría", value = category)
+                DetailRow(label = "Descripción", value = description.ifEmpty { "Sin descripción" })
                 
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 16.dp),
@@ -83,7 +86,7 @@ fun TicketDetailDialog(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = ticket.amount, 
+                        text = amount,
                         fontWeight = FontWeight.Bold, 
                         fontSize = 22.sp,
                         color = MaterialTheme.colorScheme.primary

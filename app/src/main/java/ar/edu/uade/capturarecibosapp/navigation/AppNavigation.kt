@@ -15,7 +15,6 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.*
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startScan: () -> Unit,
     mainViewModel: MainViewModel
 ) {
     // Escuchamos cambios en ticketDetectado para navegar a la pantalla de confirmación.
@@ -66,7 +65,6 @@ fun AppNavigation(
                 onManualClick = { navController.navigate(Screen.ManualExpense.route) },
                 onReportsClick = { navController.navigate(Screen.Reports.route) },
                 onHelpClick = { navController.navigate(Screen.Help.route) },
-                onScanClick = startScan
             )
         }
 
