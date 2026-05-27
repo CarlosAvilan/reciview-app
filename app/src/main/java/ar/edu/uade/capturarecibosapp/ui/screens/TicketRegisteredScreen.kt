@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
+import ar.edu.uade.capturarecibosapp.ui.theme.success
 
 @Composable
 fun TicketRegisteredScreen(
@@ -34,7 +35,6 @@ fun TicketRegisteredScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Círculo con el check (Estilo idéntico a PasswordSuccessScreen)
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -46,7 +46,7 @@ fun TicketRegisteredScreen(
                     modifier = Modifier
                         .size(70.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary),
+                        .background(MaterialTheme.colorScheme.success),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(

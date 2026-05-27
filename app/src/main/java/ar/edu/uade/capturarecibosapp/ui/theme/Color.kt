@@ -11,3 +11,5 @@ val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
 
 val Pink40 = Color(0xFF7D5260)
+
+val SuccessGreen = Color(0xFF3CC741)

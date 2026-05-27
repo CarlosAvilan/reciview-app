@@ -210,7 +210,7 @@ fun AppNavigation(
             PersonalInfoScreen(viewModel = viewModel(), onBackClick = { navController.popBackStack() }, onChangePasswordClick = { navController.navigate(Screen.ChangePassword.route) }, onSaveClick = { navController.popBackStack() }, onDeleteAccountClick = { navController.navigate(Screen.Login.route) } )
         }
         composable(Screen.ChangePassword.route) { 
-            ChangePasswordScreen(viewModel = viewModel(), onBackClick = { navController.popBackStack() }, onSaveClick = { navController.popBackStack() } )
+            ChangePasswordScreen(viewModel = viewModel(), onBackClick = { navController.popBackStack() }, onSaveClick = { navController.navigate(Screen.PasswordSuccess.route) } )
         }
     }
 }
