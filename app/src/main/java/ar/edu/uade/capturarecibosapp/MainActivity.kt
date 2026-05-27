@@ -55,12 +55,6 @@ fun ReciViewApp(
 
     val showBottomBar = currentRoute in Screen.bottomBarScreens
 
-    LaunchedEffect(viewModel.ticketDetectado) {
-        if (viewModel.ticketDetectado != null) {
-            navController.navigate(Screen.Confirmation.route)
-        }
-    }
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {

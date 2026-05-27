@@ -1,6 +1,7 @@
 package ar.edu.uade.capturarecibosapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -8,7 +9,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
 import ar.edu.uade.capturarecibosapp.ui.screens.*
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.*
 
@@ -18,14 +18,12 @@ fun AppNavigation(
     startScan: () -> Unit,
     mainViewModel: MainViewModel
 ) {
-    val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
-
-    // Lista mock centralizada
-    val mockCategories = listOf(
-        CategoryItem("🍔", "Comida y Bebida", 18500.0, 25000.0),
-        CategoryItem("🚗", "Transporte", 12200.0, 15000.0),
-        CategoryItem("💡", "Servicios y Hogar", 9800.0, 8000.0)
-    )
+    // Escuchamos cambios en ticketDetectado para navegar a la pantalla de confirmación.
+    LaunchedEffect(mainViewModel.ticketDetectado) {
+        if (mainViewModel.ticketDetectado != null) {
+            navController.navigate(Screen.Confirmation.route)
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -96,6 +94,7 @@ fun AppNavigation(
 
         // --- FLUJO RECUPERAR CONTRASEÑA ---
         composable(Screen.ForgotPassword.route) {
+            val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
             ForgotPasswordScreen(
                 viewModel = forgotPasswordViewModel,
                 onBackClick = { navController.popBackStack() },
@@ -103,9 +102,17 @@ fun AppNavigation(
             )
         }
         composable(Screen.VerifyCode.route) {
+            val backStackEntry = androidx.compose.runtime.remember(it) {
+                navController.getBackStackEntry(Screen.ForgotPassword.route)
+            }
+            val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel(backStackEntry)
             VerifyCodeScreen(viewModel = forgotPasswordViewModel, onBackClick = { navController.popBackStack() }, onCodeVerified = { navController.navigate(Screen.ResetPassword.route) })
         }
         composable(Screen.ResetPassword.route) {
+            val backStackEntry = androidx.compose.runtime.remember(it) {
+                navController.getBackStackEntry(Screen.VerifyCode.route)
+            }
+            val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel(backStackEntry)
             ResetPasswordScreen(viewModel = forgotPasswordViewModel, onBackClick = { navController.popBackStack() }, onPasswordReset = { navController.navigate(Screen.PasswordSuccess.route) })
         }
         composable(Screen.PasswordSuccess.route) {
@@ -114,7 +121,9 @@ fun AppNavigation(
 
         // --- CATEGORÍAS ---
         composable(Screen.Categories.route) {
+            val categoriesViewModel: CategoriesViewModel = viewModel()
             ExpensesCategoriesScreen(
+                viewModel = categoriesViewModel,
                 onBackClick = { navController.popBackStack() },
                 onEditCategoryClick = { category ->
                     val id = category?.name ?: "new"
@@ -126,11 +135,18 @@ fun AppNavigation(
             route = Screen.EditCategory.route,
             arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
         ) { backStackEntry ->
+            val categoriesViewModel: CategoriesViewModel = viewModel()
             val categoryId = backStackEntry.arguments?.getString("categoryId")
-            val categoryToEdit = if (categoryId == "new" || categoryId == null) null else {
-                mockCategories.find { it.name == categoryId }
-            }
-            EditCategoriesScreen(category = categoryToEdit, onBackClick = { navController.popBackStack() }, onSaveClick = { _, _ -> navController.popBackStack() })
+            val categoryToEdit = categoriesViewModel.getCategoryByName(categoryId)
+            
+            EditCategoriesScreen(
+                category = categoryToEdit,
+                onBackClick = { navController.popBackStack() },
+                onSaveClick = { nombre, limite ->
+                    categoriesViewModel.saveCategory(nombre, limite)
+                    navController.popBackStack()
+                }
+            )
         }
 
         // --- REGISTRO Y TÉRMINOS ---
@@ -155,7 +171,6 @@ fun AppNavigation(
             )
         }
 
-        // --- PANTALLA DE ÉXITO (COMPARTIDA) ---
         composable(Screen.TicketRegistered.route) {
             TicketRegisteredScreen(
                 onHomeClick = {
