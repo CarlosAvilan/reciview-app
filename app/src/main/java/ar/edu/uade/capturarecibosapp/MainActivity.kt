@@ -58,6 +58,7 @@ fun ReciViewApp(
     val showBottomBar = currentRoute in Screen.bottomBarScreens
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             if (showBottomBar) {
@@ -71,7 +72,12 @@ fun ReciViewApp(
             }
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+        ) {
             AppNavigation(
                 navController = navController,
                 mainViewModel = viewModel

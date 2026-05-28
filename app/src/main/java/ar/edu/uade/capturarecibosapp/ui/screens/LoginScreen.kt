@@ -1,15 +1,16 @@
 package ar.edu.uade.capturarecibosapp.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -30,20 +31,17 @@ fun LoginScreen(
     onRegisterClick: () -> Unit,
     onForgotPasswordClick: () -> Unit = {}
 ) {
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState()),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 24.dp)
+            .verticalScroll(rememberScrollState()),
 
-            horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally,
 
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -113,15 +111,15 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
         }
-    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {
     ReciViewTheme {
+        val viewModel = remember { LoginViewModel() }
         LoginScreen(
-            viewModel = LoginViewModel(),
+            viewModel = viewModel,
             onLoginRedirect = {},
             onRegisterClick = {}
         )

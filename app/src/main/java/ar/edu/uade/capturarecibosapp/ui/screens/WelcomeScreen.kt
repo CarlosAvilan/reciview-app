@@ -111,7 +111,7 @@ fun WelcomeScreen(
                 )
             }
 
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(100.dp)) }
         }
 
         // Diálogo de detalle - Actualizado para usar parámetros puros

@@ -39,21 +39,19 @@ fun TutorialScreen(
         }
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
-    ) { paddingValues ->
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        // Botón Saltar en la parte superior (le avisa al ViewModel)
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+                .fillMaxWidth()
+                .padding(16.dp)
+                .statusBarsPadding(), // Asegura espacio para la barra de estado si no hay topBar
+            contentAlignment = Alignment.TopEnd
         ) {
-            // Botón Saltar en la parte superior (le avisa al ViewModel)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                contentAlignment = Alignment.TopEnd
-            ) {
                 TextButton(onClick = { viewModel.onTutorialFinished() }) {
                     Text(text = "Saltar", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -109,7 +107,6 @@ fun TutorialScreen(
                 )
             }
         }
-    }
 }
 
 @Composable
