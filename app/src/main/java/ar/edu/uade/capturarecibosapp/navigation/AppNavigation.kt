@@ -181,7 +181,34 @@ fun AppNavigation(
 
         // --- OTROS ---
         composable(Screen.Profile.route) {
-            ProfileScreen(viewModel = viewModel(), onPersonalInfoClick = { navController.navigate(Screen.PersonalInfo.route) }, onCloseSessionClick = { navController.navigate(Screen.Login.route) })
+            val profileViewModel: ProfileViewModel = viewModel()
+            ProfileScreen(
+                viewModel = profileViewModel, 
+                onPersonalInfoClick = { navController.navigate(Screen.PersonalInfo.route) }, 
+                onCloseSessionClick = { navController.navigate(Screen.Login.route) },
+                onEditBudgetClick = { navController.navigate(Screen.EditBudget.route) }
+            )
+        }
+
+        composable(Screen.EditBudget.route) {
+            val profileViewModel: ProfileViewModel = viewModel()
+            EditBudgetScreen(
+                viewModel = profileViewModel,
+                onBackClick = { navController.popBackStack() },
+                onSaveSuccess = {
+                    navController.navigate(Screen.BudgetSuccess.route) {
+                        popUpTo(Screen.Profile.route) { inclusive = false }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.BudgetSuccess.route) {
+            BudgetSuccessScreen(
+                onFinish = {
+                    navController.popBackStack(Screen.Profile.route, inclusive = false)
+                }
+            )
         }
         composable(Screen.Tickets.route) { TicketsScreen(viewModel = viewModel()) }
         composable(Screen.Reports.route) { ReportsScreen(onBackClick = { navController.popBackStack() }) }

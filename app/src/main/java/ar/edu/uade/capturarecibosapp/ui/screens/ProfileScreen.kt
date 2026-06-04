@@ -9,10 +9,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,7 +25,8 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.ProfileViewModel
 fun ProfileScreen(
     viewModel: ProfileViewModel,
     onPersonalInfoClick: () -> Unit,
-    onCloseSessionClick: () -> Unit
+    onCloseSessionClick: () -> Unit,
+    onEditBudgetClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -96,7 +97,11 @@ fun ProfileScreen(
             // PREFERENCIAS
             Column(modifier = Modifier.fillMaxWidth()) {
                 SectionLabel(text = "PREFERENCIAS")
-                ProfileValueRow(label = "Presupuesto mensual", value = viewModel.presupuestoMensual)
+                ProfileValueRow(
+                    label = "Presupuesto mensual", 
+                    value = viewModel.presupuestoMensual,
+                    onClick = onEditBudgetClick
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 ProfileSwitchRow(
                     label = "Notificaciones",
@@ -163,11 +168,12 @@ fun ProfileOptionRow(text: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun ProfileValueRow(label: String, value: String) {
+fun ProfileValueRow(label: String, value: String, onClick: (() -> Unit)? = null) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(56.dp)
+            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceVariant
     ) {
@@ -233,10 +239,12 @@ fun ProfileSwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean)
 @Composable
 fun ProfileScreenPreview() {
     ReciViewTheme {
+        val viewModel = remember { ProfileViewModel() }
         ProfileScreen(
-            viewModel = ProfileViewModel(),
+            viewModel = viewModel,
             onPersonalInfoClick = {},
-            onCloseSessionClick = {}
+            onCloseSessionClick = {},
+            onEditBudgetClick = {}
         )
     }
 }
