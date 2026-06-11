@@ -41,9 +41,11 @@ fun LoginScreen(
                 .verticalScroll(rememberScrollState()),
 
             horizontalAlignment = Alignment.CenterHorizontally,
+
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Image(
                 painter = painterResource(id = R.drawable.logo),
@@ -51,14 +53,12 @@ fun LoginScreen(
                 modifier = Modifier.size(180.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             Text(
                 text = "Tu gestor de recibos inteligente",
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             TextField(
                 value = viewModel.correoElectronico,
@@ -66,16 +66,12 @@ fun LoginScreen(
                 label = "Correo Electrónico"
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
             TextField(
                 value = viewModel.contrasenia,
                 onValueChange = viewModel::onContraseniaChange,
                 label = "Contraseña",
                 isPassword = true
             )
-
-            Spacer(modifier = Modifier.height(10.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -92,14 +88,14 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Button(
                 text = "Iniciar sesión",
                 onClick = { viewModel.login(onSuccess = onLoginRedirect) }
             )
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Row {
                 Text(
@@ -114,6 +110,8 @@ fun LoginScreen(
                     modifier = Modifier.clickable { onRegisterClick() }
                 )
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
