@@ -73,7 +73,7 @@ class ForgotPasswordViewModel(
         isLoading = true
         viewModelScope.launch {
             // Mocked verification
-            val result = repository.resetPassword(email, code, "") 
+            val result = repository.resetPassword(email)
             isLoading = false
             if (result.isSuccess) {
                 currentStep = ForgotPasswordStep.NEW_PASSWORD

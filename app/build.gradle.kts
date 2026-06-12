@@ -73,6 +73,7 @@ dependencies {
     // Retrofit para la conexión al backend
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Motor de reconocimiento de texto
     implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")

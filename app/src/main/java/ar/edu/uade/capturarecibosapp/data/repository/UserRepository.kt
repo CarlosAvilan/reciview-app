@@ -1,24 +1,54 @@
 package ar.edu.uade.capturarecibosapp.data.repository
 
-import kotlinx.coroutines.delay
+import ar.edu.uade.capturarecibosapp.data.SessionManager
+import ar.edu.uade.capturarecibosapp.data.remote.RetrofitClient
+import ar.edu.uade.capturarecibosapp.data.remote.dto.ProfileDTO
 
 class UserRepository {
-    // Simulamos almacenamiento local/remoto
-    private var budget = "60.000,00"
+    private val apiService = RetrofitClient.userService
 
-    suspend fun getBudget(): String {
-        delay(500)
-        return budget
+    suspend fun getProfile(): Result<ProfileDTO> {
+        val userId = SessionManager.userId ?: return Result.failure(Exception("Usuario no autenticado"))
+        return try {
+            // Se usa el formato de consulta 'eq.UUID' para filtrar en Supabase REST
+            val response = apiService.getProfile("eq.$userId")
+            if (response.isSuccessful) {
+                val profiles = response.body()
+                if (!profiles.isNullOrEmpty()) {
+                    Result.success(profiles[0])
+                } else {
+                    Result.failure(Exception("Perfil no encontrado"))
+                }
+            } else {
+                Result.failure(Exception("Error al obtener perfil: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateProfile(name: String, birth: String, country: String, phone: String): Result<Unit> {
+        val userId = SessionManager.userId ?: return Result.failure(Exception("Usuario no autenticado"))
+        return try {
+            val updateMap = mapOf(
+                "name" to name,
+                "birth" to birth,
+                "country" to country,
+                "phone" to phone
+            )
+            // Se usa 'eq.UUID' también para el PATCH
+            val response = apiService.updateProfile("eq.$userId", updateMap)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Error al actualizar perfil: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     suspend fun updateBudget(newBudget: String): Result<Unit> {
-        delay(1000)
-        // Validamos que sea un número (simplificado)
-        return if (newBudget.isNotBlank()) {
-            budget = newBudget
-            Result.success(Unit)
-        } else {
-            Result.failure(Exception("El presupuesto no puede estar vacío"))
-        }
+        return Result.success(Unit)
     }
 }

@@ -1,47 +1,45 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import ar.edu.uade.capturarecibosapp.R
+import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.repository.ExpenseRepository
 import ar.edu.uade.capturarecibosapp.ui.components.ExpenseItem
+import kotlinx.coroutines.launch
 
 class MyExpensesViewModel : ViewModel() {
+    private val expenseRepository = ExpenseRepository()
     
-    var totalSpent by mutableStateOf("$45.280,50")
+    var totalSpent by mutableStateOf("$0,00")
         private set
 
-    var statistics by mutableStateOf("+ 25% vs enero")
+    var statistics by mutableStateOf("Calculando...")
         private set
 
-    var transactions by mutableStateOf(
-        listOf(
-            ExpenseItem(
-                imageUrl = R.drawable.logo_carrefour,
-                title = "Carrefour Market",
-                date = "Hoy, 14:20",
-                category = "Alimentos",
-                amount = 12400.0
-            ),
-            ExpenseItem(
-                imageUrl = R.drawable.logo_uber,
-                title = "Uber Trip",
-                date = "Ayer, 21:15",
-                category = "Transporte",
-                amount = 5500.0
-            ),
-            ExpenseItem(
-                imageUrl = R.drawable.logo_edesur,
-                title = "Edesur",
-                date = "18 May, 09:30",
-                category = "Servicios",
-                amount = 9800.0
-            )
-        )
-    )
-        private set
-        
-    // Aquí podrías agregar métodos para cargar datos reales desde un repositorio
-    // respetando el principio de Inversión de Dependencias.
+    var isLoading by mutableStateOf(false)
+
+    private val _transactions = mutableStateListOf<ExpenseItem>()
+    val transactions: List<ExpenseItem> get() = _transactions
+
+    init {
+        loadExpenses()
+    }
+
+    fun loadExpenses() {
+        isLoading = true
+        viewModelScope.launch {
+            val result = expenseRepository.getExpenses()
+            isLoading = false
+            if (result.isSuccess) {
+                _transactions.clear()
+                val dtos = result.getOrDefault(emptyList())
+                // Mapear dtos a ExpenseItem de UI
+                // dtos.forEach { dto -> _transactions.add(dto.toUiModel()) }
+                totalSpent = "$${dtos.sumOf { it.amount }}"
+            }
+        }
+    }
 }

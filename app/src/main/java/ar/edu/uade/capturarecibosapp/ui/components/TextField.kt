@@ -27,7 +27,8 @@ fun TextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     readOnly: Boolean = false,
     singleLine: Boolean = true,
-    isPassword: Boolean = false
+    isPassword: Boolean = false,
+    isError: Boolean = false
 ) {
 
     var passwordVisible by remember {
@@ -37,6 +38,7 @@ fun TextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
+        isError = isError,
         // Solo mostramos el label si no está vacío
         label = if (label.isNotEmpty()) { { Text(label) } } else null,
         // Agregamos el placeholder
