@@ -4,13 +4,50 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.SessionManager
+import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
+import kotlinx.coroutines.launch
 
-class PersonalInfoViewModel : ViewModel() {
-    var nombre by mutableStateOf("Juan Pérez")
-    var email by mutableStateOf("juanp@email.com")
-    var telefono by mutableStateOf("+55 11 5555-5555")
-    var fechaNacimiento by mutableStateOf("15 / 10 / 1990")
-    var paisResidencia by mutableStateOf("Argentina")
+class PersonalInfoViewModel(
+    private val userRepository: UserRepository = UserRepository()
+) : ViewModel() {
+    var nombre by mutableStateOf("")
+    var email by mutableStateOf("")
+    var telefono by mutableStateOf("")
+    var fechaNacimiento by mutableStateOf("")
+    var paisResidencia by mutableStateOf("")
+    
+    var isLoading by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
+
+    init {
+        loadUserProfile()
+    }
+
+    private fun loadUserProfile() {
+        val id = SessionManager.userId
+        if (id == null) {
+            errorMessage = "Inicia sesión para ver tus datos"
+            return
+        }
+
+        isLoading = true
+        viewModelScope.launch {
+            val result = userRepository.getProfile()
+            isLoading = false
+            result.onSuccess { profile ->
+                nombre = profile.name
+                email = profile.email
+                telefono = profile.phone ?: ""
+                fechaNacimiento = profile.birth
+                paisResidencia = profile.country ?: ""
+            }.onFailure {
+                errorMessage = "No se pudo cargar la información"
+                email = SessionManager.userEmail ?: ""
+            }
+        }
+    }
 
     fun onNombreChange(newValue: String) { nombre = newValue }
     fun onEmailChange(newValue: String) { email = newValue }
@@ -19,12 +56,26 @@ class PersonalInfoViewModel : ViewModel() {
     fun onPaisChange(newValue: String) { paisResidencia = newValue }
 
     fun guardarCambios(onSuccess: () -> Unit) {
-        // Lógica de guardado...
-        onSuccess()
+        isLoading = true
+        errorMessage = null
+        viewModelScope.launch {
+            val result = userRepository.updateProfile(
+                name = nombre,
+                birth = fechaNacimiento,
+                country = paisResidencia,
+                phone = telefono
+            )
+            isLoading = false
+            if (result.isSuccess) {
+                onSuccess()
+            } else {
+                errorMessage = "Error al actualizar perfil"
+            }
+        }
     }
 
     fun eliminarCuenta(onSuccess: () -> Unit) {
-        // Lógica para eliminar cuenta...
+        // Lógica para eliminar cuenta si se desea implementar
         onSuccess()
     }
 }

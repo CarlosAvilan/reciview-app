@@ -21,6 +21,7 @@ import ar.edu.uade.capturarecibosapp.scanner.ScannerManager
 import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
+import ar.edu.uade.capturarecibosapp.data.SessionManager
 
 class MainActivity : ComponentActivity() {
 
@@ -34,6 +35,8 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        
+        SessionManager.init(this)
 
         setContent {
             ReciViewTheme {
