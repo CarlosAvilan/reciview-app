@@ -5,7 +5,7 @@ import android.util.Log
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import ar.edu.uade.capturarecibosapp.data.model.TicketData
+import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import com.google.mlkit.vision.text.Text
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -13,7 +13,7 @@ import java.util.Locale
 
 class OcrManager {
 
-    fun analizarRecibo(bitmap: Bitmap, onResult: (TicketData) -> Unit) {
+    fun analizarRecibo(bitmap: Bitmap, onResult: (Ticket) -> Unit) {
         val image = InputImage.fromBitmap(bitmap, 0)
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
@@ -30,14 +30,14 @@ class OcrManager {
                 val comercio = detectarComercio(bloques)
                 val total = detectarTotal(lineas)
 
-                onResult(TicketData(
-                    comercio = comercio,
+                onResult(Ticket(
+                    establishment = comercio,
                     total = total,
                     fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                 ))
             }
             .addOnFailureListener {
-                onResult(TicketData("Error", 0.0, ""))
+                onResult(Ticket("Error", 0.0, ""))
             }
     }
 

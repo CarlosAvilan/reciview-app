@@ -7,9 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ar.edu.uade.capturarecibosapp.data.model.TicketData
+import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.domain.OcrManager
-import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
@@ -17,7 +16,7 @@ class MainViewModel : ViewModel() {
     private val ocrManager = OcrManager()
 
     // Estado para controlar qué ticket se está editando/confirmando
-    var ticketDetectado by mutableStateOf<TicketData?>(null)
+    var ticketDetectado by mutableStateOf<Ticket?>(null)
         private set
 
     // Estado para saber si estamos procesando la imagen (loading)
@@ -28,16 +27,16 @@ class MainViewModel : ViewModel() {
         isProcessing = true
 
         ocrManager.analizarRecibo(bitmap) { ticket ->
-            Log.d("ReciView", "OCR finalizado: ${ticket.comercio}")
+            Log.d("ReciView", "OCR finalizado: ${ticket.establishment}")
             ticketDetectado = ticket
             isProcessing = false
         }
     }
 
-    fun confirmarYSubir(ticket: TicketData) {
+    fun confirmarYSubir(ticket: Ticket) {
         viewModelScope.launch {
             try {
-                Log.d("ReciView", "Subiendo: ${ticket.comercio}, Total: ${ticket.total}, Desc: ${ticket.descripcion}")
+                Log.d("ReciView", "Subiendo: ${ticket.establishment}, Total: ${ticket.total}, Desc: ${ticket.description}")
                 // Aca iría la llamada a Retrofit
                 // RetrofitClient.instance.enviarTicket(ticket)
 

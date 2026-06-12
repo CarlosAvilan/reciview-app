@@ -17,6 +17,7 @@ import ar.edu.uade.capturarecibosapp.ui.components.TipItemRow
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.HelpViewModel
+import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 
 @Composable
@@ -61,7 +62,12 @@ fun HelpScreen(
                 TipItemRow(
                     title = tip.title,
                     description = tip.description,
-                    icon = tip.icon
+                    //TODO ARREGLAR ESTO. ASYNC IMAGE QUEDÓ CON TIPO UNIT QUE NO ESTÁ BIEN TAMPOCO
+                    icon = AsyncImage(
+                        model = tip.iconName, // Coil se encarga de descargar, cachear y renderizar el SVG
+                        contentDescription = tip.title,
+                        modifier = Modifier.size(24.dp)
+                    )
                 )
             }
 

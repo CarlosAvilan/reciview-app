@@ -4,27 +4,26 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import ar.edu.uade.capturarecibosapp.data.model.FaqItem
-import ar.edu.uade.capturarecibosapp.data.model.TipItem
+import ar.edu.uade.capturarecibosapp.data.model.AdviceItem
 
 
 class HelpViewModel : ViewModel() {
     val tips = listOf(
-        TipItem(
+        AdviceItem(
             "Usar buena iluminación", 
             "Evita las sombras sobre el ticket.",
-            Icons.Default.Lightbulb
+            "Lightbulb"
         ),
-        TipItem(
+        AdviceItem(
             "Papel bien estirado", 
             "Aplaná el ticket antes de la foto.",
-            Icons.Default.ReceiptLong
+            "ReceiptLong"
         )
     )
+
+    //Icons.Default.ReceiptLong
 
     var faqs = mutableStateListOf(
         FaqItem(
