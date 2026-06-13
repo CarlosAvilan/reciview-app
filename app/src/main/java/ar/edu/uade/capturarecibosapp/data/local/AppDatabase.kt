@@ -10,6 +10,7 @@ import ar.edu.uade.capturarecibosapp.data.local.daos.ReportDao
 import ar.edu.uade.capturarecibosapp.data.local.daos.TicketDao
 import ar.edu.uade.capturarecibosapp.data.local.daos.UserDao
 import ar.edu.uade.capturarecibosapp.data.local.seeders.HelpSeeder
+import ar.edu.uade.capturarecibosapp.data.local.seeders.UserSeeder
 import ar.edu.uade.capturarecibosapp.data.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,10 +54,17 @@ abstract class AppDatabase : RoomDatabase() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
                         CoroutineScope(Dispatchers.IO).launch {
-                            val dao = getDatabase(context).helpDao()
-                            // Consejos y Faqs
-                            dao.insertAdviceItems(HelpSeeder().provideInitialAdvice())
-                            dao.insertFaqItems(HelpSeeder().provideInitialFaqs())
+                            val database = getDatabase(context)
+
+                            // Precarga de Ayuda
+                            val helpDao = database.helpDao()
+                            helpDao.insertAdviceItems(HelpSeeder().provideInitialAdvice())
+                            helpDao.insertFaqItems(HelpSeeder().provideInitialFaqs())
+
+                            // Precarga de Usuario Mock
+                            val userDao = database.userDao()
+                            userDao.insertUser(UserSeeder().provideInitialUser())
+                            userDao.insertPreferences(UserSeeder().provideInitialPreferences())
                         }
                     }
                 })

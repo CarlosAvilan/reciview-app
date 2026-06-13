@@ -12,6 +12,7 @@ data class User(
     @ColumnInfo(name = "created_at")
     val createdAt: String,
     val name: String,
+    val email: String,
     val phone: String?,
     val birth: String,
     val country: String?
