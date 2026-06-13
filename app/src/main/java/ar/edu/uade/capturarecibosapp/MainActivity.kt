@@ -15,14 +15,14 @@ import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import ar.edu.uade.capturarecibosapp.data.local.SessionManager
+import ar.edu.uade.capturarecibosapp.data.SessionManager
+import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
 import ar.edu.uade.capturarecibosapp.navigation.AppNavigation
 import ar.edu.uade.capturarecibosapp.navigation.Screen
 import ar.edu.uade.capturarecibosapp.scanner.ScannerManager
 import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
-
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
@@ -36,9 +36,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        SessionManager.init(this)
+
         // Chequeamos SharedPreferences antes de inflar Compose
-        val sessionManager = SessionManager(this)
-        val isLoggedIn = sessionManager.getUserId() != null
+        val sharedPreferencesManager = SharedPreferencesManager(this)
+        val isLoggedIn = sharedPreferencesManager.getUserId() != null
 
         setContent {
             ReciViewTheme {

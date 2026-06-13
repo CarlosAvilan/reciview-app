@@ -155,8 +155,22 @@ fun AppNavigation(
             RegisterScreen(
                 viewModel = registerViewModel,
                 onBackClick = { navController.popBackStack() },
-                onRegisterClick = { navController.navigate(Screen.Welcome.route) },
+                onRegisterClick = { 
+                    navController.navigate(Screen.RegisterSuccess.route) {
+                        popUpTo(Screen.Login.route) { inclusive = false }
+                    }
+                },
                 onTermsClick = { navController.navigate(Screen.TermsAndConditions.route) }
+            )
+        }
+
+        composable(Screen.RegisterSuccess.route) {
+            RegisterSuccessScreen(
+                onAutoRedirect = {
+                    navController.navigate(Screen.Welcome.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                }
             )
         }
 

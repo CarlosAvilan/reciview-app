@@ -57,7 +57,7 @@ fun ProfileScreen(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "JP",
+                text = viewModel.iniciales,
                 style = MaterialTheme.typography.headlineLarge.copy(
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontWeight = FontWeight.Bold

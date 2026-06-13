@@ -2,61 +2,23 @@ package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import ar.edu.uade.capturarecibosapp.R
+import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.model.TicketItem
+import ar.edu.uade.capturarecibosapp.data.repository.TicketRepository
+import kotlinx.coroutines.launch
 
 class TicketsViewModel : ViewModel() {
-    var searchQuery by mutableStateOf("")
-    
-    var selectedCategory by mutableStateOf("Todos")
+    private val ticketRepository = TicketRepository()
 
-    private val allTickets = listOf(
-        TicketItem(
-            id = 1,
-            ticketId = 1,
-            commerce = "Shell",
-            date = "25 Mayo",
-            amount = 9346.97f,
-            category = "Combustible",
-            imageRes = R.drawable.ticket_shell,
-            description = "Shell V-Power Nafta - Pago Efectivo"
-        ),
-        TicketItem(
-            id = 2,
-            ticketId = 2,
-            commerce = "Coto Digital",
-            date = "10 Mayo",
-            amount = 15400f,
-            category = "Alimentos"
-        ),
-        TicketItem(
-            id = 3,
-            ticketId = 3,
-            commerce = "Farmacity",
-            date = "08 Mayo",
-            amount = 3200f,
-            category = "Salud"
-        ),
-        TicketItem(
-            id = 4,
-            ticketId = 4,
-            commerce = "YPF",
-            date = "05 Mayo",
-            amount = 12000f,
-            category = "Combustible"
-        ),
-        TicketItem(
-            id = 5,
-            ticketId = 5,
-            commerce = "Starbucks",
-            date = "03 Mayo",
-            amount = 4500f,
-            category = "Gastronomía"
-        )
-    )
+    var searchQuery by mutableStateOf("")
+    var selectedCategory by mutableStateOf("Todos")
+    var isLoading by mutableStateOf(false)
+
+    private val allTickets = mutableStateListOf<TicketItem>()
 
     val filteredTickets by derivedStateOf {
         allTickets.filter { ticket ->
@@ -70,4 +32,22 @@ class TicketsViewModel : ViewModel() {
     val categories = listOf("Todos", "Alimentos", "Combustible", "Salud", "Gastronomía")
     
     var selectedTicket by mutableStateOf<TicketItem?>(null)
+
+    init {
+        loadTickets()
+    }
+
+    private fun loadTickets() {
+        isLoading = true
+        viewModelScope.launch {
+            val result = ticketRepository.getTickets()
+            isLoading = false
+            if (result.isSuccess) {
+                allTickets.clear()
+                // Mapear TicketData (DTO) a TicketItem (UI Model) si es necesario
+                // Por ahora asumimos que TicketData se puede convertir o se usa TicketItem
+                // allTickets.addAll(result.getOrDefault(emptyList()))
+            }
+        }
+    }
 }

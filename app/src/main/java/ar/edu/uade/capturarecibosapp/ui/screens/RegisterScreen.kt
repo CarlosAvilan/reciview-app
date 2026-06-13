@@ -25,12 +25,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterViewModel
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterState
 
 @Composable
 fun RegisterScreen(
@@ -100,7 +100,8 @@ fun RegisterScreen(
             TextField(
                 value = viewModel.correoElectronico,
                 onValueChange = { viewModel.onCorreoChange(it) },
-                label = "Correo electrónico"
+                label = "Correo electrónico",
+                isError = viewModel.emailError
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -109,7 +110,8 @@ fun RegisterScreen(
                 value = viewModel.password,
                 onValueChange = { viewModel.onPasswordChange(it) },
                 label = "Contraseña",
-                isPassword = true
+                isPassword = true,
+                isError = viewModel.passwordError
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -216,10 +218,24 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            if (viewModel.uiState is RegisterState.Loading) {
+                CircularProgressIndicator()
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            if (viewModel.uiState is RegisterState.Error) {
+                Text(
+                    text = (viewModel.uiState as RegisterState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
             Button(
                 text = "Registrarme",
                 onClick = { viewModel.registrarse(context, onRegisterClick) },
-                enabled = viewModel.haLeidoTerminos
+                enabled = viewModel.haLeidoTerminos && viewModel.uiState !is RegisterState.Loading
             )
 
             Spacer(modifier = Modifier.height(32.dp))

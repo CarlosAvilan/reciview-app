@@ -3,7 +3,7 @@ package ar.edu.uade.capturarecibosapp.data.local
 import android.content.Context
 import android.content.SharedPreferences
 
-class SessionManager(context: Context) {
+class SharedPreferencesManager(context: Context) {
     // Creamos el archivo de preferencias llamado "user_session"
     private val prefs: SharedPreferences = context.getSharedPreferences("user_session", Context.MODE_PRIVATE)
 
