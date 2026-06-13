@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +39,8 @@ fun RegisterScreen(
     onRegisterClick: () -> Unit,
     onTermsClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
     var showCountryDropdown by remember { mutableStateOf(false) }
     val countries = listOf("Argentina", "Brasil", "Chile", "Uruguay", "Colombia", "México")
 
@@ -215,7 +218,7 @@ fun RegisterScreen(
 
             Button(
                 text = "Registrarme",
-                onClick = { viewModel.registrarse(onRegisterClick) },
+                onClick = { viewModel.registrarse(context, onRegisterClick) },
                 enabled = viewModel.haLeidoTerminos
             )
 
