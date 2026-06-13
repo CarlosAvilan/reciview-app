@@ -25,6 +25,15 @@ interface TicketDao {
     @Delete
     suspend fun deleteTicket(ticket: Ticket)
 
+    @Query("SELECT * FROM items ORDER BY id DESC")
+    fun getAllTicketItems(): Flow<List<TicketItem>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTickets(tickets: List<Ticket>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSingleTicket(ticket: Ticket): Long
+
     // Ítems individuales desglosados del Ticket
     @Query("SELECT * FROM items WHERE ticket_id = :ticketId")
     fun getItemsForTicket(ticketId: Long): Flow<List<TicketItem>>

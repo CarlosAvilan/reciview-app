@@ -10,6 +10,7 @@ import ar.edu.uade.capturarecibosapp.data.local.daos.ReportDao
 import ar.edu.uade.capturarecibosapp.data.local.daos.TicketDao
 import ar.edu.uade.capturarecibosapp.data.local.daos.UserDao
 import ar.edu.uade.capturarecibosapp.data.local.seeders.HelpSeeder
+import ar.edu.uade.capturarecibosapp.data.local.seeders.TicketSeeder
 import ar.edu.uade.capturarecibosapp.data.local.seeders.UserSeeder
 import ar.edu.uade.capturarecibosapp.data.model.*
 import kotlinx.coroutines.CoroutineScope
@@ -65,6 +66,11 @@ abstract class AppDatabase : RoomDatabase() {
                             val userDao = database.userDao()
                             userDao.insertUser(UserSeeder().provideInitialUser())
                             userDao.insertPreferences(UserSeeder().provideInitialPreferences())
+
+                            // Precarga de Ticket Seeders
+                            val ticketDao = database.ticketDao()
+                            ticketDao.insertTickets(TicketSeeder().provideInitialTickets())
+                            ticketDao.insertTicketItems(TicketSeeder().provideInitialTicketItems())
                         }
                     }
                 })
