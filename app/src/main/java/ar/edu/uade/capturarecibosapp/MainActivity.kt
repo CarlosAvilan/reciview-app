@@ -88,7 +88,7 @@ fun ReciViewApp(
             AppNavigation(
                 navController = navController,
                 mainViewModel = viewModel,
-                startDestination = if (isLoggedIn) Screen.Welcome.route else Screen.Login.route
+                startDestination = if (isLoggedIn) Screen.Welcome.route else Screen.Splash.route
             )
 
             // El cargador persiste hasta que la navegación se completa
