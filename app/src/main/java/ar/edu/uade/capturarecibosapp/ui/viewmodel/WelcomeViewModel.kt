@@ -21,26 +21,29 @@ class WelcomeViewModel : ViewModel() {
         listOf(
             TicketItem(
                 id = 101,
+                ticketId = 101,
                 commerce = "Carrefour",
                 date = "Hoy, 18:30",
-                amount = "$4.200",
+                amount = 4200f,
                 category = "Alimentos",
                 description = "Compra semanal de supermercado"
             ),
             TicketItem(
                 id = 1,
+                ticketId = 1,
                 commerce = "Shell",
                 date = "Ayer, 10:15",
-                amount = "$15.000",
+                amount = 15000f,
                 category = "Combustible",
                 imageRes = R.drawable.ticket_shell,
                 description = "Carga de combustible V-Power"
             ),
             TicketItem(
                 id = 102,
+                ticketId = 102,
                 commerce = "Starbucks",
                 date = "08/05, 09:00",
-                amount = "$3.500",
+                amount = 3500f,
                 category = "Gastronomía",
                 description = "Café Latte y Muffin"
             )

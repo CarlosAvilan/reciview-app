@@ -36,7 +36,7 @@ class MainViewModel : ViewModel() {
     fun confirmarYSubir(ticket: Ticket) {
         viewModelScope.launch {
             try {
-                Log.d("ReciView", "Subiendo: ${ticket.establishment}, Total: ${ticket.total}, Desc: ${ticket.description}")
+                Log.d("ReciView", "Subiendo: ${ticket.establishment}, Total: ${ticket.amount}, Desc: ${ticket.description}")
                 // Aca iría la llamada a Retrofit
                 // RetrofitClient.instance.enviarTicket(ticket)
 

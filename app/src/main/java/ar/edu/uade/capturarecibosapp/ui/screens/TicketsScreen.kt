@@ -126,7 +126,7 @@ fun TicketsScreen(
                     TicketCard(
                         commerce = ticket.commerce,
                         date = ticket.date,
-                        amount = ticket.amount,
+                        amount = ticket.amount.toString(),
                         imageRes = ticket.imageRes,
                         onClick = { viewModel.selectedTicket = ticket }
                     )
@@ -140,7 +140,7 @@ fun TicketsScreen(
         TicketDetailDialog(
             commerce = ticket.commerce,
             date = ticket.date,
-            amount = ticket.amount,
+            amount = ticket.amount.toString(),
             category = ticket.category,
             description = ticket.description,
             imageRes = ticket.imageRes,

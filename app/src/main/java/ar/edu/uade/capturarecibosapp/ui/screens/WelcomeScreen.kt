@@ -106,7 +106,7 @@ fun WelcomeScreen(
                     commerce = ticket.commerce,
                     date = ticket.date,
                     category = ticket.category,
-                    amount = ticket.amount,
+                    amount = ticket.amount.toString(),
                     onClick = { selectedTicket = ticket }
                 )
             }
@@ -119,7 +119,7 @@ fun WelcomeScreen(
             TicketDetailDialog(
                 commerce = ticket.commerce,
                 date = ticket.date,
-                amount = ticket.amount,
+                amount = ticket.amount.toString(),
                 category = ticket.category,
                 description = ticket.description,
                 imageRes = ticket.imageRes,

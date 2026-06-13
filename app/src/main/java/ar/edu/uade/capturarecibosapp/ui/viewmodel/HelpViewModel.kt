@@ -12,14 +12,14 @@ import ar.edu.uade.capturarecibosapp.data.model.AdviceItem
 class HelpViewModel : ViewModel() {
     val tips = listOf(
         AdviceItem(
-            "Usar buena iluminación", 
-            "Evita las sombras sobre el ticket.",
-            "Lightbulb"
+            title = "Usar buena iluminación",
+            description = "Evita las sombras sobre el ticket.",
+            iconName = "Lightbulb"
         ),
         AdviceItem(
-            "Papel bien estirado", 
-            "Aplaná el ticket antes de la foto.",
-            "ReceiptLong"
+            title = "Papel bien estirado",
+            description = "Aplaná el ticket antes de la foto.",
+            iconName = "ReceiptLong"
         )
     )
 
@@ -27,20 +27,20 @@ class HelpViewModel : ViewModel() {
 
     var faqs = mutableStateListOf(
         FaqItem(
-            "¿Cómo exporto mis gastos?",
-            "Podés exportar tus reportes mensuales entrando a la sección de Reportes. Al final de la pantalla seleccioná el formato (.PDF) y hacé clic en Descargar."
+            question = "¿Cómo exporto mis gastos?",
+            answer = "Podés exportar tus reportes mensuales entrando a la sección de Reportes. Al final de la pantalla seleccioná el formato (.PDF) y hacé clic en Descargar."
         ),
         FaqItem(
-            "¿Mis datos están seguros?",
-            "Sí, tus datos están encriptados y protegidos según las normas de seguridad vigentes."
+            question = "¿Mis datos están seguros?",
+            answer = "Sí, tus datos están encriptados y protegidos según las normas de seguridad vigentes."
         ),
         FaqItem(
-            "¿Qué pasa si el ticket está borroso?",
-            "El sistema podría no reconocerlo correctamente.Te recomendamos volver a sacarle una foto con mejor luz o intentar una carga manual"
+            question = "¿Qué pasa si el ticket está borroso?",
+            answer = "El sistema podría no reconocerlo correctamente.Te recomendamos volver a sacarle una foto con mejor luz o intentar una carga manual"
         ),
         FaqItem(
-            "¿Puedo usar tickets de cualquier país?",
-            "Actualmente soportamos tickets de Argentina, pero estamos trabajando para expandirnos."
+            question = "¿Puedo usar tickets de cualquier país?",
+            answer = "Actualmente soportamos tickets de Argentina, pero estamos trabajando para expandirnos."
         )
     )
 

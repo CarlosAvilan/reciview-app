@@ -16,17 +16,46 @@ class TicketsViewModel : ViewModel() {
     private val allTickets = listOf(
         TicketItem(
             id = 1,
-            commerce = "Shell", 
-            date = "25 Mayo", 
-            amount = "$9.346,97", 
-            category = "Combustible", 
+            ticketId = 1,
+            commerce = "Shell",
+            date = "25 Mayo",
+            amount = 9346.97f,
+            category = "Combustible",
             imageRes = R.drawable.ticket_shell,
             description = "Shell V-Power Nafta - Pago Efectivo"
         ),
-        TicketItem(id = 2, commerce = "Coto Digital", date = "10 Mayo", amount = "$15.400", category = "Alimentos"),
-        TicketItem(id = 3, commerce = "Farmacity", date = "08 Mayo", amount = "$3.200", category = "Salud"),
-        TicketItem(id = 4, commerce = "YPF", date = "05 Mayo", amount = "$12.000", category = "Combustible"),
-        TicketItem(id = 5, commerce = "Starbucks", date = "03 Mayo", amount = "$4.500", category = "Gastronomía")
+        TicketItem(
+            id = 2,
+            ticketId = 2,
+            commerce = "Coto Digital",
+            date = "10 Mayo",
+            amount = 15400f,
+            category = "Alimentos"
+        ),
+        TicketItem(
+            id = 3,
+            ticketId = 3,
+            commerce = "Farmacity",
+            date = "08 Mayo",
+            amount = 3200f,
+            category = "Salud"
+        ),
+        TicketItem(
+            id = 4,
+            ticketId = 4,
+            commerce = "YPF",
+            date = "05 Mayo",
+            amount = 12000f,
+            category = "Combustible"
+        ),
+        TicketItem(
+            id = 5,
+            ticketId = 5,
+            commerce = "Starbucks",
+            date = "03 Mayo",
+            amount = 4500f,
+            category = "Gastronomía"
+        )
     )
 
     val filteredTickets by derivedStateOf {
