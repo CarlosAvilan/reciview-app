@@ -13,11 +13,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ar.edu.uade.capturarecibosapp.ui.components.FaqItemRow
-import ar.edu.uade.capturarecibosapp.ui.components.TipItemRow
+import ar.edu.uade.capturarecibosapp.ui.components.AdviceItemRow
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.HelpViewModel
-import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 
 @Composable
@@ -59,15 +58,10 @@ fun HelpScreen(
             }
 
             itemsIndexed(viewModel.tips) { _, tip ->
-                TipItemRow(
+                AdviceItemRow(
                     title = tip.title,
                     description = tip.description,
-                    //TODO ARREGLAR ESTO. ASYNC IMAGE QUEDÓ CON TIPO UNIT QUE NO ESTÁ BIEN TAMPOCO
-                    icon = AsyncImage(
-                        model = tip.iconName, // Coil se encarga de descargar, cachear y renderizar el SVG
-                        contentDescription = tip.title,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    icon = tip.icon
                 )
             }
 

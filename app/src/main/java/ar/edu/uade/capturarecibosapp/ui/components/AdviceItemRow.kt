@@ -12,10 +12,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TipItemRow(
+fun AdviceItemRow(
     title: String,
     description: String,
-    icon: Unit
+    icon: String
 ) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -37,11 +37,10 @@ fun TipItemRow(
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
+                Text(
+                    text = icon,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))

@@ -1,8 +1,5 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import ar.edu.uade.capturarecibosapp.data.model.FaqItem
@@ -14,12 +11,12 @@ class HelpViewModel : ViewModel() {
         AdviceItem(
             title = "Usar buena iluminación",
             description = "Evita las sombras sobre el ticket.",
-            iconName = "Lightbulb"
+            icon = "\uD83D\uDCA1"
         ),
         AdviceItem(
             title = "Papel bien estirado",
             description = "Aplaná el ticket antes de la foto.",
-            iconName = "ReceiptLong"
+            icon = "\uD83D\uDCC4"
         )
     )
 

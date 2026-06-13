@@ -10,6 +10,6 @@ data class AdviceItem(
     val id: Long = 0,
     val title: String,
     val description: String,
-    @ColumnInfo(name = "icon_name")
-    val iconName: String
+    @ColumnInfo(name = "icon")
+    val icon: String
 )
