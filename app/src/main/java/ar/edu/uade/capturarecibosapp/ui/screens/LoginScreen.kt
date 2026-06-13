@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -26,11 +27,14 @@ import ar.edu.uade.capturarecibosapp.R
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel, 
+    viewModel: LoginViewModel,
     onLoginRedirect: () -> Unit, 
     onRegisterClick: () -> Unit,
     onForgotPasswordClick: () -> Unit = {}
 ) {
+
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -90,7 +94,7 @@ fun LoginScreen(
 
             Button(
                 text = "Iniciar sesión",
-                onClick = { viewModel.login(onSuccess = onLoginRedirect) }
+                onClick = { viewModel.login(context, onSuccess = onLoginRedirect) }
             )
 
             Spacer(modifier = Modifier.height(12.dp))

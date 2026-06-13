@@ -3,6 +3,7 @@ package ar.edu.uade.capturarecibosapp.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -15,7 +16,8 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.*
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    startDestination: String
 ) {
     // Escuchamos cambios en ticketDetectado para navegar a la pantalla de confirmación.
     LaunchedEffect(mainViewModel.ticketDetectado) {
@@ -26,7 +28,7 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route
+        startDestination = startDestination
     ) {
         composable(Screen.Splash.route) {
             SplashScreen(
@@ -229,7 +231,9 @@ fun AppNavigation(
         composable(Screen.Help.route) { HelpScreen(onBackClick = { navController.popBackStack() }) }
 
         composable(Screen.Confirmation.route) {
+            val context = LocalContext.current
             val ticket = mainViewModel.ticketDetectado
+
             if (ticket != null) {
                 ConfirmationScreen(
                     ticket = ticket,

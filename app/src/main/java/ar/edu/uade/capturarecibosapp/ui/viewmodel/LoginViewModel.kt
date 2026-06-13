@@ -1,19 +1,22 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
 import ar.edu.uade.capturarecibosapp.data.repository.AuthRepository
 import kotlinx.coroutines.launch
+
 
 class LoginViewModel : ViewModel() {
     private val authRepository = AuthRepository()
 
     var correoElectronico by mutableStateOf("")
     var contrasenia by mutableStateOf("")
-    
+
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
 
@@ -25,7 +28,7 @@ class LoginViewModel : ViewModel() {
         contrasenia = newValue
     }
 
-    fun login(onSuccess: () -> Unit) {
+    fun login(context: Context, onSuccess: () -> Unit) {
         if (correoElectronico.isNotEmpty() && contrasenia.isNotEmpty()) {
             isLoading = true
             errorMessage = null
@@ -33,6 +36,11 @@ class LoginViewModel : ViewModel() {
                 val result = authRepository.login(correoElectronico, contrasenia)
                 isLoading = false
                 if (result.isSuccess) {
+                    // Guardamos el ID en SharedPreferences
+                    val sharedPreferencesManager = SharedPreferencesManager(context)
+                    // Usamos un ID de prueba
+                    sharedPreferencesManager.saveUserId("user123")
+
                     onSuccess()
                 } else {
                     errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido"

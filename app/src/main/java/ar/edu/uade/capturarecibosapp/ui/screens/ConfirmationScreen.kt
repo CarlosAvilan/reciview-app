@@ -6,19 +6,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import ar.edu.uade.capturarecibosapp.data.model.TicketData
+import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.ui.components.ExpenseForm
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 
 @Composable
 fun ConfirmationScreen(
-    ticket: TicketData,
-    onConfirm: (TicketData) -> Unit,
+    ticket: Ticket,
+    onConfirm: (Ticket) -> Unit,
     onCancel: () -> Unit
 ) {
-    var comercio by remember { mutableStateOf(ticket.comercio) }
-    var total by remember { mutableStateOf(ticket.total.toString()) }
+    var comercio by remember { mutableStateOf(ticket.establishment) }
+    var total by remember { mutableStateOf(ticket.amount.toString()) }
     var categoria by remember { mutableStateOf("") }
     var fecha by remember { mutableStateOf("Hoy, 10 de Mayo") }
 
@@ -45,8 +45,8 @@ fun ConfirmationScreen(
             onButtonClick = {
                 onConfirm(
                     ticket.copy(
-                        comercio = comercio,
-                        total = total.toDoubleOrNull() ?: 0.0
+                        establishment = comercio,
+                        amount = total.toFloatOrNull() ?: 0f
                     )
                 )
             }
@@ -59,7 +59,15 @@ fun ConfirmationScreen(
 fun ConfirmationScreenPreview() {
     ReciViewTheme {
         ConfirmationScreen(
-            ticket = TicketData(comercio = "Starbucks", total = 1200.0, "10 de mayo"),
+            ticket = Ticket(
+                createdAt = "10 de mayo",
+                userId = "",
+                categoryId = 0,
+                establishment = "Starbucks",
+                amount = 1200f,
+                photoUrl = "",
+                description = ""
+            ),
             onConfirm = {},
             onCancel = {}
         )

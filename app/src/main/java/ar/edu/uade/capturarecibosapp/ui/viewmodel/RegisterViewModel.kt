@@ -1,9 +1,11 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.repository.AuthRepository
 import kotlinx.coroutines.launch
@@ -69,7 +71,7 @@ class RegisterViewModel : ViewModel() {
         haLeidoTerminos = true
     }
 
-    fun registrarse(onSuccess: () -> Unit) {
+    fun registrarse(context: Context, onSuccess: () -> Unit) {
         // Validaciones locales
         if (password.length < 6) {
             passwordError = true
@@ -97,10 +99,16 @@ class RegisterViewModel : ViewModel() {
                 birth = fechaNacimiento,
                 country = paisNacimiento
             )
-            
+
             result.fold(
-                onSuccess = { 
+                onSuccess = {
                     uiState = RegisterState.Success(it.email)
+
+                    // Guardamos el ID en SharedPreferences
+                    val sharedPreferencesManager = SharedPreferencesManager(context)
+                    // Usamos un ID de prueba
+                    sharedPreferencesManager.saveUserId("user123")
+
                     onSuccess()
                 },
                 onFailure = { error ->

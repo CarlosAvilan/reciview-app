@@ -15,14 +15,14 @@ import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import ar.edu.uade.capturarecibosapp.data.SessionManager
+import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
 import ar.edu.uade.capturarecibosapp.navigation.AppNavigation
 import ar.edu.uade.capturarecibosapp.navigation.Screen
 import ar.edu.uade.capturarecibosapp.scanner.ScannerManager
 import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
-import ar.edu.uade.capturarecibosapp.data.SessionManager
-
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
@@ -35,13 +35,18 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        
+
         SessionManager.init(this)
+
+        // Chequeamos SharedPreferences antes de inflar Compose
+        val sharedPreferencesManager = SharedPreferencesManager(this)
+        val isLoggedIn = sharedPreferencesManager.getUserId() != null
 
         setContent {
             ReciViewTheme {
                 ReciViewApp(
                     viewModel = viewModel,
+                    isLoggedIn = isLoggedIn,
                     onScanClick = { scannerManager.triggerScan() }
                 )
             }
@@ -52,6 +57,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ReciViewApp(
     viewModel: MainViewModel,
+    isLoggedIn: Boolean,
     onScanClick: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -83,7 +89,8 @@ fun ReciViewApp(
         ) {
             AppNavigation(
                 navController = navController,
-                mainViewModel = viewModel
+                mainViewModel = viewModel,
+                startDestination = if (isLoggedIn) Screen.Welcome.route else Screen.Splash.route
             )
 
             // El cargador persiste hasta que la navegación se completa

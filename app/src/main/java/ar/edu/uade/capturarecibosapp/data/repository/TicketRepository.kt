@@ -1,12 +1,12 @@
 package ar.edu.uade.capturarecibosapp.data.repository
 
-import ar.edu.uade.capturarecibosapp.data.model.TicketData
+import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.data.remote.RetrofitClient
 
 class TicketRepository {
     private val apiService = RetrofitClient.ticketService
 
-    suspend fun getTickets(): Result<List<TicketData>> {
+    suspend fun getTickets(): Result<List<Ticket>> {
         return try {
             val response = apiService.getTickets()
             if (response.isSuccessful) {
@@ -19,7 +19,7 @@ class TicketRepository {
         }
     }
 
-    suspend fun sendTicket(ticket: TicketData): Result<Unit> {
+    suspend fun sendTicket(ticket: Ticket): Result<Unit> {
         return try {
             val response = apiService.sendTicket(ticket)
             if (response.isSuccessful) {
