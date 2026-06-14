@@ -1,5 +1,6 @@
 package ar.edu.uade.capturarecibosapp.data.remote
 
+import ar.edu.uade.capturarecibosapp.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -7,10 +8,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
     // La BASE_URL debe ser la raíz para permitir el acceso a /auth y /rest
-    private const val BASE_URL = "https://rzebtxdswubvzbgwkvab.supabase.co/"
-    
-    // PEGA AQUÍ TU SUPABASE_KEY REAL
-    private const val SUPABASE_KEY = "aca poner la clave, tuve que borrar por temas de seg de github"
+    private const val BASE_URL = BuildConfig.BASE_URL
+
+    private const val SUPABASE_KEY = BuildConfig.API_KEY
 
     private val httpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
