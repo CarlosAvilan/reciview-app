@@ -27,6 +27,10 @@ object DependencyProvider {
         RetrofitClient.createService(TicketApiService::class.java) 
     }
 
+    private val categoryApiService by lazy {
+        RetrofitClient.createService(CategoryApiService::class.java)
+    }
+
 
     // --- Repositorios (Lógica de Datos) ---
     // Cada repositorio recibe su ApiService por constructor (Inversión de Dependencias).
@@ -45,5 +49,10 @@ object DependencyProvider {
 
     fun provideTicketRepository(): TicketRepository {
         return TicketRepository(ticketApiService)
+    }
+
+    fun provideCategoryRepository(context: android.content.Context): CategoryRepository {
+        val database = ar.edu.uade.capturarecibosapp.data.local.AppDatabase.getDatabase(context)
+        return CategoryRepository(database.categoryDao(), categoryApiService)
     }
 }

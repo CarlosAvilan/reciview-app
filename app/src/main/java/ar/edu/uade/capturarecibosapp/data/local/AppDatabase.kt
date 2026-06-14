@@ -4,12 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import ar.edu.uade.capturarecibosapp.data.local.daos.ExpenseDao
-import ar.edu.uade.capturarecibosapp.data.local.daos.HelpDao
-import ar.edu.uade.capturarecibosapp.data.local.daos.ReportDao
-import ar.edu.uade.capturarecibosapp.data.local.daos.TicketDao
-import ar.edu.uade.capturarecibosapp.data.local.daos.UserDao
+import ar.edu.uade.capturarecibosapp.data.local.daos.*
 import ar.edu.uade.capturarecibosapp.data.local.seeders.ExpenseSeeder
 import ar.edu.uade.capturarecibosapp.data.local.seeders.HelpSeeder
 import ar.edu.uade.capturarecibosapp.data.local.seeders.TicketSeeder
@@ -31,15 +28,17 @@ import kotlinx.coroutines.launch
         UserCategory::class,
         UserPreferences::class
     ],
-    version = 1,
-    exportSchema = false // Evita generar reportes de esquema en json durante la compilación básica
+    version = 2,
+    exportSchema = false
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun helpDao(): HelpDao
     abstract fun userDao(): UserDao
     abstract fun ticketDao(): TicketDao
     abstract fun expenseDao(): ExpenseDao
     abstract fun reportDao(): ReportDao
+    abstract fun categoryDao(): CategoryDao
 
     companion object {
         @Volatile

@@ -5,29 +5,28 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.components.Button
-import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 
 @Composable
 fun EditCategoriesScreen(
-    category: CategoryItem? = null, // Recibe la categoría a editar (o null si es nueva)
+    userCategory: UserCategory? = null, // Recibe la entidad UserCategory
     onBackClick: () -> Unit,
     onSaveClick: (String, String) -> Unit
 ) {
-    // Si venimos de una categoría existente, cargamos sus datos. Si no, usamos valores por defecto.
-    var nombre by remember { mutableStateOf(category?.let { "${it.icon} ${it.name}" } ?: "") }
-    var limite by remember { mutableStateOf(category?.let { "$${String.format("%,.0f", it.budget).replace(',', '.')}" } ?: "") }
+    // Cargamos datos desde UserCategory
+    var nombre by remember { mutableStateOf(userCategory?.name ?: "") }
+    var limite by remember { mutableStateOf(userCategory?.let { "$${String.format("%,.0f", it.budget).replace(',', '.')}" } ?: "") }
 
     Scaffold(
         topBar = {
             TopBar(
-                title = if (category == null) "Nueva categoría" else "Editar categoría",
+                title = if (userCategory == null) "Nueva categoría" else "Editar categoría",
                 onBackClick = onBackClick
             )
         },
@@ -108,7 +107,7 @@ fun EditCategoriesScreen(
 fun EditCategoriesScreenPreview() {
     ReciViewTheme {
         EditCategoriesScreen(
-            category = CategoryItem("🍔", "Comida y Bebida", 0.0, 25000.0),
+            userCategory = UserCategory(name = "Comida", budget = 25000.0, userId = "123"),
             onBackClick = {},
             onSaveClick = { _, _ -> }
         )
