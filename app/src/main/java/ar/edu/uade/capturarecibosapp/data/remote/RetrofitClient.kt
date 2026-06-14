@@ -7,22 +7,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    // La BASE_URL debe ser la raíz para permitir el acceso a /auth y /rest
     private const val BASE_URL = BuildConfig.BASE_URL
 
-    private const val SUPABASE_KEY = BuildConfig.API_KEY
-
     private val httpClient = OkHttpClient.Builder()
-        .addInterceptor { chain ->
-            val request = chain.request().newBuilder()
-                .addHeader("apikey", SUPABASE_KEY)
-                .addHeader("Authorization", "Bearer $SUPABASE_KEY")
-                .addHeader("Content-Type", "application/json")
-                // Prefer representation es clave para recibir el objeto insertado en Supabase
-                .addHeader("Prefer", "return=representation")
-                .build()
-            chain.proceed(request)
-        }
+        .addInterceptor(AuthInterceptor())
+        .authenticator(TokenAuthenticator())
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         })
