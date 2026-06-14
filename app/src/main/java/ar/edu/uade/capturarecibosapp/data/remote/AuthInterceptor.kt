@@ -5,6 +5,9 @@ import ar.edu.uade.capturarecibosapp.data.SessionManager
 import okhttp3.Interceptor
 import okhttp3.Response
 
+/**
+ * Inyecta los headers necesarios para peticiones a la API
+ */
 class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()

@@ -6,12 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.repository.ExpenseRepository
 import ar.edu.uade.capturarecibosapp.ui.components.ExpenseItem
 import kotlinx.coroutines.launch
 
 class MyExpensesViewModel : ViewModel() {
-    private val expenseRepository = ExpenseRepository()
+    private val expenseRepository = DependencyProvider.provideExpenseRepository()
     
     var totalSpent by mutableStateOf("$0,00")
         private set

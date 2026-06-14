@@ -2,27 +2,28 @@ package ar.edu.uade.capturarecibosapp.data.repository
 
 import android.util.Log
 import ar.edu.uade.capturarecibosapp.data.SessionManager
-import ar.edu.uade.capturarecibosapp.data.remote.RetrofitClient
+import ar.edu.uade.capturarecibosapp.data.remote.AuthApiService
 import ar.edu.uade.capturarecibosapp.data.remote.dto.*
 import ar.edu.uade.capturarecibosapp.domain.model.User
 
-class AuthRepository {
-    private val apiService = RetrofitClient.authService
+class AuthRepository(private val apiService: AuthApiService) {
 
     suspend fun login(email: String, pass: String): Result<User> {
         return try {
             val response = apiService.login(AuthRequestDTO(email, pass))
             if (response.isSuccessful && response.body() != null) {
                 val body = response.body()!!
-                Log.d("AuthRepository", "Login successful. UUID: \${body.id}")
+                Log.d("AuthRepository", "Login successful. UUID: ${body.id}")
                 
                 val user = body.toDomain()
                 SessionManager.userId = user.uuid
                 SessionManager.userEmail = user.email
+                SessionManager.accessToken = body.accessToken
+                SessionManager.refreshToken = body.refreshToken
                 
                 Result.success(user)
             } else {
-                Result.failure(Exception("Error en el login: \${response.code()}"))
+                Result.failure(Exception("Error en el login: ${response.code()}"))
             }
         } catch (e: Exception) {
             Log.e("AuthRepository", "Login exception", e)
@@ -30,10 +31,6 @@ class AuthRepository {
         }
     }
 
-    /**
-     * Registro en Supabase:
-     * El servidor tiene un TRIGGER que crea automáticamente el perfil.
-     */
     suspend fun registerUser(
         email: String, 
         pass: String, 
@@ -54,21 +51,23 @@ class AuthRepository {
                 ) 
             )
             
-            Log.d("AuthRepository", "Attempting signUp for: \$email")
+            Log.d("AuthRepository", "Attempting signUp for: $email")
             val response = apiService.signUp(request)
             
             if (response.isSuccessful && response.body() != null) {
                 val body = response.body()!!
-                Log.d("AuthRepository", "SignUp successful. UUID: \${body.id}")
+                Log.d("AuthRepository", "SignUp successful. UUID: ${body.id}")
                 
                 val user = body.toDomain()
                 SessionManager.userId = user.uuid
                 SessionManager.userEmail = user.email
+                SessionManager.accessToken = body.accessToken
+                SessionManager.refreshToken = body.refreshToken
                 
                 Result.success(user)
             } else {
                 val errorMsg = response.errorBody()?.string() ?: "Error en el registro"
-                Log.e("AuthRepository", "SignUp error: \$errorMsg")
+                Log.e("AuthRepository", "SignUp error: $errorMsg")
                 Result.failure(Exception(errorMsg))
             }
         } catch (e: Exception) {

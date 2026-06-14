@@ -2,10 +2,9 @@ package ar.edu.uade.capturarecibosapp.data.repository
 
 import ar.edu.uade.capturarecibosapp.data.model.CategoryDto
 import ar.edu.uade.capturarecibosapp.data.model.ExpenseDto
-import ar.edu.uade.capturarecibosapp.data.remote.RetrofitClient
+import ar.edu.uade.capturarecibosapp.data.remote.ExpenseApiService
 
-class ExpenseRepository {
-    private val apiService = RetrofitClient.expenseService
+class ExpenseRepository(private val apiService: ExpenseApiService) {
 
     suspend fun getExpenses(): Result<List<ExpenseDto>> {
         return try {

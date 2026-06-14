@@ -29,7 +29,7 @@ data class UserInfoDTO(
 data class ProfileDTO(
     @SerializedName("user_id") val userId: String,
     @SerializedName("name") val name: String,
-    @SerializedName("email") val email: String,
+    @SerializedName("email") val email: String? = null, // Cambiado a nullable
     @SerializedName("birth") val birth: String,
     @SerializedName("country") val country: String? = null,
     @SerializedName("phone") val phone: String? = null

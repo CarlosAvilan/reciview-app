@@ -5,12 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class PersonalInfoViewModel(
-    private val userRepository: UserRepository = UserRepository()
+    private val userRepository: UserRepository = DependencyProvider.provideUserRepository()
 ) : ViewModel() {
     var nombre by mutableStateOf("")
     var email by mutableStateOf("")
@@ -38,7 +39,7 @@ class PersonalInfoViewModel(
             isLoading = false
             result.onSuccess { profile ->
                 nombre = profile.name
-                email = profile.email
+                email = profile.email ?: ""
                 telefono = profile.phone ?: ""
                 fechaNacimiento = profile.birth
                 paisResidencia = profile.country ?: ""

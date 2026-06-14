@@ -1,16 +1,14 @@
 package ar.edu.uade.capturarecibosapp.data.repository
 
 import ar.edu.uade.capturarecibosapp.data.SessionManager
-import ar.edu.uade.capturarecibosapp.data.remote.RetrofitClient
+import ar.edu.uade.capturarecibosapp.data.remote.UserApiService
 import ar.edu.uade.capturarecibosapp.data.remote.dto.ProfileDTO
 
-class UserRepository {
-    private val apiService = RetrofitClient.userService
+class UserRepository(private val apiService: UserApiService) {
 
     suspend fun getProfile(): Result<ProfileDTO> {
         val userId = SessionManager.userId ?: return Result.failure(Exception("Usuario no autenticado"))
         return try {
-            // Se usa el formato de consulta 'eq.UUID' para filtrar en Supabase REST
             val response = apiService.getProfile("eq.$userId")
             if (response.isSuccessful) {
                 val profiles = response.body()
@@ -36,7 +34,6 @@ class UserRepository {
                 "country" to country,
                 "phone" to phone
             )
-            // Se usa 'eq.UUID' también para el PATCH
             val response = apiService.updateProfile("eq.$userId", updateMap)
             if (response.isSuccessful) {
                 Result.success(Unit)

@@ -1,10 +1,9 @@
 package ar.edu.uade.capturarecibosapp.data.repository
 
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
-import ar.edu.uade.capturarecibosapp.data.remote.RetrofitClient
+import ar.edu.uade.capturarecibosapp.data.remote.TicketApiService
 
-class TicketRepository {
-    private val apiService = RetrofitClient.ticketService
+class TicketRepository(private val apiService: TicketApiService) {
 
     suspend fun getTickets(): Result<List<Ticket>> {
         return try {

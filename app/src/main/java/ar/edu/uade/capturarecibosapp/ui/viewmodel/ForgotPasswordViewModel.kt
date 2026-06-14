@@ -5,12 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.enums.ForgotPasswordStep
 import ar.edu.uade.capturarecibosapp.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
 class ForgotPasswordViewModel(
-    private val repository: AuthRepository = AuthRepository()
+    private val repository: AuthRepository = DependencyProvider.provideAuthRepository()
 ) : ViewModel() {
 
     var currentStep by mutableStateOf(ForgotPasswordStep.EMAIL)

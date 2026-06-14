@@ -6,16 +6,23 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ * RetrofitClient: Fábrica genérica de servicios de red.
+ *
+ * Su única responsabilidad es configurar la infraestructura de red.
+ */
 object RetrofitClient {
     private const val BASE_URL = BuildConfig.BASE_URL
 
-    private val httpClient = OkHttpClient.Builder()
-        .addInterceptor(AuthInterceptor())
-        .authenticator(TokenAuthenticator())
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
-        .build()
+    private val httpClient: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor())
+            .authenticator(TokenAuthenticator())
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            .build()
+    }
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
@@ -25,19 +32,14 @@ object RetrofitClient {
             .build()
     }
 
-    val authService: AuthApiService by lazy {
-        retrofit.create(AuthApiService::class.java)
-    }
-
-    val expenseService: ExpenseApiService by lazy {
-        retrofit.create(ExpenseApiService::class.java)
-    }
-
-    val ticketService: TicketApiService by lazy {
-        retrofit.create(TicketApiService::class.java)
-    }
-
-    val userService: UserApiService by lazy {
-        retrofit.create(UserApiService::class.java)
+    /**
+     * Crea una implementación de la interfaz de servicio definida por [serviceClass].
+     * Este método permite que los repositorios obtengan sus dependencias de red
+     * sin que esta clase necesite conocer cada servicio individualmente.
+     *
+     * Ejemplo: val service = RetrofitClient.createService(ExpenseApiService::class.java)
+     */
+    fun <T> createService(serviceClass: Class<T>): T {
+        return retrofit.create(serviceClass)
     }
 }

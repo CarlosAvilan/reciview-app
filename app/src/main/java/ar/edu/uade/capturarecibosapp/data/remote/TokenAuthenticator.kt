@@ -13,6 +13,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
 
+/**
+ * Gestiona la autenticación por token en la app y el refresco automático del mismo en caso de vencimiento
+ */
 class TokenAuthenticator : Authenticator {
 
     private interface AuthRefreshService {

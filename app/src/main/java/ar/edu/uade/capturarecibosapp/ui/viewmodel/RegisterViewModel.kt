@@ -5,9 +5,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
 import androidx.lifecycle.viewModelScope
-import ar.edu.uade.capturarecibosapp.data.repository.AuthRepository
+import ar.edu.uade.capturarecibosapp.data.DependencyProvider
+import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
 import kotlinx.coroutines.launch
 
 sealed class RegisterState {
@@ -18,7 +18,7 @@ sealed class RegisterState {
 }
 
 class RegisterViewModel : ViewModel() {
-    private val authRepository = AuthRepository()
+    private val authRepository = DependencyProvider.provideAuthRepository()
 
     var nombreCompleto by mutableStateOf("")
     var correoElectronico by mutableStateOf("")

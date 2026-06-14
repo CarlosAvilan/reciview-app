@@ -6,12 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
-    private val userRepository: UserRepository = UserRepository()
+    private val userRepository: UserRepository = DependencyProvider.provideUserRepository()
 ) : ViewModel() {
     var nombre by mutableStateOf("Cargando...")
     var email by mutableStateOf("")
@@ -49,7 +50,8 @@ class ProfileViewModel(
             val result = userRepository.getProfile()
             result.onSuccess { profile ->
                 nombre = profile.name
-                email = profile.email
+                // Usamos el email del perfil si existe, sino el de la sesión
+                email = profile.email ?: SessionManager.userEmail ?: ""
             }.onFailure {
                 nombre = "Error al cargar"
                 email = SessionManager.userEmail ?: ""
@@ -72,8 +74,7 @@ class ProfileViewModel(
     }
 
     fun cerrarSesion(onSuccess: () -> Unit) {
-        SessionManager.userId = null
-        SessionManager.userEmail = null
+        SessionManager.clear()
         onSuccess()
     }
 }
