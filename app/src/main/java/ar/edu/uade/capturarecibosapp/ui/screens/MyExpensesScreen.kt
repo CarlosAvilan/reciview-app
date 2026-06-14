@@ -127,7 +127,7 @@ fun MyExpensesScreen(
 
         // Lista dinámica de tarjetas de gastos
         items(transacciones) { transaccion ->
-            ExpenseCard(transaccion.title, transaccion.date, transaccion.category, transaccion.amount, transaccion.imageUrl)
+            ExpenseCard(transaccion.title, transaccion.date, transaccion.category, transaccion.amount, transaccion.photoUrl)
         }
 
         item {
