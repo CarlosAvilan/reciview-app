@@ -12,14 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-data class ExpenseItem(
-    val imageUrl: Int,
-    val title: String,
-    val date: String,
-    val category: String,
-    val amount: Double
-)
-
 @Composable
 fun ExpenseCard(
     title: String,

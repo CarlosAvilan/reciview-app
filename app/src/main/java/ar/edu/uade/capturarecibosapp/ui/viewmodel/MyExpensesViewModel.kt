@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
+import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
 import ar.edu.uade.capturarecibosapp.data.repository.ExpenseRepository
-import ar.edu.uade.capturarecibosapp.ui.components.ExpenseItem
 import kotlinx.coroutines.launch
 
 class MyExpensesViewModel : ViewModel() {
