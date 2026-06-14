@@ -5,10 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import ar.edu.uade.capturarecibosapp.data.local.daos.ExpenseDao
 import ar.edu.uade.capturarecibosapp.data.local.daos.HelpDao
 import ar.edu.uade.capturarecibosapp.data.local.daos.ReportDao
 import ar.edu.uade.capturarecibosapp.data.local.daos.TicketDao
 import ar.edu.uade.capturarecibosapp.data.local.daos.UserDao
+import ar.edu.uade.capturarecibosapp.data.local.seeders.ExpenseSeeder
 import ar.edu.uade.capturarecibosapp.data.local.seeders.HelpSeeder
 import ar.edu.uade.capturarecibosapp.data.local.seeders.TicketSeeder
 import ar.edu.uade.capturarecibosapp.data.local.seeders.UserSeeder
@@ -24,6 +26,7 @@ import kotlinx.coroutines.launch
         MonthlyReport::class,
         Ticket::class,
         TicketItem::class,
+        ExpenseItem::class,
         User::class,
         UserCategory::class,
         UserPreferences::class
@@ -35,6 +38,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun helpDao(): HelpDao
     abstract fun userDao(): UserDao
     abstract fun ticketDao(): TicketDao
+    abstract fun expenseDao(): ExpenseDao
     abstract fun reportDao(): ReportDao
 
     companion object {
@@ -71,10 +75,15 @@ abstract class AppDatabase : RoomDatabase() {
                             val ticketDao = database.ticketDao()
                             ticketDao.insertTickets(TicketSeeder().provideInitialTickets())
                             ticketDao.insertTicketItems(TicketSeeder().provideInitialTicketItems())
+
+                            // Precarga de Expenses para el usuario mock
+                            val expenseDao = database.expenseDao()
+                            expenseDao.insertExpenses(ExpenseSeeder().provideInitialExpenses())
                         }
                     }
                 })
 
+                .fallbackToDestructiveMigration()
                 .build()
 
                 INSTANCE = instance
