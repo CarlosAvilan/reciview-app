@@ -10,6 +10,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.ui.screens.*
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.*
 
@@ -137,13 +138,13 @@ fun AppNavigation(
         ) { backStackEntry ->
             val categoriesViewModel: CategoriesViewModel = viewModel()
             val categoryId = backStackEntry.arguments?.getString("categoryId")
-            val categoryToEdit = categoriesViewModel.getCategoryByName(categoryId)
+            val userCategory = categoriesViewModel.getCategoryByName(categoryId)
             
             EditCategoriesScreen(
-                category = categoryToEdit,
+                userCategory = userCategory,
                 onBackClick = { navController.popBackStack() },
                 onSaveClick = { nombre, limite ->
-                    categoriesViewModel.saveCategory(nombre, limite)
+                    categoriesViewModel.saveCategory(nombre, limite, userCategory)
                     navController.popBackStack()
                 }
             )
