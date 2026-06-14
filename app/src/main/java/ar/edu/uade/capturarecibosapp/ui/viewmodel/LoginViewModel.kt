@@ -6,13 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
-import ar.edu.uade.capturarecibosapp.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
 
 class LoginViewModel : ViewModel() {
-    private val authRepository = AuthRepository()
+    private val authRepository = DependencyProvider.provideAuthRepository()
 
     var correoElectronico by mutableStateOf("")
     var contrasenia by mutableStateOf("")

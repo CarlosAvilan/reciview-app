@@ -8,6 +8,8 @@ object SessionManager {
     private const val PREF_NAME = "ReciViewSession"
     private const val KEY_USER_ID = "userId"
     private const val KEY_USER_EMAIL = "userEmail"
+    private const val KEY_ACCESS_TOKEN = "accessToken"
+    private const val KEY_REFRESH_TOKEN = "refreshToken"
 
     private var prefs: SharedPreferences? = null
 
@@ -19,32 +21,30 @@ object SessionManager {
     }
 
     var userId: String?
-        get() {
-            val id = prefs?.getString(KEY_USER_ID, null)
-            Log.d("SessionManager", "Reading userId: $id")
-            return id
-        }
+        get() = prefs?.getString(KEY_USER_ID, null)
         set(value) {
-            Log.d("SessionManager", "Writing userId: $value")
-            prefs?.edit()?.let {
-                it.putString(KEY_USER_ID, value)
-                it.apply()
-            }
+            prefs?.edit()?.putString(KEY_USER_ID, value)?.apply()
         }
 
     var userEmail: String?
         get() = prefs?.getString(KEY_USER_EMAIL, null)
         set(value) {
-            prefs?.edit()?.let {
-                it.putString(KEY_USER_EMAIL, value)
-                it.apply()
-            }
+            prefs?.edit()?.putString(KEY_USER_EMAIL, value)?.apply()
+        }
+
+    var accessToken: String?
+        get() = prefs?.getString(KEY_ACCESS_TOKEN, null)
+        set(value) {
+            prefs?.edit()?.putString(KEY_ACCESS_TOKEN, value)?.apply()
+        }
+
+    var refreshToken: String?
+        get() = prefs?.getString(KEY_REFRESH_TOKEN, null)
+        set(value) {
+            prefs?.edit()?.putString(KEY_REFRESH_TOKEN, value)?.apply()
         }
 
     fun clear() {
-        prefs?.edit()?.let {
-            it.clear()
-            it.apply()
-        }
+        prefs?.edit()?.clear()?.apply()
     }
 }

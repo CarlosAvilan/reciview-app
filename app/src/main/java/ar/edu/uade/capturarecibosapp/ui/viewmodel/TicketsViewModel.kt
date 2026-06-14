@@ -7,12 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.model.TicketItem
 import ar.edu.uade.capturarecibosapp.data.repository.TicketRepository
 import kotlinx.coroutines.launch
 
 class TicketsViewModel : ViewModel() {
-    private val ticketRepository = TicketRepository()
+    private val ticketRepository = DependencyProvider.provideTicketRepository()
 
     var searchQuery by mutableStateOf("")
     var selectedCategory by mutableStateOf("Todos")
