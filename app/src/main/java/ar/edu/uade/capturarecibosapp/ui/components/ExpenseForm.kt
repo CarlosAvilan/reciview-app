@@ -6,7 +6,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,6 +32,8 @@ fun ExpenseForm(
     categoriesList: List<UserCategory>,
     fecha: String,
     onFechaChange: (String) -> Unit,
+    descripcion: String = "",
+    onDescripcionChange: (String) -> Unit = {},
     buttonText: String,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -80,7 +81,7 @@ fun ExpenseForm(
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory)
                 },
                 isError = categoriaError,
-                modifier = Modifier.menuAnchor()
+                modifier = Modifier.menuAnchor().fillMaxWidth()
             )
 
             ExposedDropdownMenu(
@@ -114,6 +115,17 @@ fun ExpenseForm(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // DESCRIPCIÓN (Nuevo)
+        SectionLabel(text = "NOTAS / DESCRIPCIÓN (OPCIONAL)")
+        TextField(
+            value = descripcion,
+            onValueChange = onDescripcionChange,
+            placeholder = "Agregar una nota...",
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         // FECHA
         SectionLabel(text = "FECHA")
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -123,9 +135,9 @@ fun ExpenseForm(
                 readOnly = true,
                 trailingIcon = {
                     Icon(Icons.Default.CalendarToday, contentDescription = "Seleccionar fecha")
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
-            // Overlay invisible para detectar clicks en  el campo
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -133,11 +145,14 @@ fun ExpenseForm(
             )
         }
         
-        // DatePicker de Material 3
         if (showDatePicker) {
             val datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                    .atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                initialSelectedDateMillis = try {
+                    LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                        .atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                } catch (e: Exception) {
+                    System.currentTimeMillis()
+                }
             )
             DatePickerDialog(
                 onDismissRequest = { showDatePicker = false },
@@ -164,7 +179,7 @@ fun ExpenseForm(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(48.dp))
 
         Button(
             text = buttonText,

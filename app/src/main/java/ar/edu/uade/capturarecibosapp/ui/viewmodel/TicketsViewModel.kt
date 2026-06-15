@@ -25,10 +25,10 @@ class TicketsViewModel(application: Application) : AndroidViewModel(application)
     
     // Listas observables por Compose mediante mutableStateOf
     private var allTickets by mutableStateOf<List<Ticket>>(emptyList())
-    
+
     var categoryList by mutableStateOf<List<UserCategory>>(emptyList())
         private set
-        
+
     var categoryNames by mutableStateOf<List<String>>(listOf("Todos"))
         private set
 

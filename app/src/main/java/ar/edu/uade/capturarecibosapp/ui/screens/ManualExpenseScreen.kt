@@ -4,11 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.ExpenseForm
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
-import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.ManualExpenseViewModel
 
 @Composable
@@ -39,6 +36,8 @@ fun ManualExpenseScreen(
             categoriesList = categories,
             fecha = viewModel.fecha,
             onFechaChange = { viewModel.onFechaChange(it) },
+            descripcion = viewModel.descripcion,
+            onDescripcionChange = { viewModel.onDescripcionChange(it) },
             buttonText = "Guardar Gasto",
             onButtonClick = { 
                 viewModel.guardarGasto {
