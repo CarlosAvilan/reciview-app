@@ -1,4 +1,4 @@
-package ar.edu.uade.capturarecibosapp.ui.screens
+package ar.edu.uade.capturarecibosapp.ui.screens.success
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
 import ar.edu.uade.capturarecibosapp.ui.components.Button
@@ -22,7 +23,7 @@ import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.ChangePasswordViewModel
 
 @Composable
-fun ChangePasswordScreen(viewModel: ChangePasswordViewModel, onBackClick: () -> Unit, onSaveClick: () -> Unit) {
+fun ChangePasswordScreen(viewModel: ChangePasswordViewModel = viewModel(), onBackClick: () -> Unit, onSaveClick: () -> Unit) {
 
     Scaffold(
         topBar = {
@@ -104,7 +105,6 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel, onBackClick: () -> 
 fun ChangePasswordScreenPreview() {
     ReciViewTheme {
         ChangePasswordScreen(
-            viewModel = ChangePasswordViewModel(),
             onBackClick = {},
             onSaveClick = {}
         )

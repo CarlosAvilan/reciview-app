@@ -5,28 +5,41 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import ar.edu.uade.capturarecibosapp.data.model.UserCategory
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseForm(
     monto: String,
     onMontoChange: (String) -> Unit,
+    montoError: Boolean,
     establecimiento: String,
     onEstablecimientoChange: (String) -> Unit,
+    establecimientoError: Boolean,
     categoria: String,
-    onCategoriaClick: () -> Unit,
+    onCategoriaChange: (String) -> Unit,
+    categoriaError: Boolean,
+    categoriesList: List<UserCategory>,
     fecha: String,
-    onFechaClick: () -> Unit,
+    onFechaChange: (String) -> Unit,
     buttonText: String,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    var expandedCategory by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -38,7 +51,7 @@ fun ExpenseForm(
 
         // MONTO
         SectionLabel(text = "MONTO")
-        AmountCard(value = monto)
+        AmountCard(value = monto, onValueChange = onMontoChange, isError = montoError)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -47,35 +60,109 @@ fun ExpenseForm(
         TextField(
             value = establecimiento,
             onValueChange = onEstablecimientoChange,
-            label = "",
-            placeholder = "Ej: Starbucks, Coto..."
+            placeholder = "Ej: Starbucks, Coto...",
+            isError = establecimientoError
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // CATEGORÍA
         SectionLabel(text = "CATEGORÍA")
-        TextField(
-            value = if (categoria.isEmpty()) "Seleccionar categoría" else categoria,
-            onValueChange = { },
-            placeholder = "Seleccionar categoría",
-            trailingIcon = {
-                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
-            },
-            readOnly = true,
-            modifier = Modifier.clickable { onCategoriaClick() }
-        )
+        ExposedDropdownMenuBox(
+            expanded = expandedCategory,
+            onExpandedChange = { expandedCategory = !expandedCategory }
+        ) {
+            TextField(
+                value = if (categoria.isEmpty()) "Seleccionar categoría" else categoria,
+                onValueChange = { },
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory)
+                },
+                isError = categoriaError,
+                modifier = Modifier.menuAnchor()
+            )
+
+            ExposedDropdownMenu(
+                expanded = expandedCategory,
+                onDismissRequest = { expandedCategory = false }
+            ) {
+                if (categoriesList.isEmpty()) {
+                    DropdownMenuItem(
+                        text = { Text("No hay categorías") },
+                        onClick = { expandedCategory = false }
+                    )
+                } else {
+                    categoriesList.forEach { category ->
+                        DropdownMenuItem(
+                            text = { 
+                                Row {
+                                    Text(text = category.icon)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(text = category.name)
+                                }
+                            },
+                            onClick = {
+                                onCategoriaChange(category.name)
+                                expandedCategory = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // FECHA
         SectionLabel(text = "FECHA")
-        TextField(
-            value = fecha,
-            onValueChange = { },
-            readOnly = true,
-            modifier = Modifier.clickable { onFechaClick() }
-        )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            TextField(
+                value = fecha,
+                onValueChange = { },
+                readOnly = true,
+                trailingIcon = {
+                    Icon(Icons.Default.CalendarToday, contentDescription = "Seleccionar fecha")
+                }
+            )
+            // Overlay invisible para detectar clicks en  el campo
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable { showDatePicker = true }
+            )
+        }
+        
+        // DatePicker de Material 3
+        if (showDatePicker) {
+            val datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    .atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            )
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val selectedDate = Instant.ofEpochMilli(millis)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                            onFechaChange(selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                        }
+                        showDatePicker = false
+                    }) {
+                        Text("Aceptar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text("Cancelar")
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
+            }
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 

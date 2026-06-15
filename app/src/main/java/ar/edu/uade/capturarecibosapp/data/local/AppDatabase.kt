@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
         UserCategory::class,
         UserPreferences::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -77,7 +77,7 @@ abstract class AppDatabase : RoomDatabase() {
 
                             // Precarga de Expenses para el usuario mock
                             val expenseDao = database.expenseDao()
-                            expenseDao.insertExpenses(ExpenseSeeder().provideInitialExpenses())
+                            // expenseDao.insertExpenses(ExpenseSeeder().provideInitialExpenses())
                         }
                     }
                 })

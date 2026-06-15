@@ -9,6 +9,7 @@ sealed class Screen(val route: String) {
     object RegisterSuccess : Screen("register_success")
     object ManualExpense : Screen("manual_expense")
     object MyExpenses: Screen("my_expenses")
+    object AllExpenses: Screen("all_expenses")
     object Confirmation : Screen("confirmation")
     object TicketRegistered : Screen("ticket_registered")
     object Profile : Screen("profile")
@@ -24,6 +25,9 @@ sealed class Screen(val route: String) {
     object EditCategory : Screen("edit_category/{categoryId}") {
         fun createRoute(categoryId: String) = "edit_category/$categoryId"
     }
+    object CreateCategory : Screen("create_category")
+    object CategorySuccess : Screen("category_success")
+    object CategoryDeleteSuccess : Screen("category_delete_success")
     
     // Recupero de contraseña
     object ForgotPassword : Screen("forgot_password")

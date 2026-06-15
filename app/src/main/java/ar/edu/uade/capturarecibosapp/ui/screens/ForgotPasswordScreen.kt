@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.data.enums.ForgotPasswordStep
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
@@ -25,7 +26,7 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.ForgotPasswordViewModel
 
 @Composable
 fun ForgotPasswordScreen(
-    viewModel: ForgotPasswordViewModel,
+    viewModel: ForgotPasswordViewModel = viewModel(),
     onBackClick: () -> Unit,
     onCodeSent: () -> Unit = {}
 ) {
@@ -133,7 +134,6 @@ fun ForgotPasswordScreen(
 fun ForgotPasswordScreenPreview() {
     ReciViewTheme {
         ForgotPasswordScreen(
-            viewModel = ForgotPasswordViewModel(),
             onBackClick = {}
         )
     }

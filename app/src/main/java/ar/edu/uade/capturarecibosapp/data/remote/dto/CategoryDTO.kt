@@ -9,6 +9,8 @@ data class CategoryDTO(
     val name: String,
     @SerializedName("budget")
     val budget: Double,
+    @SerializedName("icon")
+    val icon: String? = null, // Cambiado a opcional para manejar datos viejos
     @SerializedName("user_id")
     val userId: String
 )

@@ -12,13 +12,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.ui.screens.*
+import ar.edu.uade.capturarecibosapp.ui.screens.success.*
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.*
 
 @Composable
 fun AppNavigation(
     navController: NavHostController,
     mainViewModel: MainViewModel,
-    startDestination: String
+    startDestination: String,
+    onScanClick: () -> Unit
 ) {
     // Escuchamos cambios en ticketDetectado para navegar a la pantalla de confirmación.
     LaunchedEffect(mainViewModel.ticketDetectado) {
@@ -74,7 +76,17 @@ fun AppNavigation(
         composable(Screen.MyExpenses.route) {
             MyExpensesScreen(
                 onCategoriesClick = { navController.navigate(Screen.Categories.route) },
-                onViewAllClick = { navController.navigate(Screen.Tickets.route) }
+                onViewAllClick = { navController.navigate(Screen.AllExpenses.route) },
+                onScanClick = onScanClick
+            )
+        }
+
+        composable(Screen.AllExpenses.route) {
+            val myExpensesViewModel: MyExpensesViewModel = viewModel()
+            AllExpensesScreen(
+                viewModel = myExpensesViewModel,
+                onBackClick = { navController.popBackStack() },
+                onScanClick = onScanClick
             )
         }
 
@@ -127,8 +139,31 @@ fun AppNavigation(
                 viewModel = categoriesViewModel,
                 onBackClick = { navController.popBackStack() },
                 onEditCategoryClick = { category ->
-                    val id = category?.name ?: "new"
+                    val id = category?.name ?: return@ExpensesCategoriesScreen
                     navController.navigate(Screen.EditCategory.createRoute(id))
+                },
+                onCreateCategoryClick = {
+                    navController.navigate(Screen.CreateCategory.route)
+                }
+            )
+        }
+
+        composable(Screen.CreateCategory.route) {
+            val categoriesViewModel: CategoriesViewModel = viewModel()
+            EditCategoriesScreen(
+                userCategory = null,
+                nameError = categoriesViewModel.nameError,
+                budgetError = categoriesViewModel.budgetError,
+                errorMessage = categoriesViewModel.errorMessage,
+                onBackClick = { navController.popBackStack() },
+                onSaveClick = { nombre, limite, icon ->
+                    categoriesViewModel.saveCategory(nombre, limite, icon, null) { success ->
+                        if (success) {
+                            navController.navigate(Screen.CategorySuccess.route) {
+                                popUpTo(Screen.Categories.route) { inclusive = false }
+                            }
+                        }
+                    }
                 }
             )
         }
@@ -136,16 +171,39 @@ fun AppNavigation(
             route = Screen.EditCategory.route,
             arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val categoriesViewModel: CategoriesViewModel = viewModel()
-            val categoryId = backStackEntry.arguments?.getString("categoryId")
-            val userCategory = categoriesViewModel.getCategoryByName(categoryId)
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+            val detailViewModel: CategoryDetailViewModel = viewModel()
             
-            EditCategoriesScreen(
-                userCategory = userCategory,
+            CategoryDetailScreen(
+                categoryId = categoryId,
+                viewModel = detailViewModel,
                 onBackClick = { navController.popBackStack() },
-                onSaveClick = { nombre, limite ->
-                    categoriesViewModel.saveCategory(nombre, limite, userCategory)
-                    navController.popBackStack()
+                onScanClick = onScanClick,
+                onSaveSuccess = {
+                    navController.navigate(Screen.CategorySuccess.route) {
+                        popUpTo(Screen.Categories.route) { inclusive = false }
+                    }
+                },
+                onDeleteSuccess = {
+                    navController.navigate(Screen.CategoryDeleteSuccess.route) {
+                        popUpTo(Screen.Categories.route) { inclusive = false }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.CategorySuccess.route) {
+            CategorySuccessScreen(
+                onFinish = {
+                    navController.popBackStack(Screen.Categories.route, inclusive = false)
+                }
+            )
+        }
+
+        composable(Screen.CategoryDeleteSuccess.route) {
+            CategoryDeleteSuccessScreen(
+                onFinish = {
+                    navController.popBackStack(Screen.Categories.route, inclusive = false)
                 }
             )
         }

@@ -1,5 +1,6 @@
 package ar.edu.uade.capturarecibosapp.ui.components
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -13,7 +14,8 @@ import androidx.compose.ui.unit.sp
 fun TopBar(
     title: String,
     onBackClick: () -> Unit,
-    containerColor: Color? = null
+    containerColor: Color? = null,
+    actions: @Composable RowScope.() -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -35,6 +37,7 @@ fun TopBar(
                 )
             }
         },
+        actions = actions,
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = containerColor ?: MaterialTheme.colorScheme.background
         )

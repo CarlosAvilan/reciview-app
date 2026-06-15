@@ -6,21 +6,26 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.ui.components.ExpenseForm
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.ManualExpenseViewModel
 
 @Composable
 fun ConfirmationScreen(
     ticket: Ticket,
     onConfirm: (Ticket) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    viewModel: ManualExpenseViewModel = viewModel()
 ) {
     var comercio by remember { mutableStateOf(ticket.establishment) }
     var total by remember { mutableStateOf(ticket.amount.toString()) }
     var categoria by remember { mutableStateOf("") }
-    var fecha by remember { mutableStateOf("Hoy, 10 de Mayo") }
+    var fecha by remember { mutableStateOf("10/05/2026") } // Formato unificado
+
+    val categories by viewModel.categories.collectAsState()
 
     Scaffold(
         topBar = {
@@ -35,12 +40,16 @@ fun ConfirmationScreen(
             modifier = Modifier.padding(paddingValues),
             monto = total,
             onMontoChange = { total = it },
+            montoError = false,
             establecimiento = comercio,
             onEstablecimientoChange = { comercio = it },
+            establecimientoError = false,
             categoria = categoria,
-            onCategoriaClick = { /* Abrir selector de categoría */ },
+            onCategoriaChange = { categoria = it },
+            categoriaError = false,
+            categoriesList = categories,
             fecha = fecha,
-            onFechaClick = { /* Abrir date picker */ },
+            onFechaChange = { fecha = it },
             buttonText = "Confirmar y Guardar",
             onButtonClick = {
                 onConfirm(

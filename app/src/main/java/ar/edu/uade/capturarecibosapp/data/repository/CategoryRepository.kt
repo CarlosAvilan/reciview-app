@@ -1,5 +1,6 @@
 package ar.edu.uade.capturarecibosapp.data.repository
 
+import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
 import ar.edu.uade.capturarecibosapp.data.local.daos.CategoryDao
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
@@ -49,6 +50,36 @@ class CategoryRepository(
 
     suspend fun syncPendingCategories(): Result<Unit> {
         return try {
+            // Sincronización de bajada (Traer de remoto lo que no tenemos)
+            val userId = SessionManager.userId
+            if (userId != null) {
+                val remoteResponse = apiService.getCategories("eq.$userId")
+                if (remoteResponse.isSuccessful) {
+                    remoteResponse.body()?.forEach { dto ->
+                        val remoteId = dto.id ?: return@forEach
+                        val existing = categoryDao.getCategoryByRemoteId(remoteId)
+                        if (existing == null) {
+                            val category = UserCategory(
+                                name = dto.name,
+                                budget = dto.budget,
+                                icon = dto.icon ?: "📁", // Fallback para categorías viejas sin icono
+                                userId = dto.userId,
+                                remoteId = remoteId,
+                                syncStatus = SyncStatus.ACTUALIZADO
+                            )
+                            categoryDao.insertCategory(category)
+                        } else if (existing.syncStatus == SyncStatus.ACTUALIZADO) {
+                            // Actualizar local si remoto cambió
+                            categoryDao.updateCategory(existing.copy(
+                                name = dto.name,
+                                budget = dto.budget,
+                                icon = dto.icon ?: existing.icon
+                            ))
+                        }
+                    }
+                }
+            }
+
             val pending = categoryDao.getPendingSyncCategories()
             pending.forEach { local ->
                 when (local.syncStatus) {
@@ -66,7 +97,8 @@ class CategoryRepository(
                         local.remoteId?.let { remoteId ->
                             val updateMap = mapOf(
                                 "name" to local.name,
-                                "budget" to local.budget
+                                "budget" to local.budget,
+                                "icon" to local.icon
                             )
                             val response = apiService.updateCategory("eq.$remoteId", updateMap)
                             if (response.isSuccessful) {
@@ -100,6 +132,7 @@ class CategoryRepository(
         id = remoteId,
         name = name,
         budget = budget,
+        icon = icon,
         userId = userId ?: ""
     )
 }

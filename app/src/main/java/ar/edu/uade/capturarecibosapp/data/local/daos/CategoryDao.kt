@@ -30,4 +30,13 @@ interface CategoryDao {
 
     @Query("SELECT * FROM user_categories WHERE id = :id")
     suspend fun getCategoryById(id: Long): UserCategory?
+
+    @Query("SELECT * FROM user_categories WHERE remote_id = :remoteId")
+    suspend fun getCategoryByRemoteId(remoteId: Long): UserCategory?
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertIfNotExist(category: UserCategory): Long
+
+    @Query("DELETE FROM user_categories")
+    suspend fun deleteAll()
 }

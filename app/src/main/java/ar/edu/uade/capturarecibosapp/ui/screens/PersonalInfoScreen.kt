@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.components.SectionLabel
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
@@ -29,7 +30,7 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.PersonalInfoViewModel
 
 @Composable
 fun PersonalInfoScreen(
-    viewModel: PersonalInfoViewModel,
+    viewModel: PersonalInfoViewModel = viewModel(),
     onBackClick: () -> Unit,
     onChangePasswordClick: () -> Unit,
     onSaveClick: () -> Unit,
@@ -194,7 +195,6 @@ fun PersonalInfoScreen(
 fun PersonalInfoScreenPreview() {
     ReciViewTheme {
         PersonalInfoScreen(
-            viewModel = PersonalInfoViewModel(),
             onBackClick = {},
             onChangePasswordClick = {},
             onSaveClick = {},
