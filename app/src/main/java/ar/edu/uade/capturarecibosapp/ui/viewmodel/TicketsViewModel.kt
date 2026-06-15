@@ -1,54 +1,65 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
-import androidx.compose.runtime.derivedStateOf
+import android.app.Application
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
-import ar.edu.uade.capturarecibosapp.data.model.TicketItem
+import ar.edu.uade.capturarecibosapp.data.SessionManager
+import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.data.repository.TicketRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class TicketsViewModel : ViewModel() {
-    private val ticketRepository = DependencyProvider.provideTicketRepository()
+class TicketsViewModel(application: Application) : AndroidViewModel(application) {
+    private val ticketRepository = DependencyProvider.provideTicketRepository(application)
+    private val userId = SessionManager.userId ?: ""
 
     var searchQuery by mutableStateOf("")
     var selectedCategory by mutableStateOf("Todos")
     var isLoading by mutableStateOf(false)
 
-    private val allTickets = mutableStateListOf<TicketItem>()
-
-    val filteredTickets by derivedStateOf {
-        allTickets.filter { ticket ->
-            val matchesSearch = ticket.commerce.contains(searchQuery, ignoreCase = true) || 
-                               ticket.date.contains(searchQuery, ignoreCase = true)
-            val matchesCategory = selectedCategory == "Todos" || ticket.category == selectedCategory
+    private val _allTickets = ticketRepository.getTickets(userId)
+    
+    val filteredTickets: StateFlow<List<Ticket>> = combine(
+        _allTickets,
+        snapshotFlow { searchQuery },
+        snapshotFlow { selectedCategory }
+    ) { tickets, query, category ->
+        tickets.filter { ticket ->
+            val matchesSearch = ticket.establishment.contains(query, ignoreCase = true) || 
+                               ticket.createdAt.contains(query, ignoreCase = true)
+            val matchesCategory = category == "Todos" || "Otros" == category // TODO: Implement category logic properly if needed
             matchesSearch && matchesCategory
         }
-    }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     val categories = listOf("Todos", "Alimentos", "Combustible", "Salud", "Gastronomía")
     
-    var selectedTicket by mutableStateOf<TicketItem?>(null)
+    var selectedTicket by mutableStateOf<Ticket?>(null)
 
     init {
-        loadTickets()
+        sync()
     }
 
-    private fun loadTickets() {
-        isLoading = true
+    fun sync() {
         viewModelScope.launch {
-            val result = ticketRepository.getTickets()
+            isLoading = true
+            ticketRepository.syncPendingTickets()
             isLoading = false
-            if (result.isSuccess) {
-                allTickets.clear()
-                // Mapear TicketData (DTO) a TicketItem (UI Model) si es necesario
-                // Por ahora asumimos que TicketData se puede convertir o se usa TicketItem
-                // allTickets.addAll(result.getOrDefault(emptyList()))
-            }
         }
     }
 }
+
+// Helper to convert Compose state to Flow
+fun <T> snapshotFlow(block: () -> T): kotlinx.coroutines.flow.Flow<T> = androidx.compose.runtime.snapshotFlow(block)

@@ -14,7 +14,7 @@ class TicketSeeder {
     )
 
     fun provideInitialTicketItems(): List<TicketItem> = listOf(
-        TicketItem(id = 1, ticketId = 1, commerce = "Shell", date = "2026-05-25", amount = 9346.97f, category = "Combustible", imageRes = R.drawable.ticket_shell, description = "Shell V-Power Nafta - Pago Efectivo"),
+        //TicketItem(id = 1, ticketId = 1, commerce = "Shell", date = "2026-05-25", amount = 9346.97f, category = "Combustible", imageRes = R.drawable.ticket_shell, description = "Shell V-Power Nafta - Pago Efectivo"),
         TicketItem(id = 2, ticketId = 2, commerce = "Coto Digital", date = "2026-05-10", amount = 15400f, category = "Alimentos"),
         TicketItem(id = 3, ticketId = 3, commerce = "Farmacity", date = "2026-05-08", amount = 3200f, category = "Salud"),
         TicketItem(id = 4, ticketId = 4, commerce = "YPF", date = "2026-05-05", amount = 12000f, category = "Combustible"),
