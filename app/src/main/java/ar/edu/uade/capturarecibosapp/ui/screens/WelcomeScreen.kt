@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -35,11 +36,13 @@ fun WelcomeScreen(
     onReportsClick: () -> Unit,
     onHelpClick: () -> Unit,
 ) {
-    // Obtenemos el estado desde el ViewModel
     val userName = viewModel.userName
     val totalSpent = viewModel.totalSpent
     val budgetPercentage = viewModel.budgetPercentage
     val recentTickets = viewModel.recentTickets
+    val currentMonthLabel = viewModel.currentMonthLabel
+    val monthComparisonText = viewModel.monthComparisonText
+    val isSpendingDown = viewModel.isSpendingDown
 
     var selectedTicket by remember { mutableStateOf<TicketItem?>(null) }
 
@@ -72,7 +75,12 @@ fun WelcomeScreen(
 
             // SUMMARY CARD
             item {
-                TotalSpentCard(totalSpent = totalSpent)
+                TotalSpentCard(
+                    totalSpent = totalSpent,
+                    monthLabel = currentMonthLabel,
+                    comparisonText = monthComparisonText,
+                    isSpendingDown = isSpendingDown
+                )
             }
 
             // PRESUPUESTO
@@ -171,7 +179,12 @@ private fun WelcomeHeader(
 }
 
 @Composable
-private fun TotalSpentCard(totalSpent: String) {
+private fun TotalSpentCard(
+    totalSpent: String,
+    monthLabel: String,
+    comparisonText: String,
+    isSpendingDown: Boolean
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,7 +199,7 @@ private fun TotalSpentCard(totalSpent: String) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Total gastado en mayo",
+                text = "Total gastado en $monthLabel",
                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                 style = MaterialTheme.typography.bodyMedium
             )
@@ -199,13 +212,16 @@ private fun TotalSpentCard(totalSpent: String) {
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.TrendingDown,
+                    imageVector = if (isSpendingDown)
+                        Icons.AutoMirrored.Filled.TrendingDown
+                    else
+                        Icons.AutoMirrored.Filled.TrendingUp,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
-                    text = " 5% menos que el mes pasado",
+                    text = " $comparisonText",
                     color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelSmall
                 )
