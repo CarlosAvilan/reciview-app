@@ -1,4 +1,4 @@
-package ar.edu.uade.capturarecibosapp.ui.screens
+package ar.edu.uade.capturarecibosapp.ui.screens.success
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,10 +7,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,11 +19,18 @@ import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.theme.success
+import kotlinx.coroutines.delay
 
 @Composable
-fun PasswordSuccessScreen(
-    onLoginClick: () -> Unit
+fun CategoryDeleteSuccessScreen(
+    onFinish: () -> Unit
 ) {
+    // Redirección automática después de 3 segundos
+    LaunchedEffect(Unit) {
+        delay(3000)
+        onFinish()
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
@@ -35,7 +42,6 @@ fun PasswordSuccessScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Círculo con el check
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -62,7 +68,7 @@ fun PasswordSuccessScreen(
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "¡Contraseña Cambiada!",
+                text = "¡Categoría eliminada!",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp
@@ -74,7 +80,7 @@ fun PasswordSuccessScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Tu cuenta ha sido actualizada correctamente.\nYa podés iniciar sesión con tu nueva credencial.",
+                text = "La categoría se eliminó correctamente.",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontSize = 16.sp
                 ),
@@ -85,8 +91,8 @@ fun PasswordSuccessScreen(
             Spacer(modifier = Modifier.height(64.dp))
 
             Button(
-                text = "Ingresar Ahora",
-                onClick = onLoginClick
+                text = "Continuar",
+                onClick = onFinish
             )
         }
     }
@@ -94,8 +100,8 @@ fun PasswordSuccessScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun PasswordSuccessScreenPreview() {
+fun CategoryDeleteSuccessScreenPreview() {
     ReciViewTheme {
-        PasswordSuccessScreen(onLoginClick = {})
+        CategoryDeleteSuccessScreen(onFinish = {})
     }
 }

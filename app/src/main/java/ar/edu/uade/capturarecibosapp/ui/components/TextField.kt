@@ -21,9 +21,9 @@ import androidx.compose.runtime.setValue
 fun TextField(
     value: String,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     label: String = "",
     placeholder: String = "",
-    modifier: Modifier = Modifier,
     trailingIcon: @Composable (() -> Unit)? = null,
     readOnly: Boolean = false,
     singleLine: Boolean = true,

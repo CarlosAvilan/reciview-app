@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,7 +30,8 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.CategoriesViewModel
 fun ExpensesCategoriesScreen(
     viewModel: CategoriesViewModel = viewModel(),
     onBackClick: () -> Unit,
-    onEditCategoryClick: (CategoryItem?) -> Unit
+    onEditCategoryClick: (CategoryItem?) -> Unit,
+    onCreateCategoryClick: () -> Unit
 ) {
     val categories by viewModel.categories.collectAsState()
 
@@ -36,7 +39,16 @@ fun ExpensesCategoriesScreen(
         topBar = {
             TopBar(
                 title = "Gastos por categoría",
-                onBackClick = onBackClick
+                onBackClick = onBackClick,
+                actions = {
+                    IconButton(onClick = onCreateCategoryClick) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Agregar Categoría",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             )
         },
         containerColor = MaterialTheme.colorScheme.background
@@ -60,7 +72,7 @@ fun ExpensesCategoriesScreen(
 
             // Botón "+ Nueva Categoría"
             item {
-                NewCategoryButton(onClick = { onEditCategoryClick(null) })
+                NewCategoryButton(onClick = onCreateCategoryClick)
             }
 
             item { Spacer(modifier = Modifier.height(100.dp)) }
@@ -98,7 +110,8 @@ fun ExpensesCategoriesScreenPreview() {
     ReciViewTheme {
         ExpensesCategoriesScreen(
             onBackClick = {},
-            onEditCategoryClick = {}
+            onEditCategoryClick = {},
+            onCreateCategoryClick = {}
         )
     }
 }

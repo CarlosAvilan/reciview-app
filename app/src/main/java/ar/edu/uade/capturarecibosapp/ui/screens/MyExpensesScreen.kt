@@ -11,6 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,11 +29,13 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.MyExpensesViewModel
 fun MyExpensesScreen(
     viewModel: MyExpensesViewModel = viewModel(),
     onCategoriesClick: () -> Unit,
-    onViewAllClick: () -> Unit
+    onViewAllClick: () -> Unit,
+    onScanClick: () -> Unit = {}
 ) {
-    val totalGastado = viewModel.totalSpent
+    val totalGastado by viewModel.totalSpent.collectAsState()
     val estadistica = viewModel.statistics
-    val transacciones = viewModel.transactions
+    val transacciones by viewModel.transactions.collectAsState()
+    val userCategories by viewModel.userCategories.collectAsState() // Suscribirse para reaccionar a cambios
 
     LazyColumn(
         modifier = Modifier
@@ -111,7 +115,7 @@ fun MyExpensesScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Tickets Recientes",
+                    text = "Gastos Recientes",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground
@@ -127,7 +131,17 @@ fun MyExpensesScreen(
 
         // Lista dinámica de tarjetas de gastos
         items(transacciones) { transaccion ->
-            ExpenseCard(transaccion.title, transaccion.date, transaccion.category, transaccion.amount, transaccion.photoUrl)
+            ExpenseCard(
+                title = transaccion.title,
+                date = transaccion.date,
+                category = transaccion.category,
+                categoryIcon = viewModel.getIconForCategory(transaccion.category),
+                amount = transaccion.amount,
+                imageRes = transaccion.photoUrl,
+                onAddTicketClick = {
+                    onScanClick()
+                }
+            )
         }
 
         item {

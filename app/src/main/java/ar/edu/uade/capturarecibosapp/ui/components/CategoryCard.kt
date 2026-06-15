@@ -1,5 +1,7 @@
 package ar.edu.uade.capturarecibosapp.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -13,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Locale
 
 // El "molde" para los datos de la categoría
 data class CategoryItem(
@@ -29,14 +32,19 @@ fun CategoryCard(
 ) {
     val isOverBudget = category.spent > category.budget
     val accentColor = if (isOverBudget) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-    val progress = (category.spent / category.budget).coerceIn(0.0, 1.0).toFloat()
+    val backgroundColor = if (isOverBudget) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f) else MaterialTheme.colorScheme.surface
+    val progress = if (category.budget > 0) (category.spent / category.budget).coerceIn(0.0, 1.0).toFloat() else 0f
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .then(
+                if (isOverBudget) Modifier.border(2.dp, MaterialTheme.colorScheme.error, RoundedCornerShape(16.dp))
+                else Modifier
+            ),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -56,15 +64,15 @@ fun CategoryCard(
                         text = category.name,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = if (isOverBudget) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                     )
                 }
                 
                 // Texto de montos: se pone rojo si supera el presupuesto
                 Text(
-                    text = "$${String.format("%,.0f", category.spent).replace(',', '.')} / $${String.format("%,.0f", category.budget).replace(',', '.')}",
+                    text = "$${String.format(Locale.getDefault(), "%,.0f", category.spent).replace(',', '.')} / $${String.format(Locale.getDefault(), "%,.0f", category.budget).replace(',', '.')}",
                     color = accentColor,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 14.sp
                 )
             }
@@ -79,7 +87,7 @@ fun CategoryCard(
                     .height(8.dp)
                     .clip(CircleShape),
                 color = accentColor,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                trackColor = if (isOverBudget) MaterialTheme.colorScheme.error.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant
             )
         }
     }

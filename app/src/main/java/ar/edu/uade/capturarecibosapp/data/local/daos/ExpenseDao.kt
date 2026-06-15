@@ -16,6 +16,9 @@ interface ExpenseDao {
     @Query("SELECT * FROM expense_item WHERE user_id = :userId ORDER BY date DESC")
     fun getExpensesForUser(userId: String): Flow<List<ExpenseItem>>
 
+    @Query("SELECT SUM(amount) FROM expense_item WHERE user_id = :userId AND category = :categoryName")
+    fun getTotalSpentByCategory(userId: String, categoryName: String): Flow<Double?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExpense(expense: ExpenseItem): Long
 

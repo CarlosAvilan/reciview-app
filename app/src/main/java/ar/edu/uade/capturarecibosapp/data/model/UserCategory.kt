@@ -10,6 +10,7 @@ data class UserCategory(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
+    val icon: String = "📁",
     val budget: Double,
     @ColumnInfo(name = "user_id")
     val userId: String?,

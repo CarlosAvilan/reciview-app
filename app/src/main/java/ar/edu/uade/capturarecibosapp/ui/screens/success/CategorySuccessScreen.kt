@@ -1,4 +1,4 @@
-package ar.edu.uade.capturarecibosapp.ui.screens
+package ar.edu.uade.capturarecibosapp.ui.screens.success
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,11 +19,18 @@ import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.theme.success
+import kotlinx.coroutines.delay
 
 @Composable
-fun BudgetSuccessScreen(
+fun CategorySuccessScreen(
     onFinish: () -> Unit
 ) {
+    // Redirección automática después de 3 segundos
+    LaunchedEffect(Unit) {
+        delay(3000)
+        onFinish()
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
@@ -60,7 +68,7 @@ fun BudgetSuccessScreen(
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "¡Presupuesto Actualizado!",
+                text = "¡Categoría actualizada!",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp
@@ -72,7 +80,7 @@ fun BudgetSuccessScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "¡Limite presupuestario mensual cambiado con exito!",
+                text = "Los cambios han sido guardados correctamente.",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontSize = 16.sp
                 ),
@@ -83,7 +91,7 @@ fun BudgetSuccessScreen(
             Spacer(modifier = Modifier.height(64.dp))
 
             Button(
-                text = "Volver al Perfil",
+                text = "Continuar",
                 onClick = onFinish
             )
         }
@@ -92,8 +100,8 @@ fun BudgetSuccessScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun BudgetSuccessScreenPreview() {
+fun CategorySuccessScreenPreview() {
     ReciViewTheme {
-        BudgetSuccessScreen(onFinish = {})
+        CategorySuccessScreen(onFinish = {})
     }
 }
