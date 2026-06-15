@@ -1,5 +1,6 @@
 package ar.edu.uade.capturarecibosapp.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -9,24 +10,29 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import ar.edu.uade.capturarecibosapp.domain.ReportPdfGenerator
 import ar.edu.uade.capturarecibosapp.ui.components.BarItem
 import ar.edu.uade.capturarecibosapp.ui.components.StatCard
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.ReportsViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun ReportsScreen(
     viewModel: ReportsViewModel = ReportsViewModel(),
     onBackClick: () -> Unit
 ) {
-    // 1. Estado para el mensaje emergente (Snackbar)
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -112,13 +118,29 @@ fun ReportsScreen(
 
             // Download Button
             Button(
-                onClick = { 
-                    // 3. Mostramos el mensaje al hacer click
+                onClick = {
                     scope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = "Se ha descargado el archivo",
-                            duration = SnackbarDuration.Short
-                        )
+                        try {
+                            val file = withContext(Dispatchers.IO) {
+                                ReportPdfGenerator.generate(context, viewModel.selectedReport)
+                            }
+                            val uri = FileProvider.getUriForFile(
+                                context,
+                                "ar.edu.uade.capturarecibosapp.fileprovider",
+                                file
+                            )
+                            val intent = Intent(Intent.ACTION_VIEW).apply {
+                                setDataAndType(uri, "application/pdf")
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            snackbarHostState.showSnackbar(
+                                message = "No se pudo abrir el PDF",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
                     }
                 },
                 modifier = Modifier
