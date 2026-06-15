@@ -50,7 +50,7 @@ object DependencyProvider {
 
     fun provideTicketRepository(context: android.content.Context): TicketRepository {
         val database = ar.edu.uade.capturarecibosapp.data.local.AppDatabase.getDatabase(context)
-        return TicketRepository(database.ticketDao(), ticketApiService)
+        return TicketRepository(database.ticketDao(), database.categoryDao(), ticketApiService)
     }
 
     fun provideCategoryRepository(context: android.content.Context): CategoryRepository {

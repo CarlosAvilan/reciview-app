@@ -9,46 +9,61 @@ import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
-import ar.edu.uade.capturarecibosapp.data.repository.TicketRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import kotlinx.coroutines.launch
 
 class TicketsViewModel(application: Application) : AndroidViewModel(application) {
     private val ticketRepository = DependencyProvider.provideTicketRepository(application)
+    private val categoryRepository = DependencyProvider.provideCategoryRepository(application)
     private val userId = SessionManager.userId ?: ""
 
+    // Estados de Compose para reactividad inmediata
     var searchQuery by mutableStateOf("")
     var selectedCategory by mutableStateOf("Todos")
     var isLoading by mutableStateOf(false)
-
-    private val _allTickets = ticketRepository.getTickets(userId)
+    var selectedTicket by mutableStateOf<Ticket?>(null)
     
-    val filteredTickets: StateFlow<List<Ticket>> = combine(
-        _allTickets,
-        snapshotFlow { searchQuery },
-        snapshotFlow { selectedCategory }
-    ) { tickets, query, category ->
-        tickets.filter { ticket ->
-            val matchesSearch = ticket.establishment.contains(query, ignoreCase = true) || 
-                               ticket.createdAt.contains(query, ignoreCase = true)
-            val matchesCategory = category == "Todos" || "Otros" == category // TODO: Implement category logic properly if needed
+    // Listas observables por Compose mediante mutableStateOf
+    private var allTickets by mutableStateOf<List<Ticket>>(emptyList())
+    
+    var categoryList by mutableStateOf<List<UserCategory>>(emptyList())
+        private set
+        
+    var categoryNames by mutableStateOf<List<String>>(listOf("Todos"))
+        private set
+
+    // Lista filtrada calculada reactivamente
+    val filteredTickets: List<Ticket>
+        get() = allTickets.filter { ticket ->
+            val matchesSearch = ticket.establishment.contains(searchQuery, ignoreCase = true) || 
+                               ticket.createdAt.contains(searchQuery, ignoreCase = true)
+            
+            val matchesCategory = if (selectedCategory == "Todos") {
+                true
+            } else {
+                val cat = categoryList.find { it.name == selectedCategory }
+                cat?.id == ticket.categoryId
+            }
+            
             matchesSearch && matchesCategory
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
-
-    val categories = listOf("Todos", "Alimentos", "Combustible", "Salud", "Gastronomía")
-    
-    var selectedTicket by mutableStateOf<Ticket?>(null)
 
     init {
+        // Observar categorías de Room
+        viewModelScope.launch {
+            categoryRepository.getCategories(userId).collect { cats ->
+                categoryList = cats
+                categoryNames = listOf("Todos") + cats.map { it.name }
+            }
+        }
+
+        // Observar tickets de Room
+        viewModelScope.launch {
+            ticketRepository.getTickets(userId).collect { tickets ->
+                allTickets = tickets
+            }
+        }
+
         sync()
     }
 
@@ -60,6 +75,3 @@ class TicketsViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 }
-
-// Helper to convert Compose state to Flow
-fun <T> snapshotFlow(block: () -> T): kotlinx.coroutines.flow.Flow<T> = androidx.compose.runtime.snapshotFlow(block)

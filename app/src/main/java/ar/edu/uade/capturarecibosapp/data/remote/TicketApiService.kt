@@ -6,7 +6,10 @@ import retrofit2.http.*
 
 interface TicketApiService {
     @GET("rest/v1/tickets")
-    suspend fun getTickets(): Response<List<TicketDTO>>
+    suspend fun getTickets(
+        @Query("user_id") userIdFilter: String,
+        @Query("select") select: String = "*"
+    ): Response<List<TicketDTO>>
 
     @POST("rest/v1/tickets")
     suspend fun createTicket(

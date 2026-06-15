@@ -2,6 +2,7 @@ package ar.edu.uade.capturarecibosapp.data.repository
 
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
+import ar.edu.uade.capturarecibosapp.data.local.daos.CategoryDao
 import ar.edu.uade.capturarecibosapp.data.local.daos.TicketDao
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.data.remote.TicketApiService
@@ -11,6 +12,7 @@ import java.io.IOException
 
 class TicketRepository(
     private val ticketDao: TicketDao,
+    private val categoryDao: CategoryDao,
     private val apiService: TicketApiService
 ) {
 
@@ -24,23 +26,6 @@ class TicketRepository(
             } else {
                 ticketDao.updateTicket(ticket.copy(syncStatus = SyncStatus.PENDIENTE_CAMBIO))
             }
-            // Disparar sincronización de fondo
-            syncPendingTickets()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun deleteTicket(ticket: Ticket): Result<Unit> {
-        return try {
-            if (ticket.remoteId == null) {
-                // Si nunca se sincronizó, borrar directo
-                ticketDao.deleteTicketPhysically(ticket)
-            } else {
-                // Borrado lógico para sincronizar luego
-                ticketDao.updateSyncStatus(ticket.id, SyncStatus.PENDIENTE_ELIMINACION)
-            }
             syncPendingTickets()
             Result.success(Unit)
         } catch (e: Exception) {
@@ -50,97 +35,80 @@ class TicketRepository(
 
     suspend fun syncPendingTickets(): Result<Unit> {
         return try {
-            val userId = SessionManager.userId
-            if (userId != null) {
-                // 1. Sincronización de bajada
-                val remoteResponse = apiService.getTickets()
-                if (remoteResponse.isSuccessful) {
-                    remoteResponse.body()?.forEach { dto ->
-                        val remoteId = dto.id ?: return@forEach
-                        val existing = ticketDao.getTicketByRemoteId(remoteId)
-                        if (existing == null) {
-                            val newTicket = Ticket(
-                                createdAt = dto.createdAt,
-                                userId = dto.userId,
-                                categoryId = dto.categoryId,
-                                establishment = dto.establishment,
-                                amount = dto.amount,
-                                photoUrl = dto.photoUrl,
-                                description = dto.description,
-                                remoteId = remoteId,
-                                syncStatus = SyncStatus.ACTUALIZADO
-                            )
-                            ticketDao.insertTicket(newTicket)
-                        } else if (existing.syncStatus == SyncStatus.ACTUALIZADO) {
-                            ticketDao.updateTicket(existing.copy(
-                                createdAt = dto.createdAt,
-                                categoryId = dto.categoryId,
-                                establishment = dto.establishment,
-                                amount = dto.amount,
-                                photoUrl = dto.photoUrl,
-                                description = dto.description
-                            ))
-                        }
+            val userId = SessionManager.userId ?: return Result.failure(Exception("No session"))
+            
+            // 1. Bajada: Mapear IDs remotos de categorías a IDs locales
+            val remoteResponse = apiService.getTickets("eq.$userId")
+            if (remoteResponse.isSuccessful) {
+                remoteResponse.body()?.forEach { dto ->
+                    val remoteId = dto.id ?: return@forEach
+                    val localCatId = dto.categoryId?.let { rId -> 
+                        categoryDao.getCategoryByRemoteId(rId)?.id 
+                    }
+
+                    val existing = ticketDao.getTicketByRemoteId(remoteId)
+                    if (existing == null) {
+                        ticketDao.insertTicket(Ticket(
+                            createdAt = dto.createdAt,
+                            userId = dto.userId,
+                            categoryId = localCatId,
+                            establishment = dto.establishment,
+                            amount = dto.amount,
+                            photoUrl = dto.photoUrl,
+                            description = dto.description,
+                            remoteId = remoteId,
+                            syncStatus = SyncStatus.ACTUALIZADO
+                        ))
+                    } else if (existing.syncStatus == SyncStatus.ACTUALIZADO) {
+                        ticketDao.updateTicket(existing.copy(categoryId = localCatId))
                     }
                 }
             }
 
-            // 2. Sincronización de subida
+            // 2. Subida: Validar que la categoría ya exista en el servidor
             val pending = ticketDao.getPendingSyncTickets()
             pending.forEach { local ->
+                val remoteCatId = if (local.categoryId != null) {
+                    val cat = categoryDao.getCategoryById(local.categoryId)
+                    // SI LA CATEGORÍA ES OFFLINE Y NO SE SINCRONIZÓ, ESPERAMOS.
+                    if (cat?.remoteId == null) return@forEach 
+                    cat.remoteId
+                } else null
+
                 when (local.syncStatus) {
                     SyncStatus.PENDIENTE_AGREGAR -> {
-                        val dto = local.toDTO()
-                        val response = apiService.createTicket(dto)
+                        val response = apiService.createTicket(local.toDTO(remoteCatId))
                         if (response.isSuccessful) {
-                            val remote = response.body()?.firstOrNull()
-                            if (remote?.id != null) {
-                                ticketDao.updateRemoteIdAfterSync(local.id, remote.id)
+                            response.body()?.firstOrNull()?.id?.let {
+                                ticketDao.updateRemoteIdAfterSync(local.id, it)
                             }
                         }
                     }
                     SyncStatus.PENDIENTE_CAMBIO -> {
-                        local.remoteId?.let { remoteId ->
-                            val updateMap = mapOf(
-                                "establishment" to local.establishment,
-                                "amount" to local.amount,
-                                "category_id" to local.categoryId,
-                                "description" to local.description,
-                                "photo_url" to local.photoUrl,
-                                "created_at" to local.createdAt
-                            )
-                            val response = apiService.updateTicket("eq.$remoteId", updateMap)
-                            if (response.isSuccessful) {
-                                ticketDao.updateSyncStatus(local.id, SyncStatus.ACTUALIZADO)
-                            }
+                        local.remoteId?.let { rId ->
+                            val response = apiService.updateTicket("eq.$rId", mapOf("category_id" to remoteCatId))
+                            if (response.isSuccessful) ticketDao.updateSyncStatus(local.id, SyncStatus.ACTUALIZADO)
                         }
                     }
                     SyncStatus.PENDIENTE_ELIMINACION -> {
-                        local.remoteId?.let { remoteId ->
-                            val response = apiService.deleteTicket("eq.$remoteId")
-                            if (response.isSuccessful || response.code() == 404) {
-                                ticketDao.deleteTicketPhysically(local)
-                            }
-                        } ?: run {
-                            ticketDao.deleteTicketPhysically(local)
-                        }
+                        local.remoteId?.let { rId ->
+                            if (apiService.deleteTicket("eq.$rId").isSuccessful) ticketDao.deleteTicketPhysically(local)
+                        } ?: ticketDao.deleteTicketPhysically(local)
                     }
                     else -> {}
                 }
             }
             Result.success(Unit)
-        } catch (e: IOException) {
-            Result.failure(e)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    private fun Ticket.toDTO() = TicketDTO(
+    private fun Ticket.toDTO(remoteCatId: Long?) = TicketDTO(
         id = remoteId,
         createdAt = createdAt,
         userId = userId,
-        categoryId = categoryId,
+        categoryId = remoteCatId,
         establishment = establishment,
         amount = amount,
         photoUrl = photoUrl,
