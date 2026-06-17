@@ -77,7 +77,7 @@ class WelcomeViewModel : ViewModel() {
                 date = "Ayer, 10:15",
                 amount = 15000f,
                 category = "Combustible",
-                imageRes = R.drawable.ticket_shell,
+                //imageRes = R.drawable.ticket_shell,
                 description = "Carga de combustible V-Power"
             ),
             TicketItem(

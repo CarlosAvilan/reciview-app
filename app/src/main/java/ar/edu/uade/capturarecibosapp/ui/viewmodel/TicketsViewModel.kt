@@ -1,54 +1,77 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
-import androidx.compose.runtime.derivedStateOf
+import android.app.Application
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
-import ar.edu.uade.capturarecibosapp.data.model.TicketItem
-import ar.edu.uade.capturarecibosapp.data.repository.TicketRepository
+import ar.edu.uade.capturarecibosapp.data.SessionManager
+import ar.edu.uade.capturarecibosapp.data.model.Ticket
+import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import kotlinx.coroutines.launch
 
-class TicketsViewModel : ViewModel() {
-    private val ticketRepository = DependencyProvider.provideTicketRepository()
+class TicketsViewModel(application: Application) : AndroidViewModel(application) {
+    private val ticketRepository = DependencyProvider.provideTicketRepository(application)
+    private val categoryRepository = DependencyProvider.provideCategoryRepository(application)
+    private val userId = SessionManager.userId ?: ""
 
+    // Estados de Compose para reactividad inmediata
     var searchQuery by mutableStateOf("")
     var selectedCategory by mutableStateOf("Todos")
     var isLoading by mutableStateOf(false)
+    var selectedTicket by mutableStateOf<Ticket?>(null)
+    
+    // Listas observables por Compose mediante mutableStateOf
+    private var allTickets by mutableStateOf<List<Ticket>>(emptyList())
 
-    private val allTickets = mutableStateListOf<TicketItem>()
+    var categoryList by mutableStateOf<List<UserCategory>>(emptyList())
+        private set
 
-    val filteredTickets by derivedStateOf {
-        allTickets.filter { ticket ->
-            val matchesSearch = ticket.commerce.contains(searchQuery, ignoreCase = true) || 
-                               ticket.date.contains(searchQuery, ignoreCase = true)
-            val matchesCategory = selectedCategory == "Todos" || ticket.category == selectedCategory
+    var categoryNames by mutableStateOf<List<String>>(listOf("Todos"))
+        private set
+
+    // Lista filtrada calculada reactivamente
+    val filteredTickets: List<Ticket>
+        get() = allTickets.filter { ticket ->
+            val matchesSearch = ticket.establishment.contains(searchQuery, ignoreCase = true) || 
+                               ticket.createdAt.contains(searchQuery, ignoreCase = true)
+            
+            val matchesCategory = if (selectedCategory == "Todos") {
+                true
+            } else {
+                val cat = categoryList.find { it.name == selectedCategory }
+                cat?.id == ticket.categoryId
+            }
+            
             matchesSearch && matchesCategory
         }
-    }
-
-    val categories = listOf("Todos", "Alimentos", "Combustible", "Salud", "Gastronomía")
-    
-    var selectedTicket by mutableStateOf<TicketItem?>(null)
 
     init {
-        loadTickets()
+        // Observar categorías de Room
+        viewModelScope.launch {
+            categoryRepository.getCategories(userId).collect { cats ->
+                categoryList = cats
+                categoryNames = listOf("Todos") + cats.map { it.name }
+            }
+        }
+
+        // Observar tickets de Room
+        viewModelScope.launch {
+            ticketRepository.getTickets(userId).collect { tickets ->
+                allTickets = tickets
+            }
+        }
+
+        sync()
     }
 
-    private fun loadTickets() {
-        isLoading = true
+    fun sync() {
         viewModelScope.launch {
-            val result = ticketRepository.getTickets()
+            isLoading = true
+            ticketRepository.syncPendingTickets()
             isLoading = false
-            if (result.isSuccess) {
-                allTickets.clear()
-                // Mapear TicketData (DTO) a TicketItem (UI Model) si es necesario
-                // Por ahora asumimos que TicketData se puede convertir o se usa TicketItem
-                // allTickets.addAll(result.getOrDefault(emptyList()))
-            }
         }
     }
 }

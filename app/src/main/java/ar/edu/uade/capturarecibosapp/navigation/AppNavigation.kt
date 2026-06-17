@@ -3,14 +3,12 @@ package ar.edu.uade.capturarecibosapp.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.ui.screens.*
 import ar.edu.uade.capturarecibosapp.ui.screens.success.*
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.*
@@ -290,15 +288,14 @@ fun AppNavigation(
         composable(Screen.Help.route) { HelpScreen(onBackClick = { navController.popBackStack() }) }
 
         composable(Screen.Confirmation.route) {
-            val context = LocalContext.current
             val ticket = mainViewModel.ticketDetectado
 
             if (ticket != null) {
                 ConfirmationScreen(
                     ticket = ticket,
-                    onConfirm = { ticketEditado ->
-                        mainViewModel.confirmarYSubir(ticketEditado)
+                    onConfirm = {
                         navController.navigate(Screen.TicketRegistered.route) {
+                            mainViewModel.confirmarYSubir(ticket)
                             popUpTo(Screen.Welcome.route) { inclusive = false }
                         }
                     },

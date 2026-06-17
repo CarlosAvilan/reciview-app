@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
         UserCategory::class,
         UserPreferences::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -72,8 +72,8 @@ abstract class AppDatabase : RoomDatabase() {
 
                             // Precarga de Ticket Seeders
                             val ticketDao = database.ticketDao()
-                            ticketDao.insertTickets(TicketSeeder().provideInitialTickets())
-                            ticketDao.insertTicketItems(TicketSeeder().provideInitialTicketItems())
+                            // ticketDao.insertTickets(TicketSeeder().provideInitialTickets())
+                            // ticketDao.insertTicketItems(TicketSeeder().provideInitialTicketItems())
 
                             // Precarga de Expenses para el usuario mock
                             val expenseDao = database.expenseDao()

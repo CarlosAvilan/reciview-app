@@ -18,15 +18,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.TicketCard
 import ar.edu.uade.capturarecibosapp.ui.components.TicketDetailDialog
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.TicketsViewModel
+import java.util.Locale
 
 @Composable
 fun TicketsScreen(
-    viewModel: TicketsViewModel = TicketsViewModel(),
+    viewModel: TicketsViewModel = viewModel(),
 ) {
+    // Accedemos directamente a las propiedades del ViewModel (mutableStateOf)
+    val filteredTickets = viewModel.filteredTickets
+    val categoryNames = viewModel.categoryNames
+    val categoryList = viewModel.categoryList
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,13 +86,13 @@ fun TicketsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Categories (Fixed layout with LazyRow)
+        // Chips de Categorías dinámicos
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(end = 24.dp)
         ) {
-            items(viewModel.categories) { category ->
+            items(categoryNames) { category ->
                 val isSelected = viewModel.selectedCategory == category
                 FilterChip(
                     selected = isSelected,
@@ -110,10 +117,14 @@ fun TicketsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Tickets Grid
-        if (viewModel.filteredTickets.isEmpty()) {
+        // Grid de Tickets
+        if (filteredTickets.isEmpty()) {
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                Text("No se encontraron tickets", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (viewModel.isLoading) {
+                    CircularProgressIndicator()
+                } else {
+                    Text("No se encontraron tickets", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
         } else {
             LazyVerticalGrid(
@@ -122,12 +133,12 @@ fun TicketsScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(viewModel.filteredTickets) { ticket ->
+                items(filteredTickets) { ticket ->
                     TicketCard(
-                        commerce = ticket.commerce,
-                        date = ticket.date,
-                        amount = ticket.amount.toString(),
-                        imageRes = ticket.imageRes,
+                        commerce = ticket.establishment,
+                        date = ticket.createdAt,
+                        amount = String.format(Locale.getDefault(), "$ %.2f", ticket.amount),
+                        imageRes = null, 
                         onClick = { viewModel.selectedTicket = ticket }
                     )
                 }
@@ -135,15 +146,18 @@ fun TicketsScreen(
         }
     }
 
-    // Show Detail Dialog if a ticket is selected
+    // Diálogo de Detalle
     viewModel.selectedTicket?.let { ticket ->
+        // Obtenemos el nombre real de la categoría comparando el id (Long) con categoryId (Long?)
+        val categoryName = categoryList.find { it.id == ticket.categoryId }?.name ?: "Sin categoría"
+        
         TicketDetailDialog(
-            commerce = ticket.commerce,
-            date = ticket.date,
-            amount = ticket.amount.toString(),
-            category = ticket.category,
+            commerce = ticket.establishment,
+            date = ticket.createdAt,
+            amount = String.format(Locale.getDefault(), "$ %.2f", ticket.amount),
+            category = categoryName,
             description = ticket.description,
-            imageRes = ticket.imageRes,
+            imageRes = null,
             onDismiss = { viewModel.selectedTicket = null }
         )
     }
@@ -153,7 +167,6 @@ fun TicketsScreen(
 @Composable
 fun TicketsScreenPreview() {
     ReciViewTheme {
-        TicketsScreen(
-        )
+        TicketsScreen()
     }
 }

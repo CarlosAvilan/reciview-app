@@ -8,8 +8,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
-import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
+import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
+import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -20,14 +21,19 @@ import java.util.Locale
 
 class ManualExpenseViewModel(application: Application) : AndroidViewModel(application) {
     private val categoryRepository = DependencyProvider.provideCategoryRepository(application)
-    private val expenseRepository = DependencyProvider.provideExpenseRepository(application)
+    private val ticketRepository = DependencyProvider.provideTicketRepository(application)
     private val userId = SessionManager.userId ?: ""
+
+    private val uiFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    private val apiFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     var monto by mutableStateOf("0.00")
     var establecimiento by mutableStateOf("")
     var categoria by mutableStateOf("")
-    var fecha by mutableStateOf(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-    
+    var descripcion by mutableStateOf("")
+    var fecha by mutableStateOf(LocalDate.now().format(uiFormatter))
+    var photoUrl by mutableStateOf("")
+
     // UI states para errores
     var montoError by mutableStateOf(false)
     var establecimientoError by mutableStateOf(false)
@@ -58,12 +64,41 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
         categoriaError = false
     }
 
+    fun onDescripcionChange(newValue: String) {
+        descripcion = newValue
+    }
+
     fun onFechaChange(newValue: String) {
         fecha = newValue
     }
 
+    fun initializeWithTicket(ticket: Ticket) {
+        monto = ticket.amount.toString()
+        establecimiento = ticket.establishment
+        descripcion = ticket.description
+        photoUrl = ticket.photoUrl ?: ""
+
+        // Formatear fecha de la API (yyyy-MM-dd) a la UI (dd/MM/yyyy)
+        fecha = try {
+            LocalDate.parse(ticket.createdAt, apiFormatter).format(uiFormatter)
+        } catch (e: Exception) {
+            ticket.createdAt // Fallback
+        }
+
+        // Buscamos el nombre de la categoría si ya tiene un ID asignado
+        viewModelScope.launch {
+            categories.collect { list ->
+                if (list.isNotEmpty()) {
+                    list.find { it.id == ticket.categoryId }?.let {
+                        categoria = it.name
+                    }
+                }
+            }
+        }
+    }
+
     fun guardarGasto(onSuccess: () -> Unit) {
-        val amount = monto.toDoubleOrNull()
+        val amount = monto.toFloatOrNull()
         
         var hasError = false
         if (amount == null || amount <= 0) {
@@ -82,16 +117,31 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
         if (hasError) return
 
         viewModelScope.launch {
-            val expense = ExpenseItem(
-                photoUrl = 0, // Icono por defecto o según lógica
+            // Buscamos el ID de la categoría seleccionada por nombre
+            val selectedCat = categories.value.find { it.name == categoria }
+            
+            // Parseamos la fecha de la UI al formato de la API
+            val fechaApi = try {
+                LocalDate.parse(fecha, uiFormatter).format(apiFormatter)
+            } catch (e: Exception) {
+                fecha // fallback
+            }
+
+            val ticket = Ticket(
+                createdAt = fechaApi,
                 userId = userId,
-                title = establecimiento,
-                date = fecha,
-                category = categoria,
-                amount = amount ?: 0.0
+                categoryId = selectedCat?.id,
+                establishment = establecimiento,
+                amount = amount ?: 0f,
+                photoUrl = null, // Guardado manual sin foto
+                description = descripcion,
+                syncStatus = SyncStatus.PENDIENTE_AGREGAR
             )
-            expenseRepository.saveExpense(expense)
-            onSuccess()
+            
+            val result = ticketRepository.saveTicket(ticket)
+            if (result.isSuccess) {
+                onSuccess()
+            }
         }
     }
 }
