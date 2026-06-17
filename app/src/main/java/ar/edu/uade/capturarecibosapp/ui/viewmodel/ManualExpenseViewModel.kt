@@ -32,7 +32,8 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
     var categoria by mutableStateOf("")
     var descripcion by mutableStateOf("")
     var fecha by mutableStateOf(LocalDate.now().format(uiFormatter))
-    
+    var photoUrl by mutableStateOf("")
+
     // UI states para errores
     var montoError by mutableStateOf(false)
     var establecimientoError by mutableStateOf(false)
@@ -69,6 +70,31 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
 
     fun onFechaChange(newValue: String) {
         fecha = newValue
+    }
+
+    fun initializeWithTicket(ticket: Ticket) {
+        monto = ticket.amount.toString()
+        establecimiento = ticket.establishment
+        descripcion = ticket.description
+        photoUrl = ticket.photoUrl ?: ""
+
+        // Formatear fecha de la API (yyyy-MM-dd) a la UI (dd/MM/yyyy)
+        fecha = try {
+            LocalDate.parse(ticket.createdAt, apiFormatter).format(uiFormatter)
+        } catch (e: Exception) {
+            ticket.createdAt // Fallback
+        }
+
+        // Buscamos el nombre de la categoría si ya tiene un ID asignado
+        viewModelScope.launch {
+            categories.collect { list ->
+                if (list.isNotEmpty()) {
+                    list.find { it.id == ticket.categoryId }?.let {
+                        categoria = it.name
+                    }
+                }
+            }
+        }
     }
 
     fun guardarGasto(onSuccess: () -> Unit) {

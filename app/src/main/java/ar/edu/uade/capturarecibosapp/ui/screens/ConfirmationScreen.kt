@@ -16,16 +16,12 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.ManualExpenseViewModel
 @Composable
 fun ConfirmationScreen(
     ticket: Ticket,
-    onConfirm: (Ticket) -> Unit,
+    onConfirm: () -> Unit,
     onCancel: () -> Unit,
     viewModel: ManualExpenseViewModel = viewModel()
 ) {
-    var comercio by remember { mutableStateOf(ticket.establishment) }
-    var total by remember { mutableStateOf(ticket.amount.toString()) }
-    var categoria by remember { mutableStateOf("") }
-    var fecha by remember { mutableStateOf("10/05/2026") } // Formato unificado
-
     val categories by viewModel.categories.collectAsState()
+    viewModel.initializeWithTicket(ticket)
 
     Scaffold(
         topBar = {
@@ -38,26 +34,23 @@ fun ConfirmationScreen(
     ) { paddingValues ->
         ExpenseForm(
             modifier = Modifier.padding(paddingValues),
-            monto = total,
-            onMontoChange = { total = it },
-            montoError = false,
-            establecimiento = comercio,
-            onEstablecimientoChange = { comercio = it },
+            monto = viewModel.monto,
+            onMontoChange = { viewModel.onMontoChange(it) },
+            montoError = viewModel.montoError,
+            establecimiento = viewModel.establecimiento,
+            onEstablecimientoChange = { viewModel.onEstablecimientoChange(it) },
             establecimientoError = false,
-            categoria = categoria,
-            onCategoriaChange = { categoria = it },
+            categoria = viewModel.categoria,
+            onDescripcionChange = {viewModel.onDescripcionChange(it)},
+            descripcion = viewModel.descripcion,
+            onCategoriaChange = { viewModel.onCategoriaChange(it) },
             categoriaError = false,
             categoriesList = categories,
-            fecha = fecha,
-            onFechaChange = { fecha = it },
+            fecha = viewModel.fecha,
+            onFechaChange = { viewModel.onFechaChange(it) },
             buttonText = "Confirmar y Guardar",
             onButtonClick = {
-                onConfirm(
-                    ticket.copy(
-                        establishment = comercio,
-                        amount = total.toFloatOrNull() ?: 0f
-                    )
-                )
+                viewModel.guardarGasto { onConfirm() }
             }
         )
     }
