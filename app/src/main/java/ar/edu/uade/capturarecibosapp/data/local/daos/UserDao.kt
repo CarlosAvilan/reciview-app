@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
 import ar.edu.uade.capturarecibosapp.data.model.User
 import ar.edu.uade.capturarecibosapp.data.model.UserPreferences
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,9 @@ interface UserDao {
     @Query("UPDATE user_preferences SET notifications_on = :enabled WHERE user_id = :userId")
     suspend fun updateNotifications(userId: String, enabled: Boolean)
 
-    @Query("UPDATE user_preferences SET monthly_max = :max WHERE user_id = :userId")
-    suspend fun updateBudget(userId: String, max: Float)
+    @Query("UPDATE user_preferences SET monthly_max = :max, sync_status = :status WHERE user_id = :userId")
+    suspend fun updateBudgetWithStatus(userId: String, max: Float, status: SyncStatus)
+
+    @Query("UPDATE user_preferences SET sync_status = :status WHERE user_id = :userId")
+    suspend fun updateSyncStatus(userId: String, status: SyncStatus)
 }

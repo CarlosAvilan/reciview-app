@@ -53,4 +53,12 @@ interface TicketDao {
     // Categorías de gastos del usuario (redundante si ya está en CategoryDao, pero lo dejamos por ahora si se usa aquí)
     @Query("SELECT * FROM user_categories WHERE user_id = :userId OR user_id IS NULL")
     fun getCategoriesForUser(userId: String): Flow<List<UserCategory>>
+
+    @Query("""
+        SELECT SUM(amount) FROM tickets 
+        WHERE user_id = :userId 
+        AND category_id = (SELECT id FROM user_categories WHERE name = :categoryName AND (user_id = :userId OR user_id IS NULL) LIMIT 1)
+        AND sync_status != 'PENDIENTE_ELIMINACION'
+    """)
+    fun getTotalSpentFromTickets(userId: String, categoryName: String): Flow<Double?>
 }

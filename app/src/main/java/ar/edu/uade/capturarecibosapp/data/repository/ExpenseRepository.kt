@@ -2,18 +2,21 @@ package ar.edu.uade.capturarecibosapp.data.repository
 
 import ar.edu.uade.capturarecibosapp.data.local.daos.CategoryDao
 import ar.edu.uade.capturarecibosapp.data.local.daos.ExpenseDao
+import ar.edu.uade.capturarecibosapp.data.local.daos.TicketDao
 import ar.edu.uade.capturarecibosapp.data.model.CategoryDto
 import ar.edu.uade.capturarecibosapp.data.model.ExpenseDto
 import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.remote.ExpenseApiService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 class ExpenseRepository(
     val expenseDao: ExpenseDao,
     val categoryDao: CategoryDao,
-    private val apiService: ExpenseApiService
+    val ticketDao: TicketDao,
+    private val apiService: ExpenseApiService,
 ) {
 
     fun getExpensesForUser(userId: String): Flow<List<ExpenseItem>> {
@@ -29,7 +32,12 @@ class ExpenseRepository(
     }
 
     fun getTotalSpentByCategory(userId: String, categoryName: String): Flow<Double> {
-        return expenseDao.getTotalSpentByCategory(userId, categoryName).map { it ?: 0.0 }
+        val manualSpentFlow = expenseDao.getTotalSpentByCategory(userId, categoryName)
+        val ticketSpentFlow = ticketDao.getTotalSpentFromTickets(userId, categoryName)
+        
+        return combine(manualSpentFlow, ticketSpentFlow) { manual, ticket ->
+            (manual ?: 0.0) + (ticket ?: 0.0)
+        }
     }
 
     suspend fun saveExpense(expense: ExpenseItem): Result<Unit> {

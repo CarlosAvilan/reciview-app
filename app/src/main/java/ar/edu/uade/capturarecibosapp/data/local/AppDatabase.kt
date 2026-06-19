@@ -7,7 +7,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import ar.edu.uade.capturarecibosapp.data.local.daos.*
-import ar.edu.uade.capturarecibosapp.data.local.seeders.ExpenseSeeder
 import ar.edu.uade.capturarecibosapp.data.local.seeders.HelpSeeder
 import ar.edu.uade.capturarecibosapp.data.local.seeders.TicketSeeder
 import ar.edu.uade.capturarecibosapp.data.local.seeders.UserSeeder
@@ -26,9 +25,9 @@ import kotlinx.coroutines.launch
         ExpenseItem::class,
         User::class,
         UserCategory::class,
-        UserPreferences::class
+        UserPreferences::class,
     ],
-    version = 5,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -54,7 +53,7 @@ abstract class AppDatabase : RoomDatabase() {
                 )
 
                 // Precarga de datos
-                .addCallback(object : RoomDatabase.Callback() {
+                .addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
                         CoroutineScope(Dispatchers.IO).launch {
@@ -69,20 +68,11 @@ abstract class AppDatabase : RoomDatabase() {
                             val userDao = database.userDao()
                             userDao.insertUser(UserSeeder().provideInitialUser())
                             userDao.insertPreferences(UserSeeder().provideInitialPreferences())
-
-                            // Precarga de Ticket Seeders
-                            val ticketDao = database.ticketDao()
-                            // ticketDao.insertTickets(TicketSeeder().provideInitialTickets())
-                            // ticketDao.insertTicketItems(TicketSeeder().provideInitialTicketItems())
-
-                            // Precarga de Expenses para el usuario mock
-                            val expenseDao = database.expenseDao()
-                            // expenseDao.insertExpenses(ExpenseSeeder().provideInitialExpenses())
                         }
                     }
                 })
 
-                .fallbackToDestructiveMigration()
+                .fallbackToDestructiveMigration(true)
                 .build()
 
                 INSTANCE = instance

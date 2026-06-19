@@ -31,6 +31,9 @@ interface CategoryDao {
     @Query("SELECT * FROM user_categories WHERE id = :id")
     suspend fun getCategoryById(id: Long): UserCategory?
 
+    @Query("SELECT * FROM user_categories WHERE id = :id")
+    fun getCategoryByIdFlow(id: Long): Flow<UserCategory?>
+
     @Query("SELECT * FROM user_categories WHERE remote_id = :remoteId")
     suspend fun getCategoryByRemoteId(remoteId: Long): UserCategory?
 
@@ -39,4 +42,7 @@ interface CategoryDao {
 
     @Query("DELETE FROM user_categories")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM user_categories WHERE name = :name AND (user_id = :userId OR user_id IS NULL) LIMIT 1")
+    suspend fun getCategoryByName(name: String, userId: String): UserCategory?
 }

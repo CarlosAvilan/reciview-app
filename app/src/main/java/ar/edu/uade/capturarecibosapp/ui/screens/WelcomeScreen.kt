@@ -29,7 +29,7 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.WelcomeViewModel
 
 @Composable
 fun WelcomeScreen(
-    viewModel: WelcomeViewModel = viewModel(),
+    viewModel: WelcomeViewModel,
     onCategoriesClick: () -> Unit,
     onManualClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -85,7 +85,10 @@ fun WelcomeScreen(
 
             // PRESUPUESTO
             item {
-                BudgetProgressCard(budgetPercentage = budgetPercentage)
+                BudgetProgressCard(
+                    budgetPercentage = budgetPercentage,
+                    monthlyMax = viewModel.monthlyMaxLabel
+                )
             }
 
             // ACCIONES RÁPIDAS
@@ -231,7 +234,7 @@ private fun TotalSpentCard(
 }
 
 @Composable
-private fun BudgetProgressCard(budgetPercentage: Float) {
+private fun BudgetProgressCard(budgetPercentage: Float, monthlyMax: String) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = "Tu Presupuesto Mensual",
@@ -250,7 +253,7 @@ private fun BudgetProgressCard(budgetPercentage: Float) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Límite: $60.000", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                    Text("Límite: $monthlyMax", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                     Text("${(budgetPercentage * 100).toInt()}%", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
