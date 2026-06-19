@@ -35,7 +35,7 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     val categories: StateFlow<List<CategoryItem>> = repository.getCategories(userId)
         .onEach { _rawCategories.value = it }
         .flatMapLatest { list ->
-            if (list.isEmpty()) return@flatMapLatest flowOf(emptyList<CategoryItem>())
+            if (list.isEmpty()) return@flatMapLatest flowOf(emptyList())
             
             val flows = list.map { category ->
                 expenseRepository.getTotalSpentByCategory(userId, category.name)
@@ -44,7 +44,7 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
                             icon = category.icon,
                             name = category.name,
                             spent = spent,
-                            budget = category.budget
+                            budget = category.budget,
                         )
                     }
             }
@@ -71,7 +71,7 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
      * Busca una categoría por su nombre.
      */
     fun getCategoryByName(name: String?): UserCategory? {
-        if (name == "new" || name == null) return null
+        if ((name == "new") || (name == null)) return null
         return _rawCategories.value.find { it.name == name }
     }
 
@@ -96,7 +96,7 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
                 .replace(",", ".")
                 .trim()
             cleanLimite.toDoubleOrNull()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
 

@@ -16,6 +16,7 @@ import java.util.Locale
 
 class MyExpensesViewModel(application: Application) : AndroidViewModel(application) {
     private val expenseRepository = DependencyProvider.provideExpenseRepository(application)
+    private val ticketRepository = DependencyProvider.provideTicketRepository(application)
     private val userId = SessionManager.userId ?: ""
     
     // Cache de categorías para evitar múltiples suscripciones
@@ -26,7 +27,22 @@ class MyExpensesViewModel(application: Application) : AndroidViewModel(applicati
             initialValue = emptyList()
         )
 
-    val transactions: StateFlow<List<ExpenseItem>> = expenseRepository.getExpensesForUser(userId)
+    private val ticketsWithCategories: Flow<List<ExpenseItem>> = ticketRepository.getTicketsWithCategories(userId)
+        .map { list ->
+            list.map { (ticket, category) ->
+                ExpenseItem(
+                    id = ticket.id,
+                    photoUrl = 0, // Ticket usa String photoUrl, ExpenseItem usa Int. Por ahora 0.
+                    userId = ticket.userId,
+                    title = ticket.establishment,
+                    date = formatTicketDate(ticket.createdAt),
+                    category = category?.name ?: "Sin categoría",
+                    amount = ticket.amount.toDouble()
+                )
+            }
+        }
+
+    val transactions: StateFlow<List<ExpenseItem>> = ticketsWithCategories
         .map { it.take(5) }
         .stateIn(
             scope = viewModelScope,
@@ -34,12 +50,22 @@ class MyExpensesViewModel(application: Application) : AndroidViewModel(applicati
             initialValue = emptyList()
         )
 
-    val allTransactions: StateFlow<List<ExpenseItem>> = expenseRepository.getExpensesForUser(userId)
+    val allTransactions: StateFlow<List<ExpenseItem>> = ticketsWithCategories
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    private fun formatTicketDate(apiDate: String): String {
+        return try {
+            val apiFormatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val uiFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            java.time.LocalDate.parse(apiDate, apiFormatter).format(uiFormatter)
+        } catch (e: Exception) {
+            apiDate
+        }
+    }
 
     fun getIconForCategory(categoryName: String): String {
         return userCategories.value.find { it.name == categoryName }?.icon ?: "📁"

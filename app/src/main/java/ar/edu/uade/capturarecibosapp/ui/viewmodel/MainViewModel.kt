@@ -24,7 +24,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         private set
 
     // Estado para saber si estamos procesando la imagen (loading)
-    var isProcessing by mutableStateOf(false)
+    var isProcessing by mutableStateOf(value = false)
         private set
 
     fun procesarImagen(bitmap: Bitmap) {
@@ -45,10 +45,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val userId = SessionManager.userId ?: "user_mock"
                 val ticketToSave = ticket.copy(userId = userId)
                 
-                ticketRepository.saveTicket(ticketToSave)
+                val result = ticketRepository.saveTicket(ticketToSave)
 
-                // Limpiamos el estado después de subir con éxito
-                ticketDetectado = null
+                if (result.isSuccess) {
+                    // Limpiamos el estado después de subir con éxito
+                    ticketDetectado = null
+                } else {
+                    Log.e("ReciView", "Error al guardar ticket: ${result.exceptionOrNull()?.message}")
+                }
             } catch (e: Exception) {
                 Log.e("ReciView", "Error al enviar: ${e.message}")
             }

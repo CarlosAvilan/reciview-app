@@ -53,36 +53,53 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
     val uiState: StateFlow<CategoryDetailUiState> = _uiState.asStateFlow()
 
     private var currentCategory: UserCategory? = null
+    private val categoryIdFlow = MutableStateFlow<Long?>(null)
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     fun loadCategory(categoryName: String) {
         viewModelScope.launch {
             _uiState.value = CategoryDetailUiState.Loading
             
-            // Buscamos la categoría por nombre (como se usa en el repo actual)
-            val categories = categoryRepository.getCategories(userId).first()
-            val category = categories.find { it.name == categoryName }
+            // Primero buscamos por nombre para obtener el ID inicial si no lo tenemos
+            val initialCategory = categoryRepository.getCategories(userId).first().find { it.name == categoryName }
             
-            if (category != null) {
-                currentCategory = category
-                editName = category.name
-                editBudget = category.budget.toString()
-                editIcon = category.icon
-                
-                // Observamos los gastos de esta categoría
-                expenseRepository.getExpensesForUser(userId)
-                    .map { list -> 
-                        list.filter { it.category == category.name } 
-                    }
-                    .collect { expenses ->
-                        val filteredExpenses = filterExpenses(expenses)
-                        _uiState.value = CategoryDetailUiState.Success(
-                            category = category,
-                            expenses = filteredExpenses,
-                            totalSpent = filteredExpenses.sumOf { it.amount }
-                        )
-                    }
-            } else {
+            if (initialCategory == null) {
                 _uiState.value = CategoryDetailUiState.Error("Categoría no encontrada")
+                return@launch
+            }
+
+            categoryIdFlow.value = initialCategory.id
+
+            categoryIdFlow.flatMapLatest { id ->
+                if (id == null) flowOf(CategoryDetailUiState.Error("Categoría no encontrada"))
+                else {
+                    combine(
+                        categoryRepository.categoryDao.getCategoryByIdFlow(id),
+                        expenseRepository.getExpensesForUser(userId)
+                    ) { category, allExpenses ->
+                        if (category == null) {
+                            CategoryDetailUiState.Error("Categoría no encontrada")
+                        } else {
+                            currentCategory = category
+                            // Solo actualizamos los campos de edición si no están siendo manipulados
+                            // O simplemente los inicializamos la primera vez
+                            if (editName.isEmpty()) editName = category.name
+                            if (editBudget.isEmpty()) editBudget = category.budget.toString()
+                            
+                            editIcon = category.icon
+                            
+                            val categoryExpenses = allExpenses.filter { it.category == category.name }
+                            val filteredExpenses = filterExpenses(categoryExpenses)
+                            CategoryDetailUiState.Success(
+                                category = category,
+                                expenses = filteredExpenses,
+                                totalSpent = filteredExpenses.sumOf { it.amount }
+                            )
+                        }
+                    }
+                }
+            }.collect { state ->
+                _uiState.value = state
             }
         }
     }

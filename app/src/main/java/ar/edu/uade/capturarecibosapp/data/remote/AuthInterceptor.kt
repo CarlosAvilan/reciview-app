@@ -13,9 +13,13 @@ class AuthInterceptor : Interceptor {
         val original = chain.request()
         val requestBuilder = original.newBuilder()
             // La apikey se inyecta en todas las peticiones
-            .addHeader("apikey", BuildConfig.API_KEY)
-            .addHeader("Content-Type", "application/json")
-            .addHeader("Prefer", "return=representation")
+            .header("apikey", BuildConfig.API_KEY)
+            .header("Content-Type", "application/json")
+
+        // Solo agregar Prefer si no está ya definido en la interfaz del servicio
+        if (original.header("Prefer") == null) {
+            requestBuilder.header("Prefer", "return=representation")
+        }
 
         val path = original.url.encodedPath
         // En endpoints de autenticación, el header Authorization debe ser nulo
