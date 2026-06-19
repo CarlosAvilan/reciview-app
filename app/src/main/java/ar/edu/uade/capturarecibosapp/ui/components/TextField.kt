@@ -2,6 +2,7 @@ package ar.edu.uade.capturarecibosapp.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -11,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -28,7 +30,8 @@ fun TextField(
     readOnly: Boolean = false,
     singleLine: Boolean = true,
     isPassword: Boolean = false,
-    isError: Boolean = false
+    isError: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
 
     var passwordVisible by remember {
@@ -39,6 +42,7 @@ fun TextField(
         value = value,
         onValueChange = onValueChange,
         isError = isError,
+        keyboardOptions = keyboardOptions,
         // Solo mostramos el label si no está vacío
         label = if (label.isNotEmpty()) { { Text(label) } } else null,
         // Agregamos el placeholder

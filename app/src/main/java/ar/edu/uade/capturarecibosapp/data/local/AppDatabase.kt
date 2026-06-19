@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
         UserCategory::class,
         UserPreferences::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

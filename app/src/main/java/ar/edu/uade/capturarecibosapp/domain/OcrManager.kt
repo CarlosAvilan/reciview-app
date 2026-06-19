@@ -33,17 +33,17 @@ class OcrManager {
                 onResult(Ticket(
                     establishment = comercio,
                     amount = total.toFloat(),
-                    createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString(),
+                    createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString(),
                     userId = "",
                     photoUrl = "",
-                    categoryId = 0,
+                    categoryId = null,
                     description = ""
                 ))
             }
             .addOnFailureListener {
                 onResult(
                     Ticket(
-                        createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                        createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                         userId = "",
                         categoryId = null,
                         establishment = "Error",

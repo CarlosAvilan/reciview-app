@@ -1,19 +1,23 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
+import android.app.Application
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.DependencyProvider
+import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.domain.OcrManager
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val ocrManager = OcrManager()
+    private val ticketRepository = DependencyProvider.provideTicketRepository(application)
 
     // Estado para controlar qué ticket se está editando/confirmando
     var ticketDetectado by mutableStateOf<Ticket?>(null)
@@ -37,8 +41,11 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 Log.d("ReciView", "Subiendo: ${ticket.establishment}, Total: ${ticket.amount}, Desc: ${ticket.description}")
-                // Aca iría la llamada a Retrofit
-                // RetrofitClient.instance.enviarTicket(ticket)
+                
+                val userId = SessionManager.userId ?: "user_mock"
+                val ticketToSave = ticket.copy(userId = userId)
+                
+                ticketRepository.saveTicket(ticketToSave)
 
                 // Limpiamos el estado después de subir con éxito
                 ticketDetectado = null

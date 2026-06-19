@@ -1,18 +1,18 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
-class PersonalInfoViewModel(
-    private val userRepository: UserRepository = DependencyProvider.provideUserRepository()
-) : ViewModel() {
+class PersonalInfoViewModel(application: Application) : AndroidViewModel(application) {
+    private val userRepository: UserRepository = DependencyProvider.provideUserRepository(application)
     var nombre by mutableStateOf("")
     var email by mutableStateOf("")
     var telefono by mutableStateOf("")

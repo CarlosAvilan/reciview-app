@@ -62,7 +62,9 @@ fun AppNavigation(
         }
 
         composable(Screen.Welcome.route) {
+            val welcomeViewModel: WelcomeViewModel = viewModel()
             WelcomeScreen(
+                viewModel = welcomeViewModel,
                 onCategoriesClick = { navController.navigate(Screen.Categories.route) },
                 onProfileClick = { navController.navigate(Screen.Profile.route) },
                 onManualClick = { navController.navigate(Screen.ManualExpense.route) },

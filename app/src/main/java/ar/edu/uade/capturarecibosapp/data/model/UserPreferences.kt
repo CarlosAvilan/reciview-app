@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
+
 @Entity(tableName = "user_preferences")
 data class UserPreferences(
     @PrimaryKey(autoGenerate = true)
@@ -13,5 +15,7 @@ data class UserPreferences(
     @ColumnInfo(name = "monthly_max")
     val monthlyMax: Float,
     @ColumnInfo(name = "user_id")
-    val userId: String
+    val userId: String,
+    @ColumnInfo(name = "sync_status")
+    val syncStatus: SyncStatus = SyncStatus.ACTUALIZADO
 )
