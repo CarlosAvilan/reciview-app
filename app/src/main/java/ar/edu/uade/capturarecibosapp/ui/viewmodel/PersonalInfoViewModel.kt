@@ -39,7 +39,7 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
             isLoading = false
             result.onSuccess { profile ->
                 nombre = profile.name
-                email = profile.email ?: ""
+                email = profile.email?.takeIf { it.isNotBlank() } ?: (SessionManager.userEmail ?: "")
                 telefono = profile.phone ?: ""
                 fechaNacimiento = profile.birth
                 paisResidencia = profile.country ?: ""
