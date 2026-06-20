@@ -62,17 +62,19 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
         val userId = SessionManager.userId ?: return
         
         viewModelScope.launch {
-            userRepository.getProfile()
-                .onSuccess { profile ->
-                    userName = resolveDisplayName(profile.name, profile.email)
-                }
-                .onFailure {
-                    userName = resolveDisplayName(null, SessionManager.userEmail)
-                }
-
             // Sincronizar preferencias de Supabase
             userRepository.fetchAndCachePreferences()
-            
+
+            launch {
+                userRepository.getProfile()
+                    .onSuccess { profile ->
+                        userName = resolveDisplayName(profile.name, profile.email)
+                    }
+                    .onFailure {
+                        userName = resolveDisplayName(null, SessionManager.userEmail)
+                    }
+            }
+
             // Observar preferencias (presupuesto)
             launch {
                 userRepository.getLocalPreferences().collectLatest { prefs ->
