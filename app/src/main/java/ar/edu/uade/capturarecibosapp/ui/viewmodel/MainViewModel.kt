@@ -12,12 +12,20 @@ import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.domain.OcrManager
+import ar.edu.uade.capturarecibosapp.events.MainNavigationEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val ocrManager = OcrManager()
     private val ticketRepository = DependencyProvider.provideTicketRepository(application)
+
+    // Eventos de navegación para desacoplar la lógica de la UI
+    private val _navigationEvents = MutableSharedFlow<MainNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     // Estado para controlar qué ticket se está editando/confirmando
     var ticketDetectado by mutableStateOf<Ticket?>(null)
@@ -34,6 +42,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Log.d("ReciView", "OCR finalizado: ${ticket.establishment}")
             ticketDetectado = ticket
             isProcessing = false
+            
+            // Disparamos el evento de navegación
+            viewModelScope.launch {
+                _navigationEvents.emit(MainNavigationEvent.NavigateToConfirmation)
+            }
         }
     }
 

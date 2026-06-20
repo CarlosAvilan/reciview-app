@@ -9,9 +9,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import ar.edu.uade.capturarecibosapp.events.MainNavigationEvent
 import ar.edu.uade.capturarecibosapp.ui.screens.*
 import ar.edu.uade.capturarecibosapp.ui.screens.success.*
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.*
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AppNavigation(
@@ -20,10 +22,14 @@ fun AppNavigation(
     startDestination: String,
     onScanClick: () -> Unit
 ) {
-    // Escuchamos cambios en ticketDetectado para navegar a la pantalla de confirmación.
-    LaunchedEffect(mainViewModel.ticketDetectado) {
-        if (mainViewModel.ticketDetectado != null) {
-            navController.navigate(Screen.Confirmation.route)
+    // Escuchamos eventos de navegación del ViewModel para desacoplar la lógica de negocio de la UI
+    LaunchedEffect(Unit) {
+        mainViewModel.navigationEvents.collectLatest { event ->
+            when (event) {
+                is MainNavigationEvent.NavigateToConfirmation -> {
+                    navController.navigate(Screen.Confirmation.route)
+                }
+            }
         }
     }
 
@@ -296,8 +302,8 @@ fun AppNavigation(
                 ConfirmationScreen(
                     ticket = ticket,
                     onConfirm = {
+                        mainViewModel.confirmarYSubir(ticket)
                         navController.navigate(Screen.TicketRegistered.route) {
-                            mainViewModel.confirmarYSubir(ticket)
                             popUpTo(Screen.Welcome.route) { inclusive = false }
                         }
                     },
