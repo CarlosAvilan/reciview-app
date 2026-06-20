@@ -10,15 +10,12 @@ import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.TicketItem
-import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import kotlin.math.abs
-import kotlin.math.roundToInt
 
 class WelcomeViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -33,7 +30,7 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
         DateTimeFormatter.ofPattern("MMMM", Locale.forLanguageTag("es-AR"))
     )
 
-    var userName by mutableStateOf(SessionManager.userId?.let { "Usuario" } ?: "Juan")
+    var userName by mutableStateOf("")
         private set
 
     var totalSpent by mutableStateOf("$0")
@@ -65,6 +62,14 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
         val userId = SessionManager.userId ?: return
         
         viewModelScope.launch {
+            userRepository.getProfile()
+                .onSuccess { profile ->
+                    userName = resolveDisplayName(profile.name, profile.email)
+                }
+                .onFailure {
+                    userName = resolveDisplayName(null, SessionManager.userEmail)
+                }
+
             // Sincronizar preferencias de Supabase
             userRepository.fetchAndCachePreferences()
             
@@ -123,6 +128,15 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
                 }
             }
         }
+    }
+
+    private fun resolveDisplayName(name: String?, email: String?): String {
+        if (name != null) return name;
+        
+        val emailName = email?.substringBefore("@")?.trim()?.takeIf { it.isNotBlank() }
+        if (emailName != null) return emailName
+
+        return "Usuario"
     }
 
     private fun updateBudgetPercentage() {
