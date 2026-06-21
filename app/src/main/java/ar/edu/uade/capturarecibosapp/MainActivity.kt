@@ -21,6 +21,7 @@ import ar.edu.uade.capturarecibosapp.navigation.AppNavigation
 import ar.edu.uade.capturarecibosapp.navigation.Screen
 import ar.edu.uade.capturarecibosapp.scanner.ScannerManager
 import ar.edu.uade.capturarecibosapp.ui.components.BottomBar
+import ar.edu.uade.capturarecibosapp.ui.components.LoadingOverlay
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MainViewModel
 class MainActivity : ComponentActivity() {
@@ -98,24 +99,7 @@ fun ReciViewApp(
             val isNavigatingToConfirm = viewModel.ticketDetectado != null && currentRoute != Screen.Confirmation.route
             
             if (viewModel.isProcessing || isNavigatingToConfirm) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color.Black.copy(alpha = 0.6f)
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Analizando ticket...",
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                }
+                LoadingOverlay(text = "Analizando ticket...")
             }
         }
     }

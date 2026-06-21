@@ -40,4 +40,22 @@ interface UserDao {
 
     @Query("UPDATE user_preferences SET sync_status = :status WHERE user_id = :userId")
     suspend fun updateSyncStatus(userId: String, status: SyncStatus)
+
+    @Query("DELETE FROM profiles WHERE user_id = :userId")
+    suspend fun deleteUserById(userId: String)
+
+    @Query("DELETE FROM user_preferences WHERE user_id = :userId")
+    suspend fun deletePreferencesByUserId(userId: String)
+
+    @Query("DELETE FROM user_categories WHERE user_id = :userId")
+    suspend fun deleteCategoriesByUserId(userId: String)
+
+    @Query("DELETE FROM items WHERE ticket_id IN (SELECT id FROM tickets WHERE user_id = :userId)")
+    suspend fun deleteTicketItemsByUserId(userId: String)
+
+    @Query("DELETE FROM tickets WHERE user_id = :userId")
+    suspend fun deleteTicketsByUserId(userId: String)
+
+    @Query("DELETE FROM expense_item WHERE user_id = :userId")
+    suspend fun deleteExpensesByUserId(userId: String)
 }

@@ -24,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.Button
+import ar.edu.uade.capturarecibosapp.ui.components.LoadingOverlay
+import ar.edu.uade.capturarecibosapp.ui.components.LoadingState
 import ar.edu.uade.capturarecibosapp.ui.components.SectionLabel
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
@@ -191,6 +193,7 @@ fun PersonalInfoScreen(
         }
     }
 
+    // MODAL DE CONFIRMACIÓN
     if (showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
@@ -218,6 +221,37 @@ fun PersonalInfoScreen(
                     onClick = { showDeleteConfirmation = false }
                 ) {
                     Text(text = "Cancelar")
+                }
+            }
+        )
+    }
+
+    // Spinner de carga
+    when (viewModel.loadingState) {
+        LoadingState.DELETING_ACCOUNT -> {
+            LoadingOverlay(text = "Eliminando cuenta...")
+        }
+        LoadingState.SAVING_CHANGES -> {
+            LoadingOverlay(text = "Guardando cambios...")
+        }
+        else -> {}
+    }
+
+    // MODAL DE ERROR (se muestra si algo falla)
+    if (viewModel.errorMessage != null) {
+        AlertDialog(
+            onDismissRequest = { viewModel.errorMessage = null }, // Limpia el error al tocar fuera
+            title = {
+                Text(text = "Error")
+            },
+            text = {
+                Text(text = viewModel.errorMessage!!)
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { viewModel.errorMessage = null } // Limpia el error al aceptar
+                ) {
+                    Text(text = "Aceptar")
                 }
             }
         )
