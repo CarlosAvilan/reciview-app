@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val ocrManager = OcrManager()
-    private val ticketRepository = DependencyProvider.provideTicketRepository(application)
 
     // Eventos de navegación para desacoplar la lógica de la UI
     private val _navigationEvents = MutableSharedFlow<MainNavigationEvent>()
