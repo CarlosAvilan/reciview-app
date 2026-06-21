@@ -27,7 +27,7 @@ class RegisterUserUseCase(
         email: String,
         password: String,
         name: String,
-        birth: LocalDate,
+        birth: LocalDate?,
         country: String,
         termsAccepted: Boolean
     ): Result {
@@ -37,6 +37,10 @@ class RegisterUserUseCase(
 
         if (email.isEmpty() || !email.contains("@")) {
             return Result.EmailError("Ingresa un correo válido")
+        }
+
+        if (birth == null) {
+            return Result.BirthDateError("Ingresa una fecha de nacimiento");
         }
 
         if (!birth.isBefore(LocalDate.now())) {

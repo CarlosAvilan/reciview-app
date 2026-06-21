@@ -23,8 +23,6 @@ class RegisterViewModel : ViewModel() {
     private val authRepository = DependencyProvider.provideAuthRepository()
     private val registerUserUseCase = RegisterUserUseCase(authRepository)
 
-    private val apiDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
     var nombreCompleto by mutableStateOf("")
     var correoElectronico by mutableStateOf("")
     var fechaNacimiento by mutableStateOf<LocalDate?>(null)
@@ -79,25 +77,18 @@ class RegisterViewModel : ViewModel() {
         haLeidoTerminos = true
     }
 
-    fun registrarse(context: Context, onSuccess: () -> Unit) {
+    fun registrarse(onSuccess: () -> Unit) {
         passwordError = false
         emailError = false
         birthDateError = false
-
-        val birthDate = fechaNacimiento
-        if (birthDate == null) {
-            birthDateError = true
-            uiState = RegisterState.Error("Seleccioná tu fecha de nacimiento")
-            return
-        }
-
         uiState = RegisterState.Loading
+
         viewModelScope.launch {
             when (val result = registerUserUseCase(
                 email = correoElectronico,
                 password = password,
                 name = nombreCompleto,
-                birth = birthDate,
+                birth = fechaNacimiento,
                 country = paisNacimiento,
                 termsAccepted = terminosAceptados
             )) {

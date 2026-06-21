@@ -236,7 +236,7 @@ fun RegisterScreen(
 
             Button(
                 text = "Registrarme",
-                onClick = { viewModel.registrarse(context, onRegisterClick) },
+                onClick = { viewModel.registrarse(onRegisterClick) },
                 enabled = viewModel.haLeidoTerminos && viewModel.uiState !is RegisterState.Loading
             )
 
