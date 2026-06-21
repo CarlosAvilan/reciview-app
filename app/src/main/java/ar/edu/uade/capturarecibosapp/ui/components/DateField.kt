@@ -56,8 +56,6 @@ fun DateField(
             }
         )
 
-        // Overlay para capturar el click incluso siendo readOnly,
-        // mismo patrón que ya usa el dropdown de país en RegisterScreen.
         Box(
             modifier = Modifier
                 .matchParentSize()

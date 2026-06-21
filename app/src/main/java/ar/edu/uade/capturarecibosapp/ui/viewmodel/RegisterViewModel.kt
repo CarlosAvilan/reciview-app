@@ -28,13 +28,8 @@ class RegisterViewModel : ViewModel() {
 
     var nombreCompleto by mutableStateOf("")
     var correoElectronico by mutableStateOf("")
-
-    // Antes era String libre tipeado a mano. Ahora es una fecha real
-    // elegida con DateField (modal DatePicker) -> nunca puede ser
-    // un string mal formado o una fecha que no existe en el calendario.
     var fechaNacimiento by mutableStateOf<LocalDate?>(null)
         private set
-
     var paisNacimiento by mutableStateOf("")
     var password by mutableStateOf("")
 

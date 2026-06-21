@@ -71,12 +71,6 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
         return _rawCategories.value.find { it.name == name }
     }
 
-    /**
-     * El ViewModel ya NO valida ni parsea moneda. Solo:
-     * 1) limpia estado de error previo
-     * 2) delega la regla de negocio al Use Case
-     * 3) traduce el resultado a estado de UI
-     */
     fun saveCategory(
         nombre: String,
         limite: String,
