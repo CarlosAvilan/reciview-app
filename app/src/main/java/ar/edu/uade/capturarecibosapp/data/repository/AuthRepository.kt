@@ -89,6 +89,21 @@ class AuthRepository(private val apiService: AuthApiService) {
         }
     }
 
+    suspend fun changePassword(password: String): Result<Unit> {
+        return try{
+            val response = apiService.changePassword(mapOf("password" to password))
+            if(response.isSuccessful){
+                Result.success(Unit)
+            }
+            else{
+                Result.failure(Exception("Error al cambiar la contraseña"))
+            }
+        }
+        catch(e: Exception){
+            Result.failure(e)
+        }
+    }
+
     suspend fun sendRecoveryCode(email: String): Result<Unit> {
         return resetPassword(email)
     }

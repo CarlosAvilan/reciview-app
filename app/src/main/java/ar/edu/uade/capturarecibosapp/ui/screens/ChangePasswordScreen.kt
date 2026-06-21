@@ -68,6 +68,7 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel = viewModel(), onBac
                 onValueChange = { viewModel.onContraseniaAnteriorChange(it) },
                 label = "Contraseña actual",
                 isPassword = true,
+                isError = viewModel.oldPasswordError
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -77,6 +78,7 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel = viewModel(), onBac
                 onValueChange = { viewModel.onNuevaContraseniaChange(it) },
                 label = "Nueva contraseña",
                 isPassword = true,
+                isError = viewModel.newPasswordError
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -86,7 +88,17 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel = viewModel(), onBac
                 onValueChange = { viewModel.onNuevaContraseniaRepetidaChange(it) },
                 label = "Repetir nueva contraseña",
                 isPassword = true,
+                isError = viewModel.confirmPasswordError
             )
+
+            if (viewModel.errorMessage != null) {
+                Text(
+                    text = viewModel.errorMessage!!,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 8.dp).align(Alignment.Start)
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
