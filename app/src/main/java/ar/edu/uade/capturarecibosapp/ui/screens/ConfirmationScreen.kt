@@ -21,7 +21,10 @@ fun ConfirmationScreen(
     viewModel: ManualExpenseViewModel = viewModel()
 ) {
     val categories by viewModel.categories.collectAsState()
-    viewModel.initializeWithTicket(ticket)
+
+    LaunchedEffect(ticket.id) {
+        viewModel.initializeWithTicket(ticket)
+    }
 
     Scaffold(
         topBar = {
@@ -39,19 +42,21 @@ fun ConfirmationScreen(
             montoError = viewModel.montoError,
             establecimiento = viewModel.establecimiento,
             onEstablecimientoChange = { viewModel.onEstablecimientoChange(it) },
-            establecimientoError = false,
+            establecimientoError = viewModel.establecimientoError,
             categoria = viewModel.categoria,
-            onDescripcionChange = {viewModel.onDescripcionChange(it)},
+            onDescripcionChange = { viewModel.onDescripcionChange(it) },
             descripcion = viewModel.descripcion,
             onCategoriaChange = { viewModel.onCategoriaChange(it) },
-            categoriaError = false,
+            categoriaError = viewModel.categoriaError,
             categoriesList = categories,
             fecha = viewModel.fecha,
             onFechaChange = { viewModel.onFechaChange(it) },
             buttonText = "Confirmar y Guardar",
             onButtonClick = {
                 viewModel.guardarGasto { onConfirm() }
-            }
+            },
+            errorMessage = viewModel.errorMessage,
+            isLoading = viewModel.isLoading
         )
     }
 }

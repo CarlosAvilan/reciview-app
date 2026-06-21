@@ -22,13 +22,13 @@ import java.time.format.DateTimeFormatter
 fun ExpenseForm(
     monto: String,
     onMontoChange: (String) -> Unit,
-    montoError: Boolean,
+    montoError: String?,
     establecimiento: String,
     onEstablecimientoChange: (String) -> Unit,
-    establecimientoError: Boolean,
+    establecimientoError: String?,
     categoria: String,
     onCategoriaChange: (String) -> Unit,
-    categoriaError: Boolean,
+    categoriaError: String?,
     categoriesList: List<UserCategory>,
     fecha: String,
     onFechaChange: (String) -> Unit,
@@ -36,7 +36,9 @@ fun ExpenseForm(
     onDescripcionChange: (String) -> Unit = {},
     buttonText: String,
     onButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    errorMessage: String? = null,
+    isLoading: Boolean = false
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     var expandedCategory by remember { mutableStateOf(false) }
@@ -52,7 +54,8 @@ fun ExpenseForm(
 
         // MONTO
         SectionLabel(text = "MONTO")
-        AmountCard(value = monto, onValueChange = onMontoChange, isError = montoError)
+        AmountCard(value = monto, onValueChange = onMontoChange, isError = montoError != null)
+        FieldErrorText(montoError)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -62,8 +65,9 @@ fun ExpenseForm(
             value = establecimiento,
             onValueChange = onEstablecimientoChange,
             placeholder = "Ej: Starbucks, Coto...",
-            isError = establecimientoError
+            isError = establecimientoError != null
         )
+        FieldErrorText(establecimientoError)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -80,7 +84,7 @@ fun ExpenseForm(
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory)
                 },
-                isError = categoriaError,
+                isError = categoriaError != null,
                 modifier = Modifier.menuAnchor().fillMaxWidth()
             )
 
@@ -96,7 +100,7 @@ fun ExpenseForm(
                 } else {
                     categoriesList.forEach { category ->
                         DropdownMenuItem(
-                            text = { 
+                            text = {
                                 Row {
                                     Text(text = category.icon)
                                     Spacer(modifier = Modifier.width(8.dp))
@@ -112,6 +116,7 @@ fun ExpenseForm(
                 }
             }
         }
+        FieldErrorText(categoriaError)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -144,7 +149,7 @@ fun ExpenseForm(
                     .clickable { showDatePicker = true }
             )
         }
-        
+
         if (showDatePicker) {
             val datePickerState = rememberDatePickerState(
                 initialSelectedDateMillis = try {
@@ -179,13 +184,42 @@ fun ExpenseForm(
             }
         }
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Button(
-            text = buttonText,
-            onClick = onButtonClick
-        )
+        // ERROR GENERAL (falla de guardado/red, no un campo puntual)
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
+
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        } else {
+            Button(
+                text = buttonText,
+                onClick = onButtonClick
+            )
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Composable
+private fun FieldErrorText(message: String?) {
+    if (message != null) {
+        Text(
+            text = message,
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+        )
     }
 }

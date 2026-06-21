@@ -34,11 +34,18 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
     var descripcion by mutableStateOf("")
     var fecha by mutableStateOf(LocalDate.now().format(uiFormatter))
     var photoUrl by mutableStateOf("")
+    var montoError by mutableStateOf<String?>(null)
+        private set
+    var establecimientoError by mutableStateOf<String?>(null)
+        private set
+    var categoriaError by mutableStateOf<String?>(null)
+        private set
 
-    // UI states para errores
-    var montoError by mutableStateOf(false)
-    var establecimientoError by mutableStateOf(false)
-    var categoriaError by mutableStateOf(false)
+    // Estado de carga y error general (falla de red/guardado, no de validación)
+    var isLoading by mutableStateOf(false)
+        private set
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
 
     val categories: StateFlow<List<UserCategory>> = categoryRepository.getCategories(userId)
         .stateIn(
@@ -48,21 +55,23 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
         )
 
     fun onMontoChange(newValue: String) {
-        // Permitir solo números y un punto decimal
         if (newValue.isEmpty() || newValue.matches(Regex("""^\d*\.?\d*$"""))) {
             monto = newValue
-            montoError = false
+            montoError = null
+            errorMessage = null
         }
     }
 
     fun onEstablecimientoChange(newValue: String) {
         establecimiento = newValue
-        establecimientoError = false
+        establecimientoError = null
+        errorMessage = null
     }
 
     fun onCategoriaChange(newValue: String) {
         categoria = newValue
-        categoriaError = false
+        categoriaError = null
+        errorMessage = null
     }
 
     fun onDescripcionChange(newValue: String) {
@@ -99,11 +108,13 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun guardarGasto(onSuccess: () -> Unit) {
-        montoError = false
-        establecimientoError = false
-        categoriaError = false
+        montoError = null
+        establecimientoError = null
+        categoriaError = null
+        errorMessage = null
 
         viewModelScope.launch {
+            isLoading = true
             when (val result = saveManualExpenseUseCase(
                 montoRaw = monto,
                 establecimiento = establecimiento,
@@ -113,14 +124,19 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
                 userId = userId,
                 categories = categories.value
             )) {
-                is SaveManualExpenseUseCase.Result.Success -> onSuccess()
+                is SaveManualExpenseUseCase.Result.Success -> {
+                    isLoading = false
+                    onSuccess()
+                }
                 is SaveManualExpenseUseCase.Result.ValidationError -> {
+                    isLoading = false
                     montoError = result.montoError
                     establecimientoError = result.establecimientoError
                     categoriaError = result.categoriaError
                 }
                 is SaveManualExpenseUseCase.Result.Failure -> {
-                    // Si querés mostrar este error en UI, agregar un errorMessage al ViewModel
+                    isLoading = false
+                    errorMessage = result.message
                 }
             }
         }

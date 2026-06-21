@@ -17,11 +17,18 @@ class SaveManualExpenseUseCase(
 ) {
     sealed class Result {
         object Success : Result()
+
+        /**
+         * Cada campo errado trae su propio mensaje (o null si ese campo
+         * estaba bien). Así la UI puede mostrar texto puntual debajo de
+         * cada input, no solo el borde en rojo.
+         */
         data class ValidationError(
-            val montoError: Boolean,
-            val establecimientoError: Boolean,
-            val categoriaError: Boolean
+            val montoError: String?,
+            val establecimientoError: String?,
+            val categoriaError: String?
         ) : Result()
+
         data class Failure(val message: String) : Result()
     }
 
@@ -39,11 +46,23 @@ class SaveManualExpenseUseCase(
     ): Result {
         val amount = montoRaw.toFloatOrNull()
 
-        val montoError = amount == null || amount <= 0
-        val establecimientoError = establecimiento.isBlank()
-        val categoriaError = categoriaNombre.isBlank()
+        // Mensaje distinto según la razón puntual, no un genérico "campo inválido".
+        val montoError = when {
+            montoRaw.isBlank() -> "Ingresá un monto"
+            amount == null -> "El monto no es un número válido"
+            amount <= 0 -> "El monto debe ser mayor a 0"
+            else -> null
+        }
 
-        if (montoError || establecimientoError || categoriaError) {
+        val establecimientoError = if (establecimiento.isBlank()) {
+            "Ingresá el nombre del establecimiento"
+        } else null
+
+        val categoriaError = if (categoriaNombre.isBlank()) {
+            "Seleccioná una categoría"
+        } else null
+
+        if (montoError != null || establecimientoError != null || categoriaError != null) {
             return Result.ValidationError(montoError, establecimientoError, categoriaError)
         }
 
