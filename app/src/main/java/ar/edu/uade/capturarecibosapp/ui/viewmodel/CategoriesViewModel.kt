@@ -89,53 +89,7 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
         nameError = false
         budgetError = false
 
-        if (nombre.isBlank()) {
-            nameError = true
-            errorMessage = "El nombre no puede estar vacío"
-            return
-        }
-
-        val budget = try {
-            val cleanLimite = limite.replace("$", "")
-                .replace(".", "")
-                .replace(",", ".")
-                .trim()
-            cleanLimite.toDoubleOrNull()
-        } catch (_: Exception) {
-            null
-        }
-
-        if (budget == null) {
-            budgetError = true
-            errorMessage = "Ingresa un monto válido"
-            return
-        }
-
-        if (budget < 0) {
-            budgetError = true
-            errorMessage = "El presupuesto no puede ser negativo"
-            return
-        }
-
-        val category = existingCategory?.copy(
-            name = nombre,
-            icon = icon,
-            budget = budget
-        ) ?: UserCategory(
-            name = nombre,
-            icon = icon,
-            budget = budget,
-            userId = userId
-        )
-
         viewModelScope.launch {
-            val result = repository.saveCategory(category)
-            if (result.isSuccess) {
-                _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
-            } else {
-                errorMessage = "Error al guardar la categoría"
-            }
-
             when (val result = saveCategoryUseCase(nombre, limite, icon, userId, existingCategory)) {
                 is SaveCategoryUseCase.Result.Success -> {
                     _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)

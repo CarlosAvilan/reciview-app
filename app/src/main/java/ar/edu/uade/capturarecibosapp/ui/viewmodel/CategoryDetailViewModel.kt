@@ -136,50 +136,8 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
         nameError = false
         budgetError = false
 
-        if (editName.isBlank()) {
-            nameError = true
-            errorMessage = "El nombre no puede estar vacío"
-            return
-        }
-
-        val budget = try {
-            val cleanBudget = editBudget.replace("$", "")
-                .replace(".", "")
-                .replace(",", ".")
-                .trim()
-            cleanBudget.toDoubleOrNull()
-        } catch (e: Exception) {
-            null
-        }
-
-        if (budget == null) {
-            budgetError = true
-            errorMessage = "Ingresa un monto válido"
-            return
-        }
-
-        if (budget < 0) {
-            budgetError = true
-            errorMessage = "El presupuesto no puede ser negativo"
-            return
-        }
-
-        val category = currentCategory ?: return
-        val updatedCategory = category.copy(
-            name = editName,
-            budget = budget,
-            icon = editIcon
-        )
-
         viewModelScope.launch {
-            val result = categoryRepository.saveCategory(updatedCategory)
-            if (result.isSuccess) {
-                _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
-            } else {
-                errorMessage = "Error al actualizar la categoría"
-            }
-
-            when (val result = saveCategoryUseCase(editName, editBudget, editIcon, userId, category)) {
+           when (val result = saveCategoryUseCase(editName, editBudget, editIcon, userId, currentCategory)) {
                 is SaveCategoryUseCase.Result.Success -> _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
                 is SaveCategoryUseCase.Result.ValidationError -> {
                     nameError = result.nameError

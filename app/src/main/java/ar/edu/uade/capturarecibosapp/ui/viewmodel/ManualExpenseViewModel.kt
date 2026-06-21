@@ -114,40 +114,12 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun guardarGasto() {
-        val amount = monto.toFloatOrNull()
         montoError = null
         establecimientoError = null
         categoriaError = null
         errorMessage = null
 
         viewModelScope.launch {
-            // Buscamos el ID de la categoría seleccionada por nombre
-            val selectedCat = categories.value.find { it.name == categoria }
-
-            // Parseamos la fecha de la UI al formato de la API
-            val fechaApi = try {
-                LocalDate.parse(fecha, uiFormatter).format(apiFormatter)
-            } catch (e: Exception) {
-                fecha // fallback
-            }
-
-            val ticket = Ticket(
-                createdAt = fechaApi,
-                userId = userId,
-                categoryId = selectedCat?.id,
-                establishment = establecimiento,
-                amount = amount ?: 0f,
-                photoUrl = null, // Guardado manual sin foto
-                description = descripcion,
-                syncStatus = SyncStatus.PENDIENTE_AGREGAR
-            )
-            
-            val result = ticketRepository.saveTicket(ticket)
-            if (result.isSuccess) {
-                _navigationEvents.emit(ManualExpenseNavigationEvent.NavigateToSuccess)
-            }
-
-            isLoading = true
             when (val result = saveManualExpenseUseCase(
                 montoRaw = monto,
                 establecimiento = establecimiento,
