@@ -10,6 +10,7 @@ import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.repository.CategoryRepository
+import ar.edu.uade.capturarecibosapp.domain.usecase.SaveCategoryUseCase
 import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,6 +21,7 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     private val repository: CategoryRepository = DependencyProvider.provideCategoryRepository(application)
     private val expenseRepository = DependencyProvider.provideExpenseRepository(application)
     private val userId = SessionManager.userId ?: ""
+    private val saveCategoryUseCase = SaveCategoryUseCase(repository)
 
     var nameError by mutableStateOf(false)
         private set
@@ -28,15 +30,13 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
-    // Lista cruda de Room para búsquedas síncronas rápidas (compatibilidad con UI actual)
     private val _rawCategories = MutableStateFlow<List<UserCategory>>(emptyList())
 
-    // Observamos las categorías desde el repositorio y las mapeamos a la UI inyectando el gasto real
     val categories: StateFlow<List<CategoryItem>> = repository.getCategories(userId)
         .onEach { _rawCategories.value = it }
         .flatMapLatest { list ->
             if (list.isEmpty()) return@flatMapLatest flowOf(emptyList())
-            
+
             val flows = list.map { category ->
                 expenseRepository.getTotalSpentByCategory(userId, category.name)
                     .map { spent ->
@@ -57,7 +57,6 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
         )
 
     init {
-        // Al iniciar, intentamos sincronizar cambios pendientes
         sync()
     }
 
@@ -67,71 +66,37 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    /**
-     * Busca una categoría por su nombre.
-     */
     fun getCategoryByName(name: String?): UserCategory? {
         if ((name == "new") || (name == null)) return null
         return _rawCategories.value.find { it.name == name }
     }
 
-    /**
-     * Guarda o actualiza una categoría.
-     */
-    fun saveCategory(nombre: String, limite: String, icon: String, existingCategory: UserCategory? = null, onResult: (Boolean) -> Unit) {
+    fun saveCategory(
+        nombre: String,
+        limite: String,
+        icon: String,
+        existingCategory: UserCategory? = null,
+        onResult: (Boolean) -> Unit
+    ) {
         errorMessage = null
         nameError = false
         budgetError = false
 
-        if (nombre.isBlank()) {
-            nameError = true
-            errorMessage = "El nombre no puede estar vacío"
-            onResult(false)
-            return
-        }
-
-        val budget = try {
-            val cleanLimite = limite.replace("$", "")
-                .replace(".", "")
-                .replace(",", ".")
-                .trim()
-            cleanLimite.toDoubleOrNull()
-        } catch (_: Exception) {
-            null
-        }
-
-        if (budget == null) {
-            budgetError = true
-            errorMessage = "Ingresa un monto válido"
-            onResult(false)
-            return
-        }
-
-        if (budget < 0) {
-            budgetError = true
-            errorMessage = "El presupuesto no puede ser negativo"
-            onResult(false)
-            return
-        }
-
-        val category = existingCategory?.copy(
-            name = nombre,
-            icon = icon,
-            budget = budget
-        ) ?: UserCategory(
-            name = nombre,
-            icon = icon,
-            budget = budget,
-            userId = userId
-        )
-
         viewModelScope.launch {
-            val result = repository.saveCategory(category)
-            if (result.isSuccess) {
-                onResult(true)
-            } else {
-                errorMessage = "Error al guardar la categoría"
-                onResult(false)
+            when (val result = saveCategoryUseCase(nombre, limite, icon, userId, existingCategory)) {
+                is SaveCategoryUseCase.Result.Success -> {
+                    onResult(true)
+                }
+                is SaveCategoryUseCase.Result.ValidationError -> {
+                    nameError = result.nameError
+                    budgetError = result.budgetError
+                    errorMessage = result.message
+                    onResult(false)
+                }
+                is SaveCategoryUseCase.Result.Failure -> {
+                    errorMessage = result.message
+                    onResult(false)
+                }
             }
         }
     }
