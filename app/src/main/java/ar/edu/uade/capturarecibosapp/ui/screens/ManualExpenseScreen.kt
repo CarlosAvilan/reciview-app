@@ -10,9 +10,8 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.ManualExpenseViewModel
 
 @Composable
 fun ManualExpenseScreen(
-    viewModel: ManualExpenseViewModel,
-    onBackClick: () -> Unit,
-    onSaveSuccess: () -> Unit
+    viewModel: ManualExpenseViewModel, 
+    onBackClick: () -> Unit
 ) {
     val categories by viewModel.categories.collectAsState()
 
@@ -39,10 +38,8 @@ fun ManualExpenseScreen(
             descripcion = viewModel.descripcion,
             onDescripcionChange = { viewModel.onDescripcionChange(it) },
             buttonText = "Guardar Gasto",
-            onButtonClick = {
-                viewModel.guardarGasto {
-                    onSaveSuccess()
-                }
+            onButtonClick = { 
+                viewModel.guardarGasto()
             },
             errorMessage = viewModel.errorMessage,
             isLoading = viewModel.isLoading

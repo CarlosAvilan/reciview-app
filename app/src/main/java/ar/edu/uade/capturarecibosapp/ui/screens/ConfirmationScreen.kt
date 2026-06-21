@@ -16,13 +16,13 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.ManualExpenseViewModel
 @Composable
 fun ConfirmationScreen(
     ticket: Ticket,
-    onConfirm: () -> Unit,
     onCancel: () -> Unit,
     viewModel: ManualExpenseViewModel = viewModel()
 ) {
     val categories by viewModel.categories.collectAsState()
 
-    LaunchedEffect(ticket.id) {
+    // Inicializar el formulario solo cuando el ticket cambia, no en cada recomposición
+    LaunchedEffect(ticket) {
         viewModel.initializeWithTicket(ticket)
     }
 
@@ -44,7 +44,7 @@ fun ConfirmationScreen(
             onEstablecimientoChange = { viewModel.onEstablecimientoChange(it) },
             establecimientoError = viewModel.establecimientoError,
             categoria = viewModel.categoria,
-            onDescripcionChange = { viewModel.onDescripcionChange(it) },
+            onDescripcionChange = {viewModel.onDescripcionChange(it)},
             descripcion = viewModel.descripcion,
             onCategoriaChange = { viewModel.onCategoriaChange(it) },
             categoriaError = viewModel.categoriaError,
@@ -53,7 +53,7 @@ fun ConfirmationScreen(
             onFechaChange = { viewModel.onFechaChange(it) },
             buttonText = "Confirmar y Guardar",
             onButtonClick = {
-                viewModel.guardarGasto { onConfirm() }
+                viewModel.guardarGasto()
             },
             errorMessage = viewModel.errorMessage,
             isLoading = viewModel.isLoading
@@ -75,7 +75,6 @@ fun ConfirmationScreenPreview() {
                 photoUrl = "",
                 description = ""
             ),
-            onConfirm = {},
             onCancel = {}
         )
     }

@@ -12,12 +12,19 @@ import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.domain.OcrManager
+import ar.edu.uade.capturarecibosapp.events.MainNavigationEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val ocrManager = OcrManager()
-    private val ticketRepository = DependencyProvider.provideTicketRepository(application)
+
+    // Eventos de navegación para desacoplar la lógica de la UI
+    private val _navigationEvents = MutableSharedFlow<MainNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     // Estado para controlar qué ticket se está editando/confirmando
     var ticketDetectado by mutableStateOf<Ticket?>(null)
@@ -34,27 +41,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Log.d("ReciView", "OCR finalizado: ${ticket.establishment}")
             ticketDetectado = ticket
             isProcessing = false
-        }
-    }
-
-    fun confirmarYSubir(ticket: Ticket) {
-        viewModelScope.launch {
-            try {
-                Log.d("ReciView", "Subiendo: ${ticket.establishment}, Total: ${ticket.amount}, Desc: ${ticket.description}")
-                
-                val userId = SessionManager.userId ?: "user_mock"
-                val ticketToSave = ticket.copy(userId = userId)
-                
-                val result = ticketRepository.saveTicket(ticketToSave)
-
-                if (result.isSuccess) {
-                    // Limpiamos el estado después de subir con éxito
-                    ticketDetectado = null
-                } else {
-                    Log.e("ReciView", "Error al guardar ticket: ${result.exceptionOrNull()?.message}")
-                }
-            } catch (e: Exception) {
-                Log.e("ReciView", "Error al enviar: ${e.message}")
+            
+            // Disparamos el evento de navegación
+            viewModelScope.launch {
+                _navigationEvents.emit(MainNavigationEvent.NavigateToConfirmation)
             }
         }
     }

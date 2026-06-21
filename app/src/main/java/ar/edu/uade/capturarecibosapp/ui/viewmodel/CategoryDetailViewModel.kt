@@ -1,6 +1,7 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +13,7 @@ import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.repository.CategoryRepository
 import ar.edu.uade.capturarecibosapp.data.repository.ExpenseRepository
+import ar.edu.uade.capturarecibosapp.events.CategoryNavigationEvent
 import ar.edu.uade.capturarecibosapp.domain.usecase.SaveCategoryUseCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -33,6 +35,9 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
     private val expenseRepository: ExpenseRepository = DependencyProvider.provideExpenseRepository(application)
     private val userId = SessionManager.userId ?: ""
     private val saveCategoryUseCase = SaveCategoryUseCase(categoryRepository)
+
+    private val _navigationEvents = MutableSharedFlow<CategoryNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     // Estados de edición
     var editName by mutableStateOf("")
@@ -126,16 +131,56 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
         currentCategory?.let { loadCategory(it.name) }
     }
 
-    fun saveChanges(onSuccess: () -> Unit) {
+    fun saveChanges() {
         errorMessage = null
         nameError = false
         budgetError = false
 
+        if (editName.isBlank()) {
+            nameError = true
+            errorMessage = "El nombre no puede estar vacío"
+            return
+        }
+
+        val budget = try {
+            val cleanBudget = editBudget.replace("$", "")
+                .replace(".", "")
+                .replace(",", ".")
+                .trim()
+            cleanBudget.toDoubleOrNull()
+        } catch (e: Exception) {
+            null
+        }
+
+        if (budget == null) {
+            budgetError = true
+            errorMessage = "Ingresa un monto válido"
+            return
+        }
+
+        if (budget < 0) {
+            budgetError = true
+            errorMessage = "El presupuesto no puede ser negativo"
+            return
+        }
+
         val category = currentCategory ?: return
+        val updatedCategory = category.copy(
+            name = editName,
+            budget = budget,
+            icon = editIcon
+        )
 
         viewModelScope.launch {
+            val result = categoryRepository.saveCategory(updatedCategory)
+            if (result.isSuccess) {
+                _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
+            } else {
+                errorMessage = "Error al actualizar la categoría"
+            }
+
             when (val result = saveCategoryUseCase(editName, editBudget, editIcon, userId, category)) {
-                is SaveCategoryUseCase.Result.Success -> onSuccess()
+                is SaveCategoryUseCase.Result.Success -> _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
                 is SaveCategoryUseCase.Result.ValidationError -> {
                     nameError = result.nameError
                     budgetError = result.budgetError
@@ -148,12 +193,12 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
         }
     }
 
-    fun deleteCategory(onSuccess: () -> Unit) {
+    fun deleteCategory() {
         val category = currentCategory ?: return
         viewModelScope.launch {
             val result = categoryRepository.deleteCategory(category)
             if (result.isSuccess) {
-                onSuccess()
+                _navigationEvents.emit(CategoryNavigationEvent.NavigateToDeleteSuccess)
             } else {
                 _uiState.value = CategoryDetailUiState.Error("Error al eliminar la categoría")
             }

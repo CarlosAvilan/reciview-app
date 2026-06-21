@@ -8,11 +8,17 @@ import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.enums.ForgotPasswordStep
 import ar.edu.uade.capturarecibosapp.data.repository.AuthRepository
+import ar.edu.uade.capturarecibosapp.events.ForgotPasswordNavigationEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class ForgotPasswordViewModel(
     private val repository: AuthRepository = DependencyProvider.provideAuthRepository()
 ) : ViewModel() {
+
+    private val _navigationEvents = MutableSharedFlow<ForgotPasswordNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     var currentStep by mutableStateOf(ForgotPasswordStep.EMAIL)
         private set
@@ -59,6 +65,7 @@ class ForgotPasswordViewModel(
             isLoading = false
             if (result.isSuccess) {
                 currentStep = ForgotPasswordStep.VERIFY_CODE
+                _navigationEvents.emit(ForgotPasswordNavigationEvent.NavigateToVerifyCode)
             } else {
                 errorMessage = "Error al enviar el código"
             }
@@ -73,11 +80,11 @@ class ForgotPasswordViewModel(
 
         isLoading = true
         viewModelScope.launch {
-            // Mocked verification
             val result = repository.resetPassword(email)
             isLoading = false
             if (result.isSuccess) {
                 currentStep = ForgotPasswordStep.NEW_PASSWORD
+                _navigationEvents.emit(ForgotPasswordNavigationEvent.NavigateToResetPassword)
             } else {
                 errorMessage = "Código incorrecto"
             }
@@ -96,11 +103,11 @@ class ForgotPasswordViewModel(
 
         isLoading = true
         viewModelScope.launch {
-            // Mocked final step
             val result = Result.success(Unit) 
             isLoading = false
             if (result.isSuccess) {
                 currentStep = ForgotPasswordStep.SUCCESS
+                _navigationEvents.emit(ForgotPasswordNavigationEvent.NavigateToSuccess)
             } else {
                 errorMessage = "Error al restablecer contraseña"
             }

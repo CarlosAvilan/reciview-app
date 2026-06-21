@@ -28,11 +28,9 @@ import ar.edu.uade.capturarecibosapp.R
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    onLoginRedirect: () -> Unit, 
     onRegisterClick: () -> Unit,
     onForgotPasswordClick: () -> Unit = {}
 ) {
-
     val context = LocalContext.current
 
     Column(
@@ -94,7 +92,7 @@ fun LoginScreen(
 
             Button(
                 text = "Iniciar sesión",
-                onClick = { viewModel.login(context, onSuccess = onLoginRedirect) }
+                onClick = { viewModel.login(context) }
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -124,7 +122,6 @@ fun LoginScreenPreview() {
         val viewModel = remember { LoginViewModel() }
         LoginScreen(
             viewModel = viewModel,
-            onLoginRedirect = {},
             onRegisterClick = {}
         )
     }

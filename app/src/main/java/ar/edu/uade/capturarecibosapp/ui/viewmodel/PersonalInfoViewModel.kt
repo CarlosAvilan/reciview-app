@@ -9,10 +9,17 @@ import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
+import ar.edu.uade.capturarecibosapp.events.ProfileNavigationEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class PersonalInfoViewModel(application: Application) : AndroidViewModel(application) {
     private val userRepository: UserRepository = DependencyProvider.provideUserRepository(application)
+    
+    private val _navigationEvents = MutableSharedFlow<ProfileNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
+
     var nombre by mutableStateOf("")
     var email by mutableStateOf("")
     var telefono by mutableStateOf("")
@@ -56,7 +63,7 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
     fun onFechaNacimientoChange(newValue: String) { fechaNacimiento = newValue }
     fun onPaisChange(newValue: String) { paisResidencia = newValue }
 
-    fun guardarCambios(onSuccess: () -> Unit) {
+    fun guardarCambios() {
         isLoading = true
         errorMessage = null
         viewModelScope.launch {
@@ -68,15 +75,17 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
             )
             isLoading = false
             if (result.isSuccess) {
-                onSuccess()
+                _navigationEvents.emit(ProfileNavigationEvent.NavigateToProfile)
             } else {
                 errorMessage = "Error al actualizar perfil"
             }
         }
     }
 
-    fun eliminarCuenta(onSuccess: () -> Unit) {
-        // Lógica para eliminar cuenta si se desea implementar
-        onSuccess()
+    fun eliminarCuenta() {
+        viewModelScope.launch {
+            // Lógica para eliminar cuenta
+            _navigationEvents.emit(ProfileNavigationEvent.NavigateToLogin)
+        }
     }
 }

@@ -11,14 +11,16 @@ import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
+import ar.edu.uade.capturarecibosapp.events.ManualExpenseNavigationEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
 import ar.edu.uade.capturarecibosapp.domain.usecase.SaveManualExpenseUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 class ManualExpenseViewModel(application: Application) : AndroidViewModel(application) {
     private val categoryRepository = DependencyProvider.provideCategoryRepository(application)
@@ -27,6 +29,9 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
     private val saveManualExpenseUseCase = SaveManualExpenseUseCase(ticketRepository)
     private val uiFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     private val apiFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+    private val _navigationEvents = MutableSharedFlow<ManualExpenseNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     var monto by mutableStateOf("0.00")
     var establecimiento by mutableStateOf("")
@@ -55,6 +60,7 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
         )
 
     fun onMontoChange(newValue: String) {
+        // Permitir solo números y un punto decimal
         if (newValue.isEmpty() || newValue.matches(Regex("""^\d*\.?\d*$"""))) {
             monto = newValue
             montoError = null
@@ -107,13 +113,40 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun guardarGasto(onSuccess: () -> Unit) {
+    fun guardarGasto() {
+        val amount = monto.toFloatOrNull()
         montoError = null
         establecimientoError = null
         categoriaError = null
         errorMessage = null
 
         viewModelScope.launch {
+            // Buscamos el ID de la categoría seleccionada por nombre
+            val selectedCat = categories.value.find { it.name == categoria }
+
+            // Parseamos la fecha de la UI al formato de la API
+            val fechaApi = try {
+                LocalDate.parse(fecha, uiFormatter).format(apiFormatter)
+            } catch (e: Exception) {
+                fecha // fallback
+            }
+
+            val ticket = Ticket(
+                createdAt = fechaApi,
+                userId = userId,
+                categoryId = selectedCat?.id,
+                establishment = establecimiento,
+                amount = amount ?: 0f,
+                photoUrl = null, // Guardado manual sin foto
+                description = descripcion,
+                syncStatus = SyncStatus.PENDIENTE_AGREGAR
+            )
+            
+            val result = ticketRepository.saveTicket(ticket)
+            if (result.isSuccess) {
+                _navigationEvents.emit(ManualExpenseNavigationEvent.NavigateToSuccess)
+            }
+
             isLoading = true
             when (val result = saveManualExpenseUseCase(
                 montoRaw = monto,
@@ -126,7 +159,7 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
             )) {
                 is SaveManualExpenseUseCase.Result.Success -> {
                     isLoading = false
-                    onSuccess()
+                    _navigationEvents.emit(ManualExpenseNavigationEvent.NavigateToSuccess)
                 }
                 is SaveManualExpenseUseCase.Result.ValidationError -> {
                     isLoading = false

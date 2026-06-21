@@ -16,21 +16,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import java.util.Locale
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.components.TextField as CustomTextField
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
+import ar.edu.uade.capturarecibosapp.ui.viewmodel.CategoriesViewModel
 
 @Composable
 fun EditCategoriesScreen(
-    userCategory: UserCategory? = null, // Recibe la entidad UserCategory
-    nameError: Boolean = false,
-    budgetError: Boolean = false,
-    errorMessage: String? = null,
-    onBackClick: () -> Unit,
-    onSaveClick: (String, String, String) -> Unit
+    viewModel: CategoriesViewModel,
+    userCategory: UserCategory? = null,
+    onBackClick: () -> Unit
 ) {
     // Cargamos datos desde UserCategory
     var nombre by remember { mutableStateOf(userCategory?.name ?: "") }
@@ -61,7 +60,7 @@ fun EditCategoriesScreen(
                 onValueChange = { nombre = it },
                 label = "Nombre",
                 placeholder = "Ej: Comida",
-                isError = nameError
+                isError = viewModel.nameError
             )
 
             // Campo Límite
@@ -70,12 +69,12 @@ fun EditCategoriesScreen(
                 onValueChange = { limite = it },
                 label = "Límite mensual sugerido",
                 placeholder = "$0.00",
-                isError = budgetError
+                isError = viewModel.budgetError
             )
 
-            if (errorMessage != null) {
+            if (viewModel.errorMessage != null) {
                 Text(
-                    text = errorMessage,
+                    text = viewModel.errorMessage!!,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 4.dp)
@@ -100,7 +99,7 @@ fun EditCategoriesScreen(
                             .size(50.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(
-                                if (isSelected) MaterialTheme.colorScheme.primaryContainer 
+                                if (isSelected) MaterialTheme.colorScheme.primaryContainer
                                 else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                             )
                             .border(
@@ -121,7 +120,7 @@ fun EditCategoriesScreen(
             // Botón Guardar
             Button(
                 text = "Guardar datos",
-                onClick = { onSaveClick(nombre, limite, selectedEmoji) }
+                onClick = { viewModel.saveCategory(nombre, limite, selectedEmoji, userCategory) }
             )
 
             // Botón Cancelar
@@ -152,9 +151,9 @@ fun EditCategoriesScreen(
 fun EditCategoriesScreenPreview() {
     ReciViewTheme {
         EditCategoriesScreen(
+            viewModel = viewModel(),
             userCategory = UserCategory(name = "Comida", budget = 25000.0, userId = "123"),
-            onBackClick = {},
-            onSaveClick = { _, _, _ -> }
+            onBackClick = { }
         )
     }
 }

@@ -7,11 +7,18 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
+import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
+import ar.edu.uade.capturarecibosapp.events.AuthNavigationEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 
 class LoginViewModel : ViewModel() {
     private val authRepository = DependencyProvider.provideAuthRepository()
+
+    private val _navigationEvents = MutableSharedFlow<AuthNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     var correoElectronico by mutableStateOf("")
     var contrasenia by mutableStateOf("")
@@ -27,7 +34,7 @@ class LoginViewModel : ViewModel() {
         contrasenia = newValue
     }
 
-    fun login(context: Context, onSuccess: () -> Unit) {
+    fun login(context: Context) {
         if (correoElectronico.isNotEmpty() && contrasenia.isNotEmpty()) {
             isLoading = true
             errorMessage = null
@@ -35,7 +42,11 @@ class LoginViewModel : ViewModel() {
                 val result = authRepository.login(correoElectronico, contrasenia)
                 isLoading = false
                 if (result.isSuccess) {
-                    onSuccess()
+                    // Guardamos el ID en SharedPreferences
+                    val sharedPreferencesManager = SharedPreferencesManager(context)
+                    // Usamos un ID de prueba
+                    sharedPreferencesManager.saveUserId("user123")
+                    _navigationEvents.emit(AuthNavigationEvent.NavigateToHome)
                 } else {
                     errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido"
                 }

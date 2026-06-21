@@ -10,11 +10,18 @@ import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
+import ar.edu.uade.capturarecibosapp.events.ProfileNavigationEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val userRepository: UserRepository = DependencyProvider.provideUserRepository(application)
+    
+    private val _navigationEvents = MutableSharedFlow<ProfileNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
+
     var nombre by mutableStateOf("Cargando...")
     var email by mutableStateOf("")
     var presupuestoMensual by mutableStateOf("0.00")
@@ -91,7 +98,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun updateBudget(onSuccess: () -> Unit) {
+    fun updateBudget() {
         val amount = budgetInput.toFloatOrNull()
         if (amount == null || amount <= 0) {
             budgetError = "Ingrese un monto válido mayor a 0"
@@ -104,12 +111,12 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             val result = userRepository.updateBudget(budgetInput)
             
             result.onSuccess {
-                onSuccess()
+                _navigationEvents.emit(ProfileNavigationEvent.NavigateToBudgetSuccess)
             }.onFailure {
                 // Si falla la sincronización, igual ya se guardó en Room (Offline-First)
                 // Pero logueamos el error para depuración
                 android.util.Log.e("ProfileViewModel", "Error sincronizando presupuesto: ${it.message}")
-                onSuccess()
+                _navigationEvents.emit(ProfileNavigationEvent.NavigateToBudgetSuccess)
             }
         }
     }
@@ -123,8 +130,10 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun cerrarSesion(onSuccess: () -> Unit) {
+    fun cerrarSesion() {
         SessionManager.clear()
-        onSuccess()
+        viewModelScope.launch {
+            _navigationEvents.emit(ProfileNavigationEvent.NavigateToLogin)
+        }
     }
 }

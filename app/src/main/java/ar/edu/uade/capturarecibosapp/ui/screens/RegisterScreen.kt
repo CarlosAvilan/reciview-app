@@ -37,7 +37,6 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterState
 fun RegisterScreen(
     viewModel: RegisterViewModel,
     onBackClick: () -> Unit,
-    onRegisterClick: () -> Unit,
     onTermsClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -236,7 +235,7 @@ fun RegisterScreen(
 
             Button(
                 text = "Registrarme",
-                onClick = { viewModel.registrarse(onRegisterClick) },
+                onClick = { viewModel.registrarse() },
                 enabled = viewModel.haLeidoTerminos && viewModel.uiState !is RegisterState.Loading
             )
 
@@ -253,7 +252,6 @@ fun RegisterScreenPreview() {
         RegisterScreen(
             viewModel = viewModel,
             onBackClick = {},
-            onRegisterClick = {},
             onTermsClick = {}
         )
     }

@@ -7,6 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
+import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
+import ar.edu.uade.capturarecibosapp.events.AuthNavigationEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import ar.edu.uade.capturarecibosapp.domain.usecase.RegisterUserUseCase
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -22,6 +26,9 @@ sealed class RegisterState {
 class RegisterViewModel : ViewModel() {
     private val authRepository = DependencyProvider.provideAuthRepository()
     private val registerUserUseCase = RegisterUserUseCase(authRepository)
+
+    private val _navigationEvents = MutableSharedFlow<AuthNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     var nombreCompleto by mutableStateOf("")
     var correoElectronico by mutableStateOf("")
@@ -77,7 +84,7 @@ class RegisterViewModel : ViewModel() {
         haLeidoTerminos = true
     }
 
-    fun registrarse(onSuccess: () -> Unit) {
+    fun registrarse() {
         passwordError = false
         emailError = false
         birthDateError = false
@@ -94,7 +101,7 @@ class RegisterViewModel : ViewModel() {
             )) {
                 is RegisterUserUseCase.Result.Success -> {
                     uiState = RegisterState.Success(result.email)
-                    onSuccess()
+                    _navigationEvents.emit(AuthNavigationEvent.NavigateToRegisterSuccess)
                 }
                 is RegisterUserUseCase.Result.PasswordError -> {
                     passwordError = true

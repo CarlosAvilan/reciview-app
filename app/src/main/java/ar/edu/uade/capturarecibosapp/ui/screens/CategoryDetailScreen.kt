@@ -34,9 +34,7 @@ fun CategoryDetailScreen(
     categoryId: String,
     viewModel: CategoryDetailViewModel,
     onBackClick: () -> Unit,
-    onScanClick: () -> Unit = {},
-    onSaveSuccess: () -> Unit,
-    onDeleteSuccess: () -> Unit
+    onScanClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
@@ -157,7 +155,7 @@ fun CategoryDetailScreen(
                         Box(modifier = Modifier.padding(horizontal = 24.dp)) {
                             Button(
                                 text = "Guardar cambios",
-                                onClick = { viewModel.saveChanges(onSaveSuccess) }
+                                onClick = { viewModel.saveChanges() }
                             )
                         }
                     }
@@ -340,7 +338,7 @@ fun CategoryDetailScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        viewModel.deleteCategory(onDeleteSuccess)
+                        viewModel.deleteCategory()
                         showDeleteConfirmation = false
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
