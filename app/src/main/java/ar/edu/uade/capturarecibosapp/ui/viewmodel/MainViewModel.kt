@@ -50,30 +50,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun confirmarYSubir(ticket: Ticket) {
-        viewModelScope.launch {
-            try {
-                Log.d("ReciView", "Subiendo: ${ticket.establishment}, Total: ${ticket.amount}, Desc: ${ticket.description}")
-                
-                val userId = SessionManager.userId ?: "user_mock"
-                val ticketToSave = ticket.copy(userId = userId)
-                
-                val result = ticketRepository.saveTicket(ticketToSave)
-
-                if (result.isSuccess) {
-                    // Limpiamos el estado después de subir con éxito
-                    ticketDetectado = null
-                    // Emitimos el evento de navegación a la pantalla de éxito
-                    _navigationEvents.emit(MainNavigationEvent.NavigateToTicketRegistered)
-                } else {
-                    Log.e("ReciView", "Error al guardar ticket: ${result.exceptionOrNull()?.message}")
-                }
-            } catch (e: Exception) {
-                Log.e("ReciView", "Error al enviar: ${e.message}")
-            }
-        }
-    }
-
     fun cancelarCaptura() {
         ticketDetectado = null
     }
