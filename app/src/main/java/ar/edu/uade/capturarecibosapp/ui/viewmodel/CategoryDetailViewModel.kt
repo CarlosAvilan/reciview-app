@@ -12,6 +12,7 @@ import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.repository.CategoryRepository
 import ar.edu.uade.capturarecibosapp.data.repository.ExpenseRepository
+import ar.edu.uade.capturarecibosapp.domain.usecase.SaveCategoryUseCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -31,6 +32,7 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
     private val categoryRepository: CategoryRepository = DependencyProvider.provideCategoryRepository(application)
     private val expenseRepository: ExpenseRepository = DependencyProvider.provideExpenseRepository(application)
     private val userId = SessionManager.userId ?: ""
+    private val saveCategoryUseCase = SaveCategoryUseCase(categoryRepository)
 
     // Estados de edición
     var editName by mutableStateOf("")
@@ -129,47 +131,19 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
         nameError = false
         budgetError = false
 
-        if (editName.isBlank()) {
-            nameError = true
-            errorMessage = "El nombre no puede estar vacío"
-            return
-        }
-
-        val budget = try {
-            val cleanBudget = editBudget.replace("$", "")
-                .replace(".", "")
-                .replace(",", ".")
-                .trim()
-            cleanBudget.toDoubleOrNull()
-        } catch (e: Exception) {
-            null
-        }
-
-        if (budget == null) {
-            budgetError = true
-            errorMessage = "Ingresa un monto válido"
-            return
-        }
-
-        if (budget < 0) {
-            budgetError = true
-            errorMessage = "El presupuesto no puede ser negativo"
-            return
-        }
-
         val category = currentCategory ?: return
-        val updatedCategory = category.copy(
-            name = editName,
-            budget = budget,
-            icon = editIcon
-        )
 
         viewModelScope.launch {
-            val result = categoryRepository.saveCategory(updatedCategory)
-            if (result.isSuccess) {
-                onSuccess()
-            } else {
-                errorMessage = "Error al actualizar la categoría"
+            when (val result = saveCategoryUseCase(editName, editBudget, editIcon, userId, category)) {
+                is SaveCategoryUseCase.Result.Success -> onSuccess()
+                is SaveCategoryUseCase.Result.ValidationError -> {
+                    nameError = result.nameError
+                    budgetError = result.budgetError
+                    errorMessage = result.message
+                }
+                is SaveCategoryUseCase.Result.Failure -> {
+                    errorMessage = result.message
+                }
             }
         }
     }

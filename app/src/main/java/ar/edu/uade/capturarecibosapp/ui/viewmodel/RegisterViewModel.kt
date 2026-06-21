@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
+import ar.edu.uade.capturarecibosapp.domain.usecase.RegisterUserUseCase
 import kotlinx.coroutines.launch
 
 sealed class RegisterState {
@@ -19,6 +20,7 @@ sealed class RegisterState {
 
 class RegisterViewModel : ViewModel() {
     private val authRepository = DependencyProvider.provideAuthRepository()
+    private val registerUserUseCase = RegisterUserUseCase(authRepository)
 
     var nombreCompleto by mutableStateOf("")
     var correoElectronico by mutableStateOf("")
@@ -72,55 +74,40 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun registrarse(context: Context, onSuccess: () -> Unit) {
-        // Validaciones locales
-        if (password.length < 6) {
-            passwordError = true
-            uiState = RegisterState.Error("Contraseña débil (mínimo 6 caracteres)")
-            return
-        }
-
-        if (correoElectronico.isEmpty() || !correoElectronico.contains("@")) {
-            emailError = true
-            uiState = RegisterState.Error("Ingresa un correo válido")
-            return
-        }
-
-        if (!terminosAceptados) {
-            uiState = RegisterState.Error("Debes aceptar los términos y condiciones")
-            return
-        }
-
+        passwordError = false
+        emailError = false
         uiState = RegisterState.Loading
+
         viewModelScope.launch {
-            val result = authRepository.registerUser(
+            when (val result = registerUserUseCase(
                 email = correoElectronico,
-                pass = password,
+                password = password,
                 name = nombreCompleto,
                 birth = fechaNacimiento,
-                country = paisNacimiento
-            )
-
-            result.fold(
-                onSuccess = {
-                    uiState = RegisterState.Success(it.email)
-
-                    // Guardamos el ID en SharedPreferences
+                country = paisNacimiento,
+                termsAccepted = terminosAceptados
+            )) {
+                is RegisterUserUseCase.Result.Success -> {
+                    uiState = RegisterState.Success(result.email)
                     val sharedPreferencesManager = SharedPreferencesManager(context)
-                    // Usamos un ID de prueba
                     sharedPreferencesManager.saveUserId("user123")
-
                     onSuccess()
-                },
-                onFailure = { error ->
-                    val message = error.message ?: ""
-                    if (message.contains("already exists", ignoreCase = true)) {
-                        emailError = true
-                        uiState = RegisterState.Error("El usuario ya existe")
-                    } else {
-                        uiState = RegisterState.Error(message)
-                    }
                 }
-            )
+                is RegisterUserUseCase.Result.PasswordError -> {
+                    passwordError = true
+                    uiState = RegisterState.Error(result.message)
+                }
+                is RegisterUserUseCase.Result.EmailError -> {
+                    emailError = true
+                    uiState = RegisterState.Error(result.message)
+                }
+                is RegisterUserUseCase.Result.TermsError -> {
+                    uiState = RegisterState.Error(result.message)
+                }
+                is RegisterUserUseCase.Result.Failure -> {
+                    uiState = RegisterState.Error(result.message)
+                }
+            }
         }
     }
 }

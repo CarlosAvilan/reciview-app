@@ -11,6 +11,7 @@ import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
+import ar.edu.uade.capturarecibosapp.domain.usecase.SaveManualExpenseUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -23,7 +24,7 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
     private val categoryRepository = DependencyProvider.provideCategoryRepository(application)
     private val ticketRepository = DependencyProvider.provideTicketRepository(application)
     private val userId = SessionManager.userId ?: ""
-
+    private val saveManualExpenseUseCase = SaveManualExpenseUseCase(ticketRepository)
     private val uiFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     private val apiFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
@@ -98,49 +99,29 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun guardarGasto(onSuccess: () -> Unit) {
-        val amount = monto.toFloatOrNull()
-        
-        var hasError = false
-        if (amount == null || amount <= 0) {
-            montoError = true
-            hasError = true
-        }
-        if (establecimiento.isBlank()) {
-            establecimientoError = true
-            hasError = true
-        }
-        if (categoria.isBlank()) {
-            categoriaError = true
-            hasError = true
-        }
-
-        if (hasError) return
+        montoError = false
+        establecimientoError = false
+        categoriaError = false
 
         viewModelScope.launch {
-            // Buscamos el ID de la categoría seleccionada por nombre
-            val selectedCat = categories.value.find { it.name == categoria }
-            
-            // Parseamos la fecha de la UI al formato de la API
-            val fechaApi = try {
-                LocalDate.parse(fecha, uiFormatter).format(apiFormatter)
-            } catch (e: Exception) {
-                fecha // fallback
-            }
-
-            val ticket = Ticket(
-                createdAt = fechaApi,
+            when (val result = saveManualExpenseUseCase(
+                montoRaw = monto,
+                establecimiento = establecimiento,
+                categoriaNombre = categoria,
+                descripcion = descripcion,
+                fechaUi = fecha,
                 userId = userId,
-                categoryId = selectedCat?.id,
-                establishment = establecimiento,
-                amount = amount ?: 0f,
-                photoUrl = null, // Guardado manual sin foto
-                description = descripcion,
-                syncStatus = SyncStatus.PENDIENTE_AGREGAR
-            )
-            
-            val result = ticketRepository.saveTicket(ticket)
-            if (result.isSuccess) {
-                onSuccess()
+                categories = categories.value
+            )) {
+                is SaveManualExpenseUseCase.Result.Success -> onSuccess()
+                is SaveManualExpenseUseCase.Result.ValidationError -> {
+                    montoError = result.montoError
+                    establecimientoError = result.establecimientoError
+                    categoriaError = result.categoriaError
+                }
+                is SaveManualExpenseUseCase.Result.Failure -> {
+                    // Si querés mostrar este error en UI, agregar un errorMessage al ViewModel
+                }
             }
         }
     }
