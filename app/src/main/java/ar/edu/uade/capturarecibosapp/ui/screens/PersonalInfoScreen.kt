@@ -12,14 +12,16 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.components.SectionLabel
@@ -34,6 +36,8 @@ fun PersonalInfoScreen(
     onBackClick: () -> Unit,
     onChangePasswordClick: () -> Unit
 ) {
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopBar(
@@ -165,7 +169,7 @@ fun PersonalInfoScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
-                onClick = { viewModel.eliminarCuenta() },
+                onClick = { showDeleteConfirmation = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -185,6 +189,38 @@ fun PersonalInfoScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
         }
+    }
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = {
+                Text(text = "Eliminar Cuenta")
+            },
+            text = {
+                Text(text = "¿Estás seguro de que deseas eliminar tu cuenta de forma permanente? Se perderán todos tus gastos y preferencias guardadas. Esta acción no se puede deshacer.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        viewModel.eliminarCuenta()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(text = "Eliminar")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDeleteConfirmation = false }
+                ) {
+                    Text(text = "Cancelar")
+                }
+            }
+        )
     }
 }
 
