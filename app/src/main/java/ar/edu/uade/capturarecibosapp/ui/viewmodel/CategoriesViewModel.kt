@@ -11,6 +11,7 @@ import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.repository.CategoryRepository
 import ar.edu.uade.capturarecibosapp.events.CategoryNavigationEvent
+import ar.edu.uade.capturarecibosapp.domain.usecase.SaveCategoryUseCase
 import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     private val repository: CategoryRepository = DependencyProvider.provideCategoryRepository(application)
     private val expenseRepository = DependencyProvider.provideExpenseRepository(application)
     private val userId = SessionManager.userId ?: ""
+    private val saveCategoryUseCase = SaveCategoryUseCase(repository)
 
     private val _navigationEvents = MutableSharedFlow<CategoryNavigationEvent>()
     val navigationEvents = _navigationEvents.asSharedFlow()
@@ -40,7 +42,7 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
         .onEach { _rawCategories.value = it }
         .flatMapLatest { list ->
             if (list.isEmpty()) return@flatMapLatest flowOf(emptyList())
-            
+
             val flows = list.map { category ->
                 expenseRepository.getTotalSpentByCategory(userId, category.name)
                     .map { spent ->
@@ -132,6 +134,20 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
                 _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
             } else {
                 errorMessage = "Error al guardar la categoría"
+            }
+
+            when (val result = saveCategoryUseCase(nombre, limite, icon, userId, existingCategory)) {
+                is SaveCategoryUseCase.Result.Success -> {
+                    _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
+                }
+                is SaveCategoryUseCase.Result.ValidationError -> {
+                    nameError = result.nameError
+                    budgetError = result.budgetError
+                    errorMessage = result.message
+                }
+                is SaveCategoryUseCase.Result.Failure -> {
+                    errorMessage = result.message
+                }
             }
         }
     }

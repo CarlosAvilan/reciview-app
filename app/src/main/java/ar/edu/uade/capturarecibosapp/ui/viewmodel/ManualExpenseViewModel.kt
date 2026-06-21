@@ -13,6 +13,7 @@ import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
 import ar.edu.uade.capturarecibosapp.events.ManualExpenseNavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
+import ar.edu.uade.capturarecibosapp.domain.usecase.SaveManualExpenseUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -25,7 +26,7 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
     private val categoryRepository = DependencyProvider.provideCategoryRepository(application)
     private val ticketRepository = DependencyProvider.provideTicketRepository(application)
     private val userId = SessionManager.userId ?: ""
-
+    private val saveManualExpenseUseCase = SaveManualExpenseUseCase(ticketRepository)
     private val uiFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     private val apiFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
@@ -38,11 +39,18 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
     var descripcion by mutableStateOf("")
     var fecha by mutableStateOf(LocalDate.now().format(uiFormatter))
     var photoUrl by mutableStateOf("")
+    var montoError by mutableStateOf<String?>(null)
+        private set
+    var establecimientoError by mutableStateOf<String?>(null)
+        private set
+    var categoriaError by mutableStateOf<String?>(null)
+        private set
 
-    // UI states para errores
-    var montoError by mutableStateOf(false)
-    var establecimientoError by mutableStateOf(false)
-    var categoriaError by mutableStateOf(false)
+    // Estado de carga y error general (falla de red/guardado, no de validación)
+    var isLoading by mutableStateOf(false)
+        private set
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
 
     val categories: StateFlow<List<UserCategory>> = categoryRepository.getCategories(userId)
         .stateIn(
@@ -55,18 +63,21 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
         // Permitir solo números y un punto decimal
         if (newValue.isEmpty() || newValue.matches(Regex("""^\d*\.?\d*$"""))) {
             monto = newValue
-            montoError = false
+            montoError = null
+            errorMessage = null
         }
     }
 
     fun onEstablecimientoChange(newValue: String) {
         establecimiento = newValue
-        establecimientoError = false
+        establecimientoError = null
+        errorMessage = null
     }
 
     fun onCategoriaChange(newValue: String) {
         categoria = newValue
-        categoriaError = false
+        categoriaError = null
+        errorMessage = null
     }
 
     fun onDescripcionChange(newValue: String) {
@@ -104,27 +115,15 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
 
     fun guardarGasto() {
         val amount = monto.toFloatOrNull()
-        
-        var hasError = false
-        if (amount == null || amount <= 0) {
-            montoError = true
-            hasError = true
-        }
-        if (establecimiento.isBlank()) {
-            establecimientoError = true
-            hasError = true
-        }
-        if (categoria.isBlank()) {
-            categoriaError = true
-            hasError = true
-        }
-
-        if (hasError) return
+        montoError = null
+        establecimientoError = null
+        categoriaError = null
+        errorMessage = null
 
         viewModelScope.launch {
             // Buscamos el ID de la categoría seleccionada por nombre
             val selectedCat = categories.value.find { it.name == categoria }
-            
+
             // Parseamos la fecha de la UI al formato de la API
             val fechaApi = try {
                 LocalDate.parse(fecha, uiFormatter).format(apiFormatter)
@@ -146,6 +145,32 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
             val result = ticketRepository.saveTicket(ticket)
             if (result.isSuccess) {
                 _navigationEvents.emit(ManualExpenseNavigationEvent.NavigateToSuccess)
+            }
+
+            isLoading = true
+            when (val result = saveManualExpenseUseCase(
+                montoRaw = monto,
+                establecimiento = establecimiento,
+                categoriaNombre = categoria,
+                descripcion = descripcion,
+                fechaUi = fecha,
+                userId = userId,
+                categories = categories.value
+            )) {
+                is SaveManualExpenseUseCase.Result.Success -> {
+                    isLoading = false
+                    _navigationEvents.emit(ManualExpenseNavigationEvent.NavigateToSuccess)
+                }
+                is SaveManualExpenseUseCase.Result.ValidationError -> {
+                    isLoading = false
+                    montoError = result.montoError
+                    establecimientoError = result.establecimientoError
+                    categoriaError = result.categoriaError
+                }
+                is SaveManualExpenseUseCase.Result.Failure -> {
+                    isLoading = false
+                    errorMessage = result.message
+                }
             }
         }
     }

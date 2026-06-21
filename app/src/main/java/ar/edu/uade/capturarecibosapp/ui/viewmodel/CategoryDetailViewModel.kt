@@ -1,6 +1,7 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,6 +14,7 @@ import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.repository.CategoryRepository
 import ar.edu.uade.capturarecibosapp.data.repository.ExpenseRepository
 import ar.edu.uade.capturarecibosapp.events.CategoryNavigationEvent
+import ar.edu.uade.capturarecibosapp.domain.usecase.SaveCategoryUseCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -32,6 +34,7 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
     private val categoryRepository: CategoryRepository = DependencyProvider.provideCategoryRepository(application)
     private val expenseRepository: ExpenseRepository = DependencyProvider.provideExpenseRepository(application)
     private val userId = SessionManager.userId ?: ""
+    private val saveCategoryUseCase = SaveCategoryUseCase(categoryRepository)
 
     private val _navigationEvents = MutableSharedFlow<CategoryNavigationEvent>()
     val navigationEvents = _navigationEvents.asSharedFlow()
@@ -174,6 +177,18 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
                 _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
             } else {
                 errorMessage = "Error al actualizar la categoría"
+            }
+
+            when (val result = saveCategoryUseCase(editName, editBudget, editIcon, userId, category)) {
+                is SaveCategoryUseCase.Result.Success -> _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
+                is SaveCategoryUseCase.Result.ValidationError -> {
+                    nameError = result.nameError
+                    budgetError = result.budgetError
+                    errorMessage = result.message
+                }
+                is SaveCategoryUseCase.Result.Failure -> {
+                    errorMessage = result.message
+                }
             }
         }
     }

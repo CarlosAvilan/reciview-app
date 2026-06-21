@@ -40,7 +40,9 @@ fun ManualExpenseScreen(
             buttonText = "Guardar Gasto",
             onButtonClick = { 
                 viewModel.guardarGasto()
-            }
+            },
+            errorMessage = viewModel.errorMessage,
+            isLoading = viewModel.isLoading
         )
     }
 }

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
 import ar.edu.uade.capturarecibosapp.ui.components.Button
+import ar.edu.uade.capturarecibosapp.ui.components.DateField
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterViewModel
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterState
@@ -115,10 +116,11 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextField(
+            DateField(
                 value = viewModel.fechaNacimiento,
                 onValueChange = { viewModel.onFechaNacimientoChange(it) },
-                label = "Fecha de nacimiento"
+                label = "Fecha de nacimiento",
+                isError = viewModel.birthDateError
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -233,7 +235,7 @@ fun RegisterScreen(
 
             Button(
                 text = "Registrarme",
-                onClick = { viewModel.registrarse(context) },
+                onClick = { viewModel.registrarse() },
                 enabled = viewModel.haLeidoTerminos && viewModel.uiState !is RegisterState.Loading
             )
 
