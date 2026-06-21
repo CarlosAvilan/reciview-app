@@ -10,6 +10,8 @@ import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
 import ar.edu.uade.capturarecibosapp.domain.usecase.RegisterUserUseCase
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 sealed class RegisterState {
     object Idle : RegisterState()
@@ -22,15 +24,24 @@ class RegisterViewModel : ViewModel() {
     private val authRepository = DependencyProvider.provideAuthRepository()
     private val registerUserUseCase = RegisterUserUseCase(authRepository)
 
+    private val apiDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
     var nombreCompleto by mutableStateOf("")
     var correoElectronico by mutableStateOf("")
-    var fechaNacimiento by mutableStateOf("")
+
+    // Antes era String libre tipeado a mano. Ahora es una fecha real
+    // elegida con DateField (modal DatePicker) -> nunca puede ser
+    // un string mal formado o una fecha que no existe en el calendario.
+    var fechaNacimiento by mutableStateOf<LocalDate?>(null)
+        private set
+
     var paisNacimiento by mutableStateOf("")
     var password by mutableStateOf("")
 
     // Estados de validación para la UI
     var passwordError by mutableStateOf(false)
     var emailError by mutableStateOf(false)
+    var birthDateError by mutableStateOf(false)
 
     var terminosAceptados by mutableStateOf(false)
     var permisosCamaraAceptados by mutableStateOf(false)
@@ -53,8 +64,9 @@ class RegisterViewModel : ViewModel() {
         passwordError = false
     }
 
-    fun onFechaNacimientoChange(newValue: String) {
+    fun onFechaNacimientoChange(newValue: LocalDate) {
         fechaNacimiento = newValue
+        birthDateError = false
     }
 
     fun onPaisChange(newValue: String) {
@@ -76,14 +88,22 @@ class RegisterViewModel : ViewModel() {
     fun registrarse(context: Context, onSuccess: () -> Unit) {
         passwordError = false
         emailError = false
-        uiState = RegisterState.Loading
+        birthDateError = false
 
+        val birthDate = fechaNacimiento
+        if (birthDate == null) {
+            birthDateError = true
+            uiState = RegisterState.Error("Seleccioná tu fecha de nacimiento")
+            return
+        }
+
+        uiState = RegisterState.Loading
         viewModelScope.launch {
             when (val result = registerUserUseCase(
                 email = correoElectronico,
                 password = password,
                 name = nombreCompleto,
-                birth = fechaNacimiento,
+                birth = birthDate,
                 country = paisNacimiento,
                 termsAccepted = terminosAceptados
             )) {
@@ -99,6 +119,10 @@ class RegisterViewModel : ViewModel() {
                 }
                 is RegisterUserUseCase.Result.EmailError -> {
                     emailError = true
+                    uiState = RegisterState.Error(result.message)
+                }
+                is RegisterUserUseCase.Result.BirthDateError -> {
+                    birthDateError = true
                     uiState = RegisterState.Error(result.message)
                 }
                 is RegisterUserUseCase.Result.TermsError -> {
