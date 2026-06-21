@@ -12,6 +12,7 @@ import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.repository.CategoryRepository
 import ar.edu.uade.capturarecibosapp.data.repository.ExpenseRepository
+import ar.edu.uade.capturarecibosapp.events.CategoryNavigationEvent
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -31,6 +32,9 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
     private val categoryRepository: CategoryRepository = DependencyProvider.provideCategoryRepository(application)
     private val expenseRepository: ExpenseRepository = DependencyProvider.provideExpenseRepository(application)
     private val userId = SessionManager.userId ?: ""
+
+    private val _navigationEvents = MutableSharedFlow<CategoryNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     // Estados de edición
     var editName by mutableStateOf("")
@@ -124,7 +128,7 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
         currentCategory?.let { loadCategory(it.name) }
     }
 
-    fun saveChanges(onSuccess: () -> Unit) {
+    fun saveChanges() {
         errorMessage = null
         nameError = false
         budgetError = false
@@ -167,19 +171,19 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
         viewModelScope.launch {
             val result = categoryRepository.saveCategory(updatedCategory)
             if (result.isSuccess) {
-                onSuccess()
+                _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
             } else {
                 errorMessage = "Error al actualizar la categoría"
             }
         }
     }
 
-    fun deleteCategory(onSuccess: () -> Unit) {
+    fun deleteCategory() {
         val category = currentCategory ?: return
         viewModelScope.launch {
             val result = categoryRepository.deleteCategory(category)
             if (result.isSuccess) {
-                onSuccess()
+                _navigationEvents.emit(CategoryNavigationEvent.NavigateToDeleteSuccess)
             } else {
                 _uiState.value = CategoryDetailUiState.Error("Error al eliminar la categoría")
             }

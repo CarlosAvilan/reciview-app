@@ -11,13 +11,15 @@ import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
+import ar.edu.uade.capturarecibosapp.events.ManualExpenseNavigationEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 class ManualExpenseViewModel(application: Application) : AndroidViewModel(application) {
     private val categoryRepository = DependencyProvider.provideCategoryRepository(application)
@@ -26,6 +28,9 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
 
     private val uiFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     private val apiFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+    private val _navigationEvents = MutableSharedFlow<ManualExpenseNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     var monto by mutableStateOf("0.00")
     var establecimiento by mutableStateOf("")
@@ -97,7 +102,7 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun guardarGasto(onSuccess: () -> Unit) {
+    fun guardarGasto() {
         val amount = monto.toFloatOrNull()
         
         var hasError = false
@@ -140,7 +145,7 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
             
             val result = ticketRepository.saveTicket(ticket)
             if (result.isSuccess) {
-                onSuccess()
+                _navigationEvents.emit(ManualExpenseNavigationEvent.NavigateToSuccess)
             }
         }
     }

@@ -22,8 +22,7 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.ProfileViewModel
 @Composable
 fun EditBudgetScreen(
     viewModel: ProfileViewModel,
-    onBackClick: () -> Unit,
-    onSaveSuccess: () -> Unit
+    onBackClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -66,7 +65,7 @@ fun EditBudgetScreen(
             Button(
                 text = "Guardar cambios",
                 onClick = {
-                    viewModel.updateBudget(onSaveSuccess)
+                    viewModel.updateBudget()
                 }
             )
         }
@@ -81,8 +80,7 @@ fun EditBudgetScreenPreview() {
         val viewModel = remember { ProfileViewModel(context.applicationContext as Application) }
         EditBudgetScreen(
             viewModel = viewModel,
-            onBackClick = {},
-            onSaveSuccess = {}
+            onBackClick = {}
         )
     }
 }

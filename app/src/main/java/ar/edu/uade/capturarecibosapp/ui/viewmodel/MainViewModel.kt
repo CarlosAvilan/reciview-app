@@ -63,6 +63,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 if (result.isSuccess) {
                     // Limpiamos el estado después de subir con éxito
                     ticketDetectado = null
+                    // Emitimos el evento de navegación a la pantalla de éxito
+                    _navigationEvents.emit(MainNavigationEvent.NavigateToTicketRegistered)
                 } else {
                     Log.e("ReciView", "Error al guardar ticket: ${result.exceptionOrNull()?.message}")
                 }

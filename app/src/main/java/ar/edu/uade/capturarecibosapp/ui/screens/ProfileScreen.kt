@@ -27,7 +27,6 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.ProfileViewModel
 fun ProfileScreen(
     viewModel: ProfileViewModel,
     onPersonalInfoClick: () -> Unit,
-    onCloseSessionClick: () -> Unit,
     onEditBudgetClick: () -> Unit
 ) {
     Column(
@@ -116,7 +115,7 @@ fun ProfileScreen(
 
         // Botón Cerrar Sesión estilizado
         Button(
-            onClick = { viewModel.cerrarSesion(onCloseSessionClick) },
+            onClick = { viewModel.cerrarSesion() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -246,7 +245,6 @@ fun ProfileScreenPreview() {
         ProfileScreen(
             viewModel = viewModel,
             onPersonalInfoClick = {},
-            onCloseSessionClick = {},
             onEditBudgetClick = {}
         )
     }

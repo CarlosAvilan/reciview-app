@@ -8,6 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
+import ar.edu.uade.capturarecibosapp.events.AuthNavigationEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 sealed class RegisterState {
@@ -19,6 +22,9 @@ sealed class RegisterState {
 
 class RegisterViewModel : ViewModel() {
     private val authRepository = DependencyProvider.provideAuthRepository()
+
+    private val _navigationEvents = MutableSharedFlow<AuthNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     var nombreCompleto by mutableStateOf("")
     var correoElectronico by mutableStateOf("")
@@ -71,8 +77,7 @@ class RegisterViewModel : ViewModel() {
         haLeidoTerminos = true
     }
 
-    fun registrarse(context: Context, onSuccess: () -> Unit) {
-        // Validaciones locales
+    fun registrarse(context: Context) {
         if (password.length < 6) {
             passwordError = true
             uiState = RegisterState.Error("Contraseña débil (mínimo 6 caracteres)")
@@ -108,8 +113,7 @@ class RegisterViewModel : ViewModel() {
                     val sharedPreferencesManager = SharedPreferencesManager(context)
                     // Usamos un ID de prueba
                     sharedPreferencesManager.saveUserId("user123")
-
-                    onSuccess()
+                    _navigationEvents.emit(AuthNavigationEvent.NavigateToRegisterSuccess)
                 },
                 onFailure = { error ->
                     val message = error.message ?: ""

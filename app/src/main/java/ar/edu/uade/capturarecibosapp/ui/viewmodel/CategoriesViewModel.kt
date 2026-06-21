@@ -10,6 +10,7 @@ import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.repository.CategoryRepository
+import ar.edu.uade.capturarecibosapp.events.CategoryNavigationEvent
 import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,6 +21,9 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     private val repository: CategoryRepository = DependencyProvider.provideCategoryRepository(application)
     private val expenseRepository = DependencyProvider.provideExpenseRepository(application)
     private val userId = SessionManager.userId ?: ""
+
+    private val _navigationEvents = MutableSharedFlow<CategoryNavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     var nameError by mutableStateOf(false)
         private set
@@ -78,7 +82,7 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     /**
      * Guarda o actualiza una categoría.
      */
-    fun saveCategory(nombre: String, limite: String, icon: String, existingCategory: UserCategory? = null, onResult: (Boolean) -> Unit) {
+    fun saveCategory(nombre: String, limite: String, icon: String, existingCategory: UserCategory? = null) {
         errorMessage = null
         nameError = false
         budgetError = false
@@ -86,7 +90,6 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
         if (nombre.isBlank()) {
             nameError = true
             errorMessage = "El nombre no puede estar vacío"
-            onResult(false)
             return
         }
 
@@ -103,14 +106,12 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
         if (budget == null) {
             budgetError = true
             errorMessage = "Ingresa un monto válido"
-            onResult(false)
             return
         }
 
         if (budget < 0) {
             budgetError = true
             errorMessage = "El presupuesto no puede ser negativo"
-            onResult(false)
             return
         }
 
@@ -128,17 +129,19 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
             val result = repository.saveCategory(category)
             if (result.isSuccess) {
-                onResult(true)
+                _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
             } else {
                 errorMessage = "Error al guardar la categoría"
-                onResult(false)
             }
         }
     }
 
     fun deleteCategory(category: UserCategory) {
         viewModelScope.launch {
-            repository.deleteCategory(category)
+            val result = repository.deleteCategory(category)
+            if (result.isSuccess) {
+                _navigationEvents.emit(CategoryNavigationEvent.NavigateToDeleteSuccess)
+            }
         }
     }
 
