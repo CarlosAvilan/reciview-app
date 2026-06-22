@@ -8,12 +8,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import ar.edu.uade.capturarecibosapp.events.*
 import ar.edu.uade.capturarecibosapp.ui.screens.*
 import ar.edu.uade.capturarecibosapp.ui.screens.success.*
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.*
 import kotlinx.coroutines.flow.collectLatest
+import androidx.navigation.navArgument
 
 @Composable
 fun AppNavigation(
@@ -64,7 +64,7 @@ fun AppNavigation(
 
         composable(Screen.Login.route) {
             val loginViewModel: LoginViewModel = viewModel()
-            
+
             LaunchedEffect(loginViewModel.navigationEvents, navController) {
                 loginViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -117,7 +117,7 @@ fun AppNavigation(
         // --- CARGA MANUAL CON PANTALLA DE ÉXITO ---
         composable(Screen.ManualExpense.route) {
             val manualViewModel: ManualExpenseViewModel = viewModel()
-            
+
             LaunchedEffect(manualViewModel.navigationEvents, navController) {
                 manualViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -139,7 +139,7 @@ fun AppNavigation(
         // --- FLUJO RECUPERAR CONTRASEÑA ---
         composable(Screen.ForgotPassword.route) {
             val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
-            
+
             LaunchedEffect(forgotPasswordViewModel.navigationEvents, navController) {
                 forgotPasswordViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -163,7 +163,7 @@ fun AppNavigation(
                 navController.getBackStackEntry(Screen.ForgotPassword.route)
             }
             val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel(backStackEntry)
-            
+
             LaunchedEffect(forgotPasswordViewModel.navigationEvents, navController) {
                 forgotPasswordViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -176,8 +176,8 @@ fun AppNavigation(
             }
 
             VerifyCodeScreen(
-                viewModel = forgotPasswordViewModel, 
-                onBackClick = { navController.popBackStack() }, 
+                viewModel = forgotPasswordViewModel,
+                onBackClick = { navController.popBackStack() },
                 onCodeVerified = { }
             )
         }
@@ -187,7 +187,7 @@ fun AppNavigation(
                 navController.getBackStackEntry(Screen.ForgotPassword.route)
             }
             val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel(backStackEntry)
-            
+
             LaunchedEffect(forgotPasswordViewModel.navigationEvents, navController) {
                 forgotPasswordViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -200,17 +200,17 @@ fun AppNavigation(
             }
 
             ResetPasswordScreen(
-                viewModel = forgotPasswordViewModel, 
-                onBackClick = { navController.popBackStack() }, 
+                viewModel = forgotPasswordViewModel,
+                onBackClick = { navController.popBackStack() },
                 onPasswordReset = { }
             )
         }
 
         composable(Screen.PasswordSuccess.route) {
-            PasswordSuccessScreen(onLoginClick = { 
-                navController.navigate(Screen.Login.route) { 
-                    popUpTo(Screen.Login.route) { inclusive = true } 
-                } 
+            PasswordSuccessScreen(onLoginClick = {
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(0) { inclusive = true }
+                }
             })
         }
 
@@ -232,7 +232,7 @@ fun AppNavigation(
 
         composable(Screen.CreateCategory.route) {
             val categoriesViewModel: CategoriesViewModel = viewModel()
-            
+
             LaunchedEffect(categoriesViewModel.navigationEvents, navController) {
                 categoriesViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -276,7 +276,7 @@ fun AppNavigation(
                     }
                 }
             }
-            
+
             CategoryDetailScreen(
                 categoryId = categoryId,
                 viewModel = detailViewModel,
@@ -296,7 +296,7 @@ fun AppNavigation(
         // --- REGISTRO Y TÉRMINOS ---
         composable(Screen.Register.route) {
             val registerViewModel: RegisterViewModel = viewModel()
-            
+
             LaunchedEffect(registerViewModel.navigationEvents, navController) {
                 registerViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -351,7 +351,7 @@ fun AppNavigation(
         // --- OTROS ---
         composable(Screen.Profile.route) {
             val profileViewModel: ProfileViewModel = viewModel()
-            
+
             LaunchedEffect(profileViewModel.navigationEvents, navController) {
                 profileViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -366,15 +366,15 @@ fun AppNavigation(
             }
 
             ProfileScreen(
-                viewModel = profileViewModel, 
-                onPersonalInfoClick = { navController.navigate(Screen.PersonalInfo.route) }, 
+                viewModel = profileViewModel,
+                onPersonalInfoClick = { navController.navigate(Screen.PersonalInfo.route) },
                 onEditBudgetClick = { navController.navigate(Screen.EditBudget.route) }
             )
         }
 
         composable(Screen.EditBudget.route) {
             val profileViewModel: ProfileViewModel = viewModel()
-            
+
             LaunchedEffect(profileViewModel.navigationEvents, navController) {
                 profileViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -401,7 +401,7 @@ fun AppNavigation(
                 }
             )
         }
-        
+
         composable(Screen.Tickets.route) { TicketsScreen(viewModel = viewModel()) }
         composable(Screen.Reports.route) { ReportsScreen(onBackClick = { navController.popBackStack() }) }
         composable(Screen.Help.route) { HelpScreen(onBackClick = { navController.popBackStack() }) }
@@ -409,7 +409,7 @@ fun AppNavigation(
         composable(Screen.Confirmation.route) {
             val ticket = mainViewModel.ticketDetectado
             val manualViewModel : ManualExpenseViewModel = viewModel()
-            
+
             LaunchedEffect(manualViewModel.navigationEvents) {
                 manualViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -434,10 +434,10 @@ fun AppNavigation(
                 )
             }
         }
-        
-        composable(Screen.PersonalInfo.route) { 
+
+        composable(Screen.PersonalInfo.route) {
             val personalInfoViewModel: PersonalInfoViewModel = viewModel()
-            
+
             LaunchedEffect(personalInfoViewModel.navigationEvents, navController) {
                 personalInfoViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -455,20 +455,27 @@ fun AppNavigation(
             }
 
             PersonalInfoScreen(
-                viewModel = personalInfoViewModel, 
-                onBackClick = { navController.popBackStack() }, 
-                onChangePasswordClick = { navController.navigate(Screen.ChangePassword.route) }, 
+                viewModel = personalInfoViewModel,
+                onBackClick = { navController.popBackStack() },
+                onChangePasswordClick = { navController.navigate(Screen.ChangePassword.route) },
             )
         }
 
-        composable(Screen.ChangePassword.route) { 
+        composable(Screen.ChangePassword.route) {
             val changePasswordViewModel: ChangePasswordViewModel = viewModel()
-            
+
             LaunchedEffect(changePasswordViewModel.navigationEvents, navController) {
                 changePasswordViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
+                        is ProfileNavigationEvent.NavigateToLogin -> {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
                         is ProfileNavigationEvent.NavigateToBudgetSuccess -> {
-                            navController.navigate(Screen.PasswordSuccess.route)
+                            navController.navigate(Screen.PasswordSuccess.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
                         }
                         else -> {}
                     }
@@ -476,7 +483,7 @@ fun AppNavigation(
             }
 
             ChangePasswordScreen(
-                viewModel = changePasswordViewModel, 
+                viewModel = changePasswordViewModel,
                 onBackClick = { navController.popBackStack() }
             )
         }

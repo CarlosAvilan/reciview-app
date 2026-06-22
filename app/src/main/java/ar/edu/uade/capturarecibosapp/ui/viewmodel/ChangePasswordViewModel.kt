@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
+import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.domain.usecase.ChangePasswordUseCase
 import ar.edu.uade.capturarecibosapp.events.ProfileNavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -49,7 +50,8 @@ class ChangePasswordViewModel : ViewModel() {
         viewModelScope.launch {
             when (val result = changePasswordUseCase(contraseniaAnterior, nuevaContrasenia, nuevaContraseniaRepetida)) {
                 is ChangePasswordUseCase.Result.Success -> {
-                    _navigationEvents.emit(ProfileNavigationEvent.NavigateToBudgetSuccess) // Usando uno existente o genérico de éxito
+                    SessionManager.clear()
+                    _navigationEvents.emit(ProfileNavigationEvent.NavigateToBudgetSuccess)
                 }
                 is ChangePasswordUseCase.Result.ValidationError -> {
                     oldPasswordError = result.oldPasswordError
