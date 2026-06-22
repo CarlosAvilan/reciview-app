@@ -41,7 +41,7 @@ object DependencyProvider {
 
     fun provideUserRepository(context: android.content.Context): UserRepository {
         val database = ar.edu.uade.capturarecibosapp.data.local.AppDatabase.getDatabase(context)
-        return UserRepository(userApiService, ticketApiService, categoryApiService, database.userDao())
+        return UserRepository(userApiService, database.userDao())
     }
 
     fun provideExpenseRepository(context: android.content.Context): ExpenseRepository {

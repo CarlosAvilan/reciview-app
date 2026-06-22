@@ -29,14 +29,4 @@ interface UserApiService {
         @QueryMap filters: Map<String, String>,
         @Body preferences: Map<String, @JvmSuppressWildcards Any>
     ): Response<Unit>
-
-    @DELETE("rest/v1/user_preferences")
-    suspend fun deletePreferencesByUserId(
-        @Query("user_id") userIdFilter: String
-    ): Response<Unit>
-
-    @DELETE("rest/v1/profiles")
-    suspend fun deleteProfileByUserId(
-        @Query("user_id") userIdFilter: String
-    ): Response<Unit>
 }

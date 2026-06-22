@@ -28,9 +28,4 @@ interface CategoryApiService {
     suspend fun deleteCategory(
         @Query("id") idFilter: String
     ): Response<Unit>
-
-    @DELETE("rest/v1/user_categories")
-    suspend fun deleteCategoriesByUserId(
-        @Query("user_id") userIdFilter: String
-    ): Response<Unit>
 }
