@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
     private val authRepository = DependencyProvider.provideAuthRepository()
-
     private val _navigationEvents = MutableSharedFlow<AuthNavigationEvent>()
     val navigationEvents = _navigationEvents.asSharedFlow()
 
@@ -35,22 +34,51 @@ class LoginViewModel : ViewModel() {
     }
 
     fun login(context: Context) {
+        val userRepository = DependencyProvider.provideUserRepository(context)
+
         if (correoElectronico.isNotEmpty() && contrasenia.isNotEmpty()) {
             isLoading = true
             errorMessage = null
             viewModelScope.launch {
-                val result = authRepository.login(correoElectronico, contrasenia)
-                isLoading = false
-                if (result.isSuccess) {
-                    // Guardamos el ID en SharedPreferences
-                    val sharedPreferencesManager = SharedPreferencesManager(context)
-                    // Usamos un ID de prueba
-                    sharedPreferencesManager.saveUserId("user123")
+                try {
+                    val loginResult = authRepository.login(
+                        correoElectronico,
+                        contrasenia
+                    )
+                    if (loginResult.isFailure) {
+                        errorMessage = loginResult.exceptionOrNull()?.message
+                            ?: "Credenciales inválidas"
+                        return@launch
+                    }
+
+                    val profileResult = userRepository.getProfile()
+                    if (profileResult.isFailure) {
+                        errorMessage = profileResult.exceptionOrNull()?.message
+                            ?: "No se pudo obtener el perfil"
+                        return@launch
+                    }
+
+                    val profile = profileResult.getOrNull()
+                    if (profile?.deleted == true) {
+                        errorMessage = "La cuenta ha sido eliminada"
+                        return@launch
+                    }
+
+                    //Exito
+                    val sharedPreferencesManager =
+                        SharedPreferencesManager(context)
+                    profile?.userId?.let {
+                        sharedPreferencesManager.saveUserId(it)
+                    }
+
                     _navigationEvents.emit(AuthNavigationEvent.NavigateToHome)
-                } else {
-                    errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido"
+                } catch (e: Exception) {
+                    errorMessage = e.message ?: "Error inesperado"
+                } finally {
+                    isLoading = false
                 }
             }
+
         } else {
             errorMessage = "Por favor, completa todos los campos"
         }

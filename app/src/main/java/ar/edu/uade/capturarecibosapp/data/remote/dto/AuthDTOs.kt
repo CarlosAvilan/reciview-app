@@ -32,5 +32,6 @@ data class ProfileDTO(
     @SerializedName("email") val email: String? = null, // Cambiado a nullable
     @SerializedName("birth") val birth: String,
     @SerializedName("country") val country: String? = null,
-    @SerializedName("phone") val phone: String? = null
+    @SerializedName("phone") val phone: String? = null,
+    @SerializedName("deleted") val deleted: Boolean? = false
 )

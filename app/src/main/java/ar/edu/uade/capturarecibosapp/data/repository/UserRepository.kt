@@ -135,25 +135,29 @@ class UserRepository(
             val userId = SessionManager.userId
                 ?: return Result.failure(Exception("No hay sesión activa"))
 
-            // Llamada al Backend
-            // val response = apiService.deleteAccount(userId)
-            // if (!response.isSuccessful) return Result.failure(Exception("Error en servidor"))
+            // Borrado lógico del backend
+            val response = apiService.softDeleteProfile("eq.$userId")
 
-            // Eliminar datos locales en Room
-            userDao.deletePreferencesByUserId(userId)
-            userDao.deleteCategoriesByUserId(userId)
-            userDao.deleteExpensesByUserId(userId)
-            userDao.deleteTicketItemsByUserId(userId)
-            userDao.deleteTicketsByUserId(userId)
-            userDao.deleteUserById(userId)
+            if (response.isSuccessful) {
+                // Si el servidor confirmó el cambio, eliminamos datos locales
+                userDao.deletePreferencesByUserId(userId)
+                userDao.deleteCategoriesByUserId(userId)
+                userDao.deleteExpensesByUserId(userId)
+                userDao.deleteTicketItemsByUserId(userId)
+                userDao.deleteTicketsByUserId(userId)
+                userDao.deleteUserById(userId)
 
-            // Limpiar las credenciales y estado de sesión global
-            SessionManager.clear()
-            Result.success(Unit)
+                // Limpiar sesión global
+                SessionManager.clear()
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Error al eliminar la cuenta en el servidor: ${response.code()}"))
+            }
 
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
+
 
 }
