@@ -1,17 +1,19 @@
 package ar.edu.uade.capturarecibosapp.data.repository
 
-import androidx.compose.runtime.LaunchedEffect
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
 import ar.edu.uade.capturarecibosapp.data.local.daos.UserDao
 import ar.edu.uade.capturarecibosapp.data.model.UserPreferences
+import ar.edu.uade.capturarecibosapp.data.remote.CategoryApiService
+import ar.edu.uade.capturarecibosapp.data.remote.TicketApiService
 import ar.edu.uade.capturarecibosapp.data.remote.UserApiService
 import ar.edu.uade.capturarecibosapp.data.remote.dto.ProfileDTO
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
 class UserRepository(
     private val apiService: UserApiService,
+    private val ticketApiService: TicketApiService,
+    private val categoryApiService: CategoryApiService,
     private val userDao: UserDao
 ) {
 
@@ -134,12 +136,26 @@ class UserRepository(
         return try {
             val userId = SessionManager.userId
                 ?: return Result.failure(Exception("No hay sesión activa"))
+            val userIdFilter = "eq.$userId"
 
-            // Llamada al Backend
-            // val response = apiService.deleteAccount(userId)
-            // if (!response.isSuccessful) return Result.failure(Exception("Error en servidor"))
 
-            // Eliminar datos locales en Room
+            // Borrado Remoto
+            // 1 - Elimino tickets
+            val ticketsResponse = ticketApiService.deleteTicketsByUserId(userIdFilter)
+            if (!ticketsResponse.isSuccessful) return Result.failure(Exception("Error al borrar tickets remotos: ${ticketsResponse.code()}"))
+
+            val categoriesResponse = categoryApiService.deleteCategoriesByUserId(userIdFilter)
+            if (!categoriesResponse.isSuccessful) return Result.failure(Exception("Error al borrar categorías remotas: ${categoriesResponse.code()}"))
+
+            // 2 - Elimino usuario
+            val prefsResponse = apiService.deletePreferencesByUserId(userIdFilter)
+            if (!prefsResponse.isSuccessful) return Result.failure(Exception("Error al borrar preferencias remotas: ${prefsResponse.code()}"))
+
+            val profileResponse = apiService.deleteProfileByUserId(userIdFilter)
+            if (!profileResponse.isSuccessful) return Result.failure(Exception("Error al borrar el perfil remoto: ${profileResponse.code()}"))
+
+
+            // Borrado Local
             userDao.deletePreferencesByUserId(userId)
             userDao.deleteCategoriesByUserId(userId)
             userDao.deleteExpensesByUserId(userId)
@@ -147,7 +163,7 @@ class UserRepository(
             userDao.deleteTicketsByUserId(userId)
             userDao.deleteUserById(userId)
 
-            // Limpiar las credenciales y estado de sesión global
+            // Limpiar las credenciales y estado de sesión
             SessionManager.clear()
             Result.success(Unit)
 

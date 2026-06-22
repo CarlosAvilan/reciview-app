@@ -26,4 +26,9 @@ interface TicketApiService {
     suspend fun deleteTicket(
         @Query("id") idFilter: String
     ): Response<Unit>
+
+    @DELETE("rest/v1/tickets")
+    suspend fun deleteTicketsByUserId(
+        @Query("user_id") userIdFilter: String
+    ): Response<Unit>
 }
