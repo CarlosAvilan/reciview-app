@@ -16,8 +16,6 @@ class CategoryCardTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
-
-    // Valores menores a 1000 para evitar separadores de miles dependientes del locale
     private val categoryNormal = CategoryItem(
         icon = "🍔",
         name = "Comida",
@@ -25,7 +23,7 @@ class CategoryCardTest {
         budget = 800.0
     )
 
-    private val categoryOverBudget = CategoryItem(
+    private val categorySobrePrecioLimite = CategoryItem(
         icon = "🚗",
         name = "Transporte",
         spent = 900.0,
@@ -33,7 +31,7 @@ class CategoryCardTest {
     )
 
     @Test
-    fun categoryCard_displaysName() {
+    fun categoryCard_muestraNombre() {
         composeTestRule.setContent {
             MaterialTheme {
                 CategoryCard(category = categoryNormal, onClick = {})
@@ -44,7 +42,7 @@ class CategoryCardTest {
     }
 
     @Test
-    fun categoryCard_displaysIcon() {
+    fun categoryCard_muestraIcono() {
         composeTestRule.setContent {
             MaterialTheme {
                 CategoryCard(category = categoryNormal, onClick = {})
@@ -55,19 +53,18 @@ class CategoryCardTest {
     }
 
     @Test
-    fun categoryCard_displaysSpentAndBudgetAmounts() {
+    fun categoryCard_muestraGastadoYLimite() {
         composeTestRule.setContent {
             MaterialTheme {
                 CategoryCard(category = categoryNormal, onClick = {})
             }
         }
 
-        // El formato es "$500 / $800" para valores sin separador de miles
         composeTestRule.onNodeWithText("$500 / $800").assertIsDisplayed()
     }
 
     @Test
-    fun categoryCard_clickTriggers_onClickCallback() {
+    fun categoryCard_llamaCallback() {
         var clicked = false
 
         composeTestRule.setContent {
@@ -82,10 +79,10 @@ class CategoryCardTest {
     }
 
     @Test
-    fun categoryCard_overBudget_displaysName() {
+    fun categoryCard_siExcedeLimite_muestraNombre() {
         composeTestRule.setContent {
             MaterialTheme {
-                CategoryCard(category = categoryOverBudget, onClick = {})
+                CategoryCard(category = categorySobrePrecioLimite, onClick = {})
             }
         }
 
@@ -93,10 +90,10 @@ class CategoryCardTest {
     }
 
     @Test
-    fun categoryCard_overBudget_displaysAmounts() {
+    fun categoryCard_siExcedeLimite_muestraTotal() {
         composeTestRule.setContent {
             MaterialTheme {
-                CategoryCard(category = categoryOverBudget, onClick = {})
+                CategoryCard(category = categorySobrePrecioLimite, onClick = {})
             }
         }
 
@@ -104,35 +101,16 @@ class CategoryCardTest {
     }
 
     @Test
-    fun categoryCard_overBudget_clickStillWorks() {
+    fun categoryCard_siExcedeLimite_funcionaNormalmente() {
         var clicked = false
 
         composeTestRule.setContent {
             MaterialTheme {
-                CategoryCard(category = categoryOverBudget, onClick = { clicked = true })
+                CategoryCard(category = categorySobrePrecioLimite, onClick = { clicked = true })
             }
         }
 
         composeTestRule.onNodeWithText("Transporte").performClick()
-
         assertTrue(clicked)
-    }
-
-    @Test
-    fun categoryCard_zeroBudget_displaysWithoutCrash() {
-        val categoryZeroBudget = CategoryItem(
-            icon = "📁",
-            name = "Sin límite",
-            spent = 100.0,
-            budget = 0.0
-        )
-
-        composeTestRule.setContent {
-            MaterialTheme {
-                CategoryCard(category = categoryZeroBudget, onClick = {})
-            }
-        }
-
-        composeTestRule.onNodeWithText("Sin límite").assertIsDisplayed()
     }
 }

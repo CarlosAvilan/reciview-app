@@ -14,35 +14,35 @@ class HelpViewModelTest {
     }
 
     @Test
-    fun `tips list has two items`() {
+    fun HelpViewModelTest_Tips_TieneDosItems() {
         assertEquals(2, viewModel.tips.size)
     }
 
     @Test
-    fun `faqs list has four items`() {
+    fun HelpViewModelTest_Faqs_TieneCuatroItems() {
         assertEquals(4, viewModel.faqs.size)
     }
 
     @Test
-    fun `all faqs start collapsed`() {
+    fun HelpViewModelTest_Faqs_ComienzanCerradas() {
         assertTrue(viewModel.faqs.all { !it.isExpanded })
     }
 
     @Test
-    fun `toggleFaq expands a collapsed faq`() {
+    fun HelpViewModelTest_ToggleFaq_ExpandeFaq() {
         viewModel.toggleFaq(0)
         assertTrue(viewModel.faqs[0].isExpanded)
     }
 
     @Test
-    fun `toggleFaq collapses an already expanded faq`() {
+    fun HelpViewModelTest_ToggleFaq_ColapsaFaqExpandida() {
         viewModel.toggleFaq(1)
         viewModel.toggleFaq(1)
         assertFalse(viewModel.faqs[1].isExpanded)
     }
 
     @Test
-    fun `toggling one faq does not affect the others`() {
+    fun HelpViewModelTest_ToggleFaq_NoAfectaOtrasFaqs() {
         viewModel.toggleFaq(0)
         assertFalse(viewModel.faqs[1].isExpanded)
         assertFalse(viewModel.faqs[2].isExpanded)
@@ -50,7 +50,7 @@ class HelpViewModelTest {
     }
 
     @Test
-    fun `each tip has a non-empty title and description`() {
+    fun HelpViewModelTest_Tips_TienenContenido() {
         viewModel.tips.forEach { tip ->
             assertTrue(tip.title.isNotBlank())
             assertTrue(tip.description.isNotBlank())
@@ -58,7 +58,7 @@ class HelpViewModelTest {
     }
 
     @Test
-    fun `each faq has a non-empty question and answer`() {
+    fun HelpViewModelTest_Faqs_TienenContenido() {
         viewModel.faqs.forEach { faq ->
             assertTrue(faq.question.isNotBlank())
             assertTrue(faq.answer.isNotBlank())

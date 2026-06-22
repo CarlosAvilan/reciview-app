@@ -16,7 +16,7 @@ class StatCardTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun statCard_displaysTitle() {
+    fun StatCardTest_MuestraTitulo() {
         composeTestRule.setContent {
             MaterialTheme {
                 StatCard(title = "Promedio por gasto", value = "$1.234")
@@ -27,7 +27,7 @@ class StatCardTest {
     }
 
     @Test
-    fun statCard_displaysValue() {
+    fun StatCardTest_MuestraValor() {
         composeTestRule.setContent {
             MaterialTheme {
                 StatCard(title = "Promedio por gasto", value = "$1.234")
@@ -38,7 +38,7 @@ class StatCardTest {
     }
 
     @Test
-    fun statCard_displaysTitleAndValueSimultaneously() {
+    fun StatCardTest_MuestraTituloYValor() {
         composeTestRule.setContent {
             MaterialTheme {
                 StatCard(title = "Día más activo", value = "Lunes")
@@ -50,7 +50,7 @@ class StatCardTest {
     }
 
     @Test
-    fun statCard_displaysEmptyStrings() {
+    fun StatCardTest_MuestraStringsVacios() {
         composeTestRule.setContent {
             MaterialTheme {
                 StatCard(title = "", value = "")
@@ -61,8 +61,8 @@ class StatCardTest {
     }
 
     @Test
-    fun statCard_displaysLongText() {
-        val longTitle = "Este es un título muy largo que podría truncarse en pantallas pequeñas"
+    fun StatCardTest_MuestraTextoLargo() {
+        val longTitle = "Yo soy un título muy largo que podría no entrar en pantallas chicas"
         val longValue = "Jueves"
 
         composeTestRule.setContent {

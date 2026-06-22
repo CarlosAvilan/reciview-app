@@ -22,7 +22,7 @@ class FaqItemRowTest {
     private val answer = "Podés exportar tus reportes mensuales desde la sección Reportes."
 
     @Test
-    fun faqItemRow_questionAlwaysVisible_whenCollapsed() {
+    fun FaqItemRowTest_LaPreguntaSiempreEsVisible_CuandoEstaContraido() {
         composeTestRule.setContent {
             MaterialTheme {
                 FaqItemRow(
@@ -38,7 +38,7 @@ class FaqItemRowTest {
     }
 
     @Test
-    fun faqItemRow_questionAlwaysVisible_whenExpanded() {
+    fun FaqItemRowTest_LaPreguntaSiempreEsVisible_CuandoEstaExpandido() {
         composeTestRule.setContent {
             MaterialTheme {
                 FaqItemRow(
@@ -54,7 +54,7 @@ class FaqItemRowTest {
     }
 
     @Test
-    fun faqItemRow_answerHidden_whenCollapsed() {
+    fun FaqItemRowTest_LaRespuestaEstaOculta_CuandoEstaContraido() {
         composeTestRule.setContent {
             MaterialTheme {
                 FaqItemRow(
@@ -70,7 +70,7 @@ class FaqItemRowTest {
     }
 
     @Test
-    fun faqItemRow_answerVisible_whenExpanded() {
+    fun FaqItemRowTest_LaRespuestaEsVisible_CuandoEstaExpandido() {
         composeTestRule.setContent {
             MaterialTheme {
                 FaqItemRow(
@@ -86,7 +86,7 @@ class FaqItemRowTest {
     }
 
     @Test
-    fun faqItemRow_clickTriggers_onClickCallback() {
+    fun FaqItemRowTest_clicActiva_callbackOnClick() {
         var clicked = false
 
         composeTestRule.setContent {
@@ -106,7 +106,7 @@ class FaqItemRowTest {
     }
 
     @Test
-    fun faqItemRow_clickOnAnswer_triggerCallback_whenExpanded() {
+    fun FaqItemRowTest_clicEnRespuesta_activaCallbackCuandoEstaExpandido() {
         var clicked = false
 
         composeTestRule.setContent {

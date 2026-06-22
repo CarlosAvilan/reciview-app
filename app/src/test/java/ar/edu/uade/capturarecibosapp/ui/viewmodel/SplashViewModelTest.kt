@@ -29,7 +29,7 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun `navigateToNext does not emit before 2 seconds`() = runTest(testDispatcher) {
+    fun SplashViewModelTest_NavigateToNext_NoEmiteAntesDeDosSegundos() = runTest(testDispatcher) {
         val viewModel = SplashViewModel()
         val results = mutableListOf<Unit>()
 
@@ -42,7 +42,7 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun `navigateToNext emits exactly once after 2 seconds`() = runTest(testDispatcher) {
+    fun SplashViewModelTest_NavigateToNext_EmiteUnaVezTrasDosSegundos() = runTest(testDispatcher) {
         val viewModel = SplashViewModel()
         val results = mutableListOf<Unit>()
 
@@ -55,7 +55,7 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun `navigateToNext does not emit a second time after more time passes`() = runTest(testDispatcher) {
+    fun SplashViewModelTest_NavigateToNext_NoEmiteDosVeces() = runTest(testDispatcher) {
         val viewModel = SplashViewModel()
         val results = mutableListOf<Unit>()
 

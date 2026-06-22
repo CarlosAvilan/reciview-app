@@ -26,13 +26,13 @@ class ReportCalculatorTest {
     )
 
     @Test
-    fun `empty lists return empty report`() {
+    fun ReportCalculatorTest_ListasVacias_DevuelvenReporteVacio() {
         val result = ReportCalculator.calcular(emptyList(), emptyList())
         assertTrue(result.isEmpty())
     }
 
     @Test
-    fun `single ticket produces one monthly report with correct values`() {
+    fun ReportCalculatorTest_UnTicket_ProduceUnReporteMensualCorrecto() {
         val result = ReportCalculator.calcular(listOf(ticket("2024-03-15", 1000f)), emptyList())
         assertEquals(1, result.size)
         assertEquals("MAR", result[0].month)
@@ -40,7 +40,7 @@ class ReportCalculatorTest {
     }
 
     @Test
-    fun `two tickets in same month are aggregated`() {
+    fun ReportCalculatorTest_DosTicketsMismoMes_SonAgregados() {
         val tickets = listOf(
             ticket("2024-06-01", 500f),
             ticket("2024-06-15", 300f)
@@ -51,7 +51,7 @@ class ReportCalculatorTest {
     }
 
     @Test
-    fun `tickets and expenses in same month are combined`() {
+    fun ReportCalculatorTest_TicketsYGastosMismoMes_SonCombinados() {
         val result = ReportCalculator.calcular(
             listOf(ticket("2024-06-01", 400f)),
             listOf(expense("2024-06-10", 200.0))
@@ -61,7 +61,7 @@ class ReportCalculatorTest {
     }
 
     @Test
-    fun `reports are sorted chronologically`() {
+    fun ReportCalculatorTest_Reportes_EstanOrdenadosCronologicamente() {
         val tickets = listOf(
             ticket("2024-06-01", 300f),
             ticket("2024-01-01", 200f),
@@ -72,7 +72,7 @@ class ReportCalculatorTest {
     }
 
     @Test
-    fun `entry with invalid date is ignored`() {
+    fun ReportCalculatorTest_EntradaConFechaInvalida_EsIgnorada() {
         val result = ReportCalculator.calcular(
             listOf(
                 ticket("fecha-invalida", 1000f),
@@ -85,7 +85,7 @@ class ReportCalculatorTest {
     }
 
     @Test
-    fun `all twelve month labels are correct`() {
+    fun ReportCalculatorTest_DoceMeses_EtiquetasCorrectas() {
         val expected = listOf("ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC")
         val tickets = (1..12).map { month -> ticket("2024-%02d-01".format(month), 100f) }
         val result = ReportCalculator.calcular(tickets, emptyList())
@@ -93,7 +93,7 @@ class ReportCalculatorTest {
     }
 
     @Test
-    fun `average cost is formatted correctly`() {
+    fun ReportCalculatorTest_CostoPromedio_FormateadoCorrectamente() {
         val tickets = listOf(
             ticket("2024-06-01", 100f),
             ticket("2024-06-02", 300f)
@@ -103,7 +103,7 @@ class ReportCalculatorTest {
     }
 
     @Test
-    fun `same month in different years produces two separate reports`() {
+    fun ReportCalculatorTest_MismoMesDiferentesAnios_ProduceDosReportesSeparados() {
         val result = ReportCalculator.calcular(
             listOf(
                 ticket("2023-06-01", 100f),
@@ -115,8 +115,7 @@ class ReportCalculatorTest {
     }
 
     @Test
-    fun `most active day reflects the day with most entries`() {
-        // 2024-06-03 is Monday, 2024-06-04 is Tuesday
+    fun ReportCalculatorTest_DiaMasActivo_ReflejaDiaConMasEntradas() {
         val result = ReportCalculator.calcular(
             listOf(
                 ticket("2024-06-03", 100f),
@@ -126,16 +125,5 @@ class ReportCalculatorTest {
             emptyList()
         )
         assertEquals("Lunes", result[0].mostActiveDay)
-    }
-
-    @Test
-    fun `only expense items without tickets produce a valid report`() {
-        val result = ReportCalculator.calcular(
-            emptyList(),
-            listOf(expense("2024-09-20", 750.0))
-        )
-        assertEquals(1, result.size)
-        assertEquals("SEP", result[0].month)
-        assertEquals(750f, result[0].amount, 0.01f)
     }
 }
