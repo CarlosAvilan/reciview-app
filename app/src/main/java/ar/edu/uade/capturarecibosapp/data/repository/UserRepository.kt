@@ -1,11 +1,13 @@
 package ar.edu.uade.capturarecibosapp.data.repository
 
+import androidx.compose.runtime.LaunchedEffect
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
 import ar.edu.uade.capturarecibosapp.data.local.daos.UserDao
 import ar.edu.uade.capturarecibosapp.data.model.UserPreferences
 import ar.edu.uade.capturarecibosapp.data.remote.UserApiService
 import ar.edu.uade.capturarecibosapp.data.remote.dto.ProfileDTO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
 class UserRepository(
@@ -127,4 +129,35 @@ class UserRepository(
             Result.failure(e)
         }
     }
+
+    suspend fun deleteAccount(): Result<Unit> {
+        return try {
+            val userId = SessionManager.userId
+                ?: return Result.failure(Exception("No hay sesión activa"))
+
+            // Borrado lógico del backend
+            val response = apiService.softDeleteProfile("eq.$userId")
+
+            if (response.isSuccessful) {
+                // Si el servidor confirmó el cambio, eliminamos datos locales
+                userDao.deletePreferencesByUserId(userId)
+                userDao.deleteCategoriesByUserId(userId)
+                userDao.deleteExpensesByUserId(userId)
+                userDao.deleteTicketItemsByUserId(userId)
+                userDao.deleteTicketsByUserId(userId)
+                userDao.deleteUserById(userId)
+
+                // Limpiar sesión global
+                SessionManager.clear()
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Error al eliminar la cuenta en el servidor: ${response.code()}"))
+            }
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
 }
