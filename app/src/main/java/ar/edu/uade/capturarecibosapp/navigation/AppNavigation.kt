@@ -175,10 +175,8 @@ fun AppNavigation(
                 }
             }
 
-            VerifyCodeScreen(
-                viewModel = forgotPasswordViewModel, 
-                onBackClick = { navController.popBackStack() }, 
-                onCodeVerified = { }
+            ForgotPasswordEmailSent(
+                onLoginClick = { navController.navigate(Screen.Login.route) }
             )
         }
 
