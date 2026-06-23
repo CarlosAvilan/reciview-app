@@ -4,7 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import ar.edu.uade.capturarecibosapp.data.SessionManager
 import androidx.lifecycle.viewModelScope
+import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.domain.usecase.ChangePasswordUseCase
 import ar.edu.uade.capturarecibosapp.events.ProfileNavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -12,7 +14,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class ChangePasswordViewModel : ViewModel() {
-    private val changePasswordUseCase = ChangePasswordUseCase()
+    private val repository = DependencyProvider.provideAuthRepository()
+    private val changePasswordUseCase = ChangePasswordUseCase(repository)
 
     private val _navigationEvents = MutableSharedFlow<ProfileNavigationEvent>()
     val navigationEvents = _navigationEvents.asSharedFlow()
@@ -21,47 +24,43 @@ class ChangePasswordViewModel : ViewModel() {
     var nuevaContrasenia by mutableStateOf("")
     var nuevaContraseniaRepetida by mutableStateOf("")
 
-    var contraseniaAnteriorError by mutableStateOf<String?>(null)
-        private set
-    var nuevaContraseniaError by mutableStateOf<String?>(null)
-        private set
-    var nuevaContraseniaRepetidaError by mutableStateOf<String?>(null)
-        private set
+    var oldPasswordError by mutableStateOf(false)
+    var newPasswordError by mutableStateOf(false)
+    var confirmPasswordError by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
 
     fun onContraseniaAnteriorChange(newValue: String) {
         contraseniaAnterior = newValue
-        contraseniaAnteriorError = null
     }
 
     fun onNuevaContraseniaChange(newValue: String) {
         nuevaContrasenia = newValue
-        nuevaContraseniaError = null
-        nuevaContraseniaRepetidaError = null
     }
 
     fun onNuevaContraseniaRepetidaChange(newValue: String) {
         nuevaContraseniaRepetida = newValue
-        nuevaContraseniaRepetidaError = null
     }
 
     fun cambiarContrasenia() {
-        contraseniaAnteriorError = null
-        nuevaContraseniaError = null
-        nuevaContraseniaRepetidaError = null
+        errorMessage = null
+        oldPasswordError = false
+        newPasswordError = false
+        confirmPasswordError = false
 
-        when (val result = changePasswordUseCase(
-            currentPassword = contraseniaAnterior,
-            newPassword = nuevaContrasenia,
-            repeatPassword = nuevaContraseniaRepetida
-        )) {
-            is ChangePasswordUseCase.Result.ValidationError -> {
-                contraseniaAnteriorError = result.currentPasswordError
-                nuevaContraseniaError = result.newPasswordError
-                nuevaContraseniaRepetidaError = result.repeatPasswordError
-            }
-            is ChangePasswordUseCase.Result.Success -> {
-                viewModelScope.launch {
+        viewModelScope.launch {
+            when (val result = changePasswordUseCase(contraseniaAnterior, nuevaContrasenia, nuevaContraseniaRepetida)) {
+                is ChangePasswordUseCase.Result.Success -> {
+                    SessionManager.clear()
                     _navigationEvents.emit(ProfileNavigationEvent.NavigateToBudgetSuccess)
+                }
+                is ChangePasswordUseCase.Result.ValidationError -> {
+                    oldPasswordError = result.oldPasswordError
+                    newPasswordError = result.newPasswordError
+                    confirmPasswordError = result.confirmPasswordError
+                    errorMessage = result.message
+                }
+                is ChangePasswordUseCase.Result.Failure -> {
+                    errorMessage = result.message
                 }
             }
         }

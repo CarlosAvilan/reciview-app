@@ -185,7 +185,7 @@ fun AppNavigation(
                 navController.getBackStackEntry(Screen.ForgotPassword.route)
             }
             val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel(backStackEntry)
-            
+
             LaunchedEffect(forgotPasswordViewModel.navigationEvents, navController) {
                 forgotPasswordViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
@@ -465,8 +465,15 @@ fun AppNavigation(
             LaunchedEffect(changePasswordViewModel.navigationEvents, navController) {
                 changePasswordViewModel.navigationEvents.collectLatest { event ->
                     when (event) {
+                        is ProfileNavigationEvent.NavigateToLogin -> {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
                         is ProfileNavigationEvent.NavigateToBudgetSuccess -> {
-                            navController.navigate(Screen.PasswordSuccess.route)
+                            navController.navigate(Screen.PasswordSuccess.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
                         }
                         else -> {}
                     }

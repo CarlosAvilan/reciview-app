@@ -16,7 +16,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.Button
-import ar.edu.uade.capturarecibosapp.ui.components.FieldErrorText
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
 import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
@@ -44,6 +43,7 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel = viewModel(), onBac
         ) {
             Spacer(modifier = Modifier.height(20.dp))
 
+            // Icono
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -61,25 +61,24 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel = viewModel(), onBac
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            //Campos de texto
             TextField(
                 value = viewModel.contraseniaAnterior,
                 onValueChange = { viewModel.onContraseniaAnteriorChange(it) },
                 label = "Contraseña actual",
                 isPassword = true,
-                isError = viewModel.contraseniaAnteriorError != null
+                isError = viewModel.oldPasswordError
             )
-            FieldErrorText(viewModel.contraseniaAnteriorError)
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             TextField(
                 value = viewModel.nuevaContrasenia,
                 onValueChange = { viewModel.onNuevaContraseniaChange(it) },
                 label = "Nueva contraseña",
                 isPassword = true,
-                isError = viewModel.nuevaContraseniaError != null
+                isError = viewModel.newPasswordError
             )
-            FieldErrorText(viewModel.nuevaContraseniaError)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -88,9 +87,17 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel = viewModel(), onBac
                 onValueChange = { viewModel.onNuevaContraseniaRepetidaChange(it) },
                 label = "Repetir nueva contraseña",
                 isPassword = true,
-                isError = viewModel.nuevaContraseniaRepetidaError != null
+                isError = viewModel.confirmPasswordError
             )
-            FieldErrorText(viewModel.nuevaContraseniaRepetidaError)
+
+            if (viewModel.errorMessage != null) {
+                Text(
+                    text = viewModel.errorMessage!!,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 8.dp).align(Alignment.Start)
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 

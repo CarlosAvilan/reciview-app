@@ -1,41 +1,71 @@
 package ar.edu.uade.capturarecibosapp.domain.usecase
+import ar.edu.uade.capturarecibosapp.data.SessionManager
+import ar.edu.uade.capturarecibosapp.data.repository.AuthRepository
 
-class ChangePasswordUseCase {
-
+class ChangePasswordUseCase(
+    private val repository: AuthRepository
+) {
     sealed class Result {
         object Success : Result()
         data class ValidationError(
-            val currentPasswordError: String?,
-            val newPasswordError: String?,
-            val repeatPasswordError: String?
+            val oldPasswordError: Boolean = false,
+            val newPasswordError: Boolean = false,
+            val confirmPasswordError: Boolean = false,
+            val message: String
         ) : Result()
+        data class Failure(val message: String) : Result()
     }
 
-    operator fun invoke(
-        currentPassword: String,
+    suspend operator fun invoke(
+        oldPassword: String,
         newPassword: String,
-        repeatPassword: String
+        confirmPassword: String
     ): Result {
-        val currentPasswordError =
-            if (currentPassword.isBlank()) "Ingresá la contraseña actual" else null
-
-        val newPasswordError = when {
-            newPassword.isBlank() -> "Ingresá la nueva contraseña"
-            newPassword.length < 6 -> "Mínimo 6 caracteres"
-            else -> null
+        if (oldPassword.isBlank()) {
+            return Result.ValidationError(
+                oldPasswordError = true,
+                message = "La contraseña actual no puede estar vacía"
+            )
         }
 
-        // Solo validamos coincidencia si la nueva contraseña es formalmente válida
-        val repeatPasswordError = when {
-            repeatPassword.isBlank() -> "Repetí la nueva contraseña"
-            newPasswordError == null && newPassword != repeatPassword -> "Las contraseñas no coinciden"
-            else -> null
+        if (newPassword.isBlank()) {
+            return Result.ValidationError(
+                newPasswordError = true,
+                message = "La nueva contraseña no puede estar vacía"
+            )
         }
 
-        return if (currentPasswordError != null || newPasswordError != null || repeatPasswordError != null) {
-            Result.ValidationError(currentPasswordError, newPasswordError, repeatPasswordError)
-        } else {
+        if (newPassword.length < 6) {
+            return Result.ValidationError(
+                newPasswordError = true,
+                message = "La nueva contraseña debe tener al menos 6 caracteres"
+            )
+        }
+
+        if (newPassword != confirmPassword) {
+            return Result.ValidationError(
+                confirmPasswordError = true,
+                message = "Las contraseñas no coinciden"
+            )
+        }
+
+        val email = SessionManager.userEmail ?: return Result.Failure("Usuario no autenticado")
+
+        // Validar que la contraseña anterior sea correcta re-autenticando
+        val loginResult = repository.login(email, oldPassword)
+        if (loginResult.isFailure) {
+            return Result.ValidationError(
+                oldPasswordError = true,
+                message = "La contraseña actual es incorrecta"
+            )
+        }
+
+        // Si todo es correcto, cambiar la contraseña
+        val changeResult = repository.changePassword(newPassword)
+        return if (changeResult.isSuccess) {
             Result.Success
+        } else {
+            Result.Failure("Error al cambiar la contraseña")
         }
     }
 }
