@@ -3,10 +3,10 @@ package ar.edu.uade.capturarecibosapp.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -29,7 +29,6 @@ import java.util.Locale
 fun TicketsScreen(
     viewModel: TicketsViewModel = viewModel(),
 ) {
-    // Accedemos directamente a las propiedades del ViewModel (mutableStateOf)
     val filteredTickets = viewModel.filteredTickets
     val categoryNames = viewModel.categoryNames
     val categoryList = viewModel.categoryList
@@ -92,12 +91,13 @@ fun TicketsScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(end = 24.dp)
         ) {
+            // Usamos items de LazyListScope (import androidx.compose.foundation.lazy.items)
             items(categoryNames) { category ->
                 val isSelected = viewModel.selectedCategory == category
                 FilterChip(
                     selected = isSelected,
                     onClick = { viewModel.selectedCategory = category },
-                    label = { Text(category) },
+                    label = { Text(text = category) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primary,
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
@@ -133,12 +133,13 @@ fun TicketsScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
+                // Usamos items de LazyGridScope (import androidx.compose.foundation.lazy.grid.items)
                 items(filteredTickets) { ticket ->
                     TicketCard(
                         commerce = ticket.establishment,
                         date = ticket.createdAt,
                         amount = String.format(Locale.getDefault(), "$ %.2f", ticket.amount),
-                        imageRes = null, 
+                        photoUrl = ticket.photoUrl, 
                         onClick = { viewModel.selectedTicket = ticket }
                     )
                 }
@@ -148,7 +149,6 @@ fun TicketsScreen(
 
     // Diálogo de Detalle
     viewModel.selectedTicket?.let { ticket ->
-        // Obtenemos el nombre real de la categoría comparando el id (Long) con categoryId (Long?)
         val categoryName = categoryList.find { it.id == ticket.categoryId }?.name ?: "Sin categoría"
         
         TicketDetailDialog(
@@ -157,7 +157,7 @@ fun TicketsScreen(
             amount = String.format(Locale.getDefault(), "$ %.2f", ticket.amount),
             category = categoryName,
             description = ticket.description,
-            imageRes = null,
+            photoUrl = ticket.photoUrl,
             onDismiss = { viewModel.selectedTicket = null }
         )
     }

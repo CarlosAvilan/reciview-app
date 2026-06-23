@@ -424,6 +424,7 @@ fun AppNavigation(
             if (ticket != null) {
                 ConfirmationScreen(
                     ticket = ticket,
+                    bitmap = mainViewModel.bitmapDetectado,
                     viewModel = manualViewModel,
                     onCancel = {
                         mainViewModel.cancelarCaptura()

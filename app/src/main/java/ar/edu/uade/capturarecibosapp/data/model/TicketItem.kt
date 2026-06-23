@@ -14,6 +14,6 @@ data class TicketItem(
     val date: String,
     val amount: Float,
     val category: String = "Otros",
-    val imageRes: Int? = null,
+    val photoUrl: String? = null,
     val description: String = ""
 )

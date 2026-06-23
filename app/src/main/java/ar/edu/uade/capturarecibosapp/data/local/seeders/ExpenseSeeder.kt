@@ -6,7 +6,7 @@ class ExpenseSeeder {
     fun provideInitialExpenses(): List<ExpenseItem> = listOf(
         ExpenseItem(
             userId = UserSeeder.MOCK_USER_ID,
-            photoUrl = 0,
+            photoUrl = "",
             title = "Supermercado Coto",
             date = "2026-06-01",
             category = "Alimentos",
@@ -14,7 +14,7 @@ class ExpenseSeeder {
         ),
         ExpenseItem(
             userId = UserSeeder.MOCK_USER_ID,
-            photoUrl = 0,
+            photoUrl = "",
             title = "Combustible YPF",
             date = "2026-06-05",
             category = "Transporte",
@@ -22,7 +22,7 @@ class ExpenseSeeder {
         ),
         ExpenseItem(
             userId = UserSeeder.MOCK_USER_ID,
-            photoUrl = 0,
+            photoUrl = "",
             title = "Farmacia",
             date = "2026-06-08",
             category = "Salud",
@@ -30,7 +30,7 @@ class ExpenseSeeder {
         ),
         ExpenseItem(
             userId = UserSeeder.MOCK_USER_ID,
-            photoUrl = 0,
+            photoUrl = "",
             title = "Cena en restaurante",
             date = "2026-06-10",
             category = "Entretenimiento",
@@ -38,7 +38,7 @@ class ExpenseSeeder {
         ),
         ExpenseItem(
             userId = UserSeeder.MOCK_USER_ID,
-            photoUrl = 0,
+            photoUrl = "",
             title = "Café Italiano",
             date = "2026-06-12",
             category = "Gastos personales",

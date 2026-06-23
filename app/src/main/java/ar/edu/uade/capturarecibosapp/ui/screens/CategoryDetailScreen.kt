@@ -230,7 +230,7 @@ fun CategoryDetailScreen(
                                     category = expense.category,
                                     categoryIcon = state.category.icon,
                                     amount = expense.amount,
-                                    imageRes = expense.photoUrl,
+                                    photoUrl = expense.photoUrl,
                                     onAddTicketClick = {
                                         onScanClick()
                                     }

@@ -8,8 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import ar.edu.uade.capturarecibosapp.data.DependencyProvider
-import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.domain.OcrManager
 import ar.edu.uade.capturarecibosapp.events.MainNavigationEvent
@@ -30,12 +28,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var ticketDetectado by mutableStateOf<Ticket?>(null)
         private set
 
+    // Guardamos el bitmap para poder guardarlo localmente luego si se confirma
+    var bitmapDetectado by mutableStateOf<Bitmap?>(null)
+        private set
+
     // Estado para saber si estamos procesando la imagen (loading)
     var isProcessing by mutableStateOf(value = false)
         private set
 
     fun procesarImagen(bitmap: Bitmap) {
         isProcessing = true
+        bitmapDetectado = bitmap
 
         ocrManager.analizarRecibo(bitmap) { ticket ->
             Log.d("ReciView", "OCR finalizado: ${ticket.establishment}")
@@ -51,5 +54,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun cancelarCaptura() {
         ticketDetectado = null
+        bitmapDetectado = null
     }
 }
