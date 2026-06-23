@@ -21,7 +21,7 @@ class SaveCategoryUseCaseTest {
     }
 
     @Test
-    fun SaveCategoryUseCaseTest_NombreEnBlanco_RetornaErrorDeValidacionConNombreErrorVerdadero() = runTest {
+    fun SaveCategoryUseCaseTest_NombreEnBlanco_RetornaErrorDeNombre() = runTest {
         val result = useCase("  ", "1000", "📁", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.ValidationError)
         val error = result as SaveCategoryUseCase.Result.ValidationError
@@ -30,7 +30,7 @@ class SaveCategoryUseCaseTest {
     }
 
     @Test
-    fun SaveCategoryUseCaseTest_PresupuestoNoNumerico_RetornaErrorDeValidacionConPresupuestoErrorVerdadero() = runTest {
+    fun SaveCategoryUseCaseTest_PresupuestoNoNumerico_RetornaErrorDePresupuesto() = runTest {
         val result = useCase("Comida", "abc", "📁", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.ValidationError)
         val error = result as SaveCategoryUseCase.Result.ValidationError
@@ -39,7 +39,7 @@ class SaveCategoryUseCaseTest {
     }
 
     @Test
-    fun SaveCategoryUseCaseTest_PresupuestoNegativo_RetornaErrorDeValidacionConPresupuestoErrorVerdadero() = runTest {
+    fun SaveCategoryUseCaseTest_PresupuestoNegativo_RetornaErrorDePresupuesto() = runTest {
         val result = useCase("Comida", "-500", "📁", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.ValidationError)
         assertTrue((result as SaveCategoryUseCase.Result.ValidationError).budgetError)
