@@ -49,16 +49,16 @@ fun TicketDetailDialog(
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
-                
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (!photoUrl.isNullOrEmpty()) {
+                if (!photoUrl.isNullOrEmpty()) {
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(250.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                        contentAlignment = Alignment.Center
+                    ) {
                         SubcomposeAsyncImage(
                             model = photoUrl,
                             contentDescription = commerce,
@@ -68,23 +68,18 @@ fun TicketDetailDialog(
                                 Box(contentAlignment = Alignment.Center) {
                                     Text(
                                         text = "X",
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                            alpha = 0.5f
+                                        ),
                                         style = MaterialTheme.typography.displayMedium
                                     )
                                 }
                             }
                         )
-                    } else {
-                        Text(
-                            text = "X",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                            style = MaterialTheme.typography.displayMedium
-                        )
                     }
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
+
                 DetailRow(label = "Comercio", value = commerce)
                 DetailRow(label = "Fecha", value = date)
                 DetailRow(label = "Categoría", value = category)
