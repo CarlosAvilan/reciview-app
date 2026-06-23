@@ -61,6 +61,7 @@ fun TextField(
                         Icons.Default.VisibilityOff
                     else
                         Icons.Default.Visibility
+                val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
                 IconButton(
                     onClick = {
                         passwordVisible = !passwordVisible
@@ -68,7 +69,7 @@ fun TextField(
                 ) {
                     Icon(
                         imageVector = icon,
-                        contentDescription = null,
+                        contentDescription = description,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

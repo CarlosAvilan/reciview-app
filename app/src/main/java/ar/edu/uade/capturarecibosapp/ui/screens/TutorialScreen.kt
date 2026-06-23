@@ -127,7 +127,7 @@ fun TutorialPageContent(page: TutorialPageData) {
         ) {
             Image(
                 painter = painterResource(id = page.imageRes),
-                contentDescription = null,
+                contentDescription = "Ilustración de ${page.title}",
                 modifier = Modifier.size(160.dp)
             )
         }

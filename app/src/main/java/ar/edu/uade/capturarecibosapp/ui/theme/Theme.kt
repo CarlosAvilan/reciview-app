@@ -55,7 +55,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun ReciViewTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true, 
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

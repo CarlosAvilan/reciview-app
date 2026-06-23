@@ -25,7 +25,7 @@ fun FaqItemRow(
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable(onClickLabel = if (isExpanded) "Contraer pregunta" else "Expandir pregunta") { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -45,7 +45,7 @@ fun FaqItemRow(
                 )
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = null,
+                    contentDescription = if (isExpanded) "Icono contraer" else "Icono expandir",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }

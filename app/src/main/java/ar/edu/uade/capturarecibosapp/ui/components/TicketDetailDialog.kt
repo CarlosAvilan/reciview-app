@@ -49,9 +49,17 @@ fun TicketDetailDialog(
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
+<<<<<<< Updated upstream
                 if (!photoUrl.isNullOrEmpty()) {
 
                     Box(
+=======
+                
+                if (imageRes != null) {
+                    Image(
+                        painter = painterResource(id = imageRes),
+                        contentDescription = "Imagen del recibo de $commerce",
+>>>>>>> Stashed changes
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(250.dp)

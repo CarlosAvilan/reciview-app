@@ -124,7 +124,7 @@ fun MyExpensesScreen(
                     text = "Ver todo",
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.clickable { onViewAllClick() }
+                    modifier = Modifier.clickable(onClickLabel = "Ver todas las transacciones") { onViewAllClick() }
                 )
             }
         }
@@ -147,7 +147,7 @@ fun MyExpensesScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onCategoriesClick() },
+                    .clickable(onClickLabel = "Ver gastos por categoría") { onCategoriesClick() },
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
@@ -166,7 +166,7 @@ fun MyExpensesScreen(
                     )
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
+                        contentDescription = "Ir a gastos por categoría",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }

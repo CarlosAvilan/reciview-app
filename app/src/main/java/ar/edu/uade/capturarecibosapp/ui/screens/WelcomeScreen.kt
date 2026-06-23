@@ -168,7 +168,7 @@ private fun WelcomeHeader(
                 .size(48.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .clickable { onProfileClick() },
+                .clickable(onClickLabel = "Ver perfil") { onProfileClick() },
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -218,7 +218,7 @@ private fun TotalSpentCard(
                         Icons.AutoMirrored.Filled.TrendingDown
                     else
                         Icons.AutoMirrored.Filled.TrendingUp,
-                    contentDescription = null,
+                    contentDescription = if (isSpendingDown) "Tendencia de gasto hacia abajo" else "Tendencia de gasto hacia arriba",
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(16.dp)
                 )
@@ -304,7 +304,7 @@ private fun QuickActionsRow(
 fun QuickActionItem(icon: ImageVector, label: String, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable { onClick() }
+        modifier = Modifier.clickable(onClickLabel = "Acción rápida $label") { onClick() }
     ) {
         Box(
             modifier = Modifier
@@ -313,7 +313,7 @@ fun QuickActionItem(icon: ImageVector, label: String, onClick: () -> Unit) {
                 .background(MaterialTheme.colorScheme.surface),
             contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = icon, contentDescription = label, tint = MaterialTheme.colorScheme.primary)
+            Icon(imageVector = icon, contentDescription = "Icono de $label", tint = MaterialTheme.colorScheme.primary)
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -332,7 +332,7 @@ fun RecentActivityItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { onClick() },
+            .clickable(onClickLabel = "Ver detalle del ticket de $commerce") { onClick() },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(2.dp)
@@ -354,7 +354,7 @@ fun RecentActivityItem(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
-                        contentDescription = null,
+                        contentDescription = "Icono de recibo",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )

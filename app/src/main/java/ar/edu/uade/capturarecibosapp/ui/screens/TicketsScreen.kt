@@ -68,7 +68,7 @@ fun TicketsScreen(
             leadingIcon = {
                 Icon(
                     Icons.Default.Search,
-                    contentDescription = null,
+                    contentDescription = "Icono de búsqueda",
                     tint = MaterialTheme.colorScheme.primary
                 )
             },

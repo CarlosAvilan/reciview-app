@@ -130,7 +130,7 @@ fun PersonalInfoScreen(
                 onValueChange = { viewModel.onPaisChange(it) },
                 label = "País de residencia",
                 trailingIcon = {
-                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Seleccionar país", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 },
                 readOnly = true,
                 modifier = Modifier.clickable { /* Abrir selector */ }
@@ -162,7 +162,7 @@ fun PersonalInfoScreen(
                     )
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
+                        contentDescription = "Ir a cambiar contraseña",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

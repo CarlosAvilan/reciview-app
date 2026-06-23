@@ -49,7 +49,7 @@ fun ForgotPasswordEmailSent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Email,
-                        contentDescription = null,
+                        contentDescription = "Icono de mail",
                         modifier = Modifier.size(40.dp),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )

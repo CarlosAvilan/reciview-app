@@ -46,7 +46,7 @@ fun LoginScreen(
 
         Image(
             painter = painterResource(id = R.drawable.logo),
-            contentDescription = null,
+            contentDescription = "Logo de ReciView",
             modifier = Modifier.size(180.dp)
         )
 

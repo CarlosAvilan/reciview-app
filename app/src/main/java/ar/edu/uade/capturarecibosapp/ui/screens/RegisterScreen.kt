@@ -74,7 +74,7 @@ fun RegisterScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = null,
+                    contentDescription = "Foto de perfil predeterminada",
                     modifier = Modifier.size(60.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -135,7 +135,7 @@ fun RegisterScreen(
                     onValueChange = { },
                     label = "País de residencia",
                     trailingIcon = {
-                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Seleccionar país", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     },
                     readOnly = true,
                     isError = viewModel.countryError,
@@ -207,7 +207,7 @@ fun RegisterScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
-                            contentDescription = null,
+                            contentDescription = "Términos aceptados",
                             tint = Color(0xFF10B981),
                             modifier = Modifier.size(20.dp)
                         )

@@ -143,7 +143,7 @@ fun ProfileOptionRow(text: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .clickable { onClick() },
+            .clickable(onClickLabel = "Abrir $text") { onClick() },
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceVariant
     ) {
@@ -161,7 +161,7 @@ fun ProfileOptionRow(text: String, onClick: () -> Unit) {
             )
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
+                contentDescription = "Ir a $text",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -174,7 +174,7 @@ fun ProfileValueRow(label: String, value: String, onClick: (() -> Unit)? = null)
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
+            .then(if (onClick != null) Modifier.clickable(onClickLabel = "Editar $label") { onClick() } else Modifier),
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceVariant
     ) {

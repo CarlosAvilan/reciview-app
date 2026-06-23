@@ -53,7 +53,7 @@ fun ChangePasswordScreen(viewModel: ChangePasswordViewModel = viewModel(), onBac
             ) {
                 Icon(
                     imageVector = Icons.Default.Shield,
-                    contentDescription = null,
+                    contentDescription = "Icono de escudo",
                     modifier = Modifier.size(60.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
