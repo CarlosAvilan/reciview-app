@@ -17,6 +17,7 @@ import java.util.Locale
 class MyExpensesViewModel(application: Application) : AndroidViewModel(application) {
     private val expenseRepository = DependencyProvider.provideExpenseRepository(application)
     private val ticketRepository = DependencyProvider.provideTicketRepository(application)
+    private val userRepository = DependencyProvider.provideUserRepository(application)
     private val userId = SessionManager.userId ?: ""
     
     // Cache de categorías para evitar múltiples suscripciones
@@ -59,9 +60,10 @@ class MyExpensesViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun formatTicketDate(apiDate: String): String {
         return try {
+            val cleanDate = apiDate.substringBefore('T')
             val apiFormatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")
             val uiFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            java.time.LocalDate.parse(apiDate, apiFormatter).format(uiFormatter)
+            java.time.LocalDate.parse(cleanDate, apiFormatter).format(uiFormatter)
         } catch (e: Exception) {
             apiDate
         }
@@ -77,8 +79,15 @@ class MyExpensesViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    val totalSpent: StateFlow<String> = transactions.map { list ->
-        val total = list.sumOf { it.amount }
+    val totalSpent: StateFlow<String> = allTransactions.map { list ->
+        val now = java.time.LocalDate.now()
+        val uiFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        val total = list.filter { expense ->
+            try {
+                val d = java.time.LocalDate.parse(expense.date, uiFormatter)
+                d.year == now.year && d.monthValue == now.monthValue
+            } catch (e: Exception) { false }
+        }.sumOf { it.amount }
         "$${String.format(Locale("es", "AR"), "%,.2f", total)}"
     }.stateIn(
         scope = viewModelScope,
@@ -86,10 +95,30 @@ class MyExpensesViewModel(application: Application) : AndroidViewModel(applicati
         initialValue = "$0,00"
     )
 
-    var statistics by mutableStateOf("Vas por el 45% de tu presupuesto")
+    var statistics by mutableStateOf("Calculando...")
         private set
 
     init {
-        // Podríamos disparar una sincronización aquí si fuera necesario
+        viewModelScope.launch {
+            val monthlyMaxFlow = userRepository.getLocalPreferences()
+                .map { it?.monthlyMax ?: 60000f }
+
+            combine(allTransactions, monthlyMaxFlow) { list, monthlyMax ->
+                val now = java.time.LocalDate.now()
+                val uiFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                val total = list.filter { expense ->
+                    try {
+                        val d = java.time.LocalDate.parse(expense.date, uiFormatter)
+                        d.year == now.year && d.monthValue == now.monthValue
+                    } catch (e: Exception) { false }
+                }.sumOf { it.amount }
+
+                if (monthlyMax <= 0f) "Sin presupuesto configurado"
+                else {
+                    val pct = ((total / monthlyMax) * 100).toInt().coerceIn(0, 100)
+                    "Vas por el $pct% de tu presupuesto"
+                }
+            }.collect { text -> statistics = text }
+        }
     }
 }
