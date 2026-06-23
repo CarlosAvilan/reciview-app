@@ -5,8 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
 import ar.edu.uade.capturarecibosapp.data.local.daos.*
+import ar.edu.uade.capturarecibosapp.data.local.seeders.HelpSeeder
+import ar.edu.uade.capturarecibosapp.data.local.seeders.TicketSeeder
+import ar.edu.uade.capturarecibosapp.data.local.seeders.UserSeeder
 import ar.edu.uade.capturarecibosapp.data.model.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Database(
     entities = [
@@ -44,6 +51,27 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "captura_recibos_database"
                 )
+
+                // Precarga de datos
+                .addCallback(object : Callback() {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        super.onCreate(db)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val database = getDatabase(context)
+
+                            // Precarga de Ayuda
+                            val helpDao = database.helpDao()
+                            helpDao.insertAdviceItems(HelpSeeder().provideInitialAdvice())
+                            helpDao.insertFaqItems(HelpSeeder().provideInitialFaqs())
+
+                            // Precarga de Usuario Mock
+                            val userDao = database.userDao()
+                            userDao.insertUser(UserSeeder().provideInitialUser())
+                            userDao.insertPreferences(UserSeeder().provideInitialPreferences())
+                        }
+                    }
+                })
+
                 .fallbackToDestructiveMigration(true)
                 .build()
 
