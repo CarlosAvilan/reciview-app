@@ -35,8 +35,7 @@ class TicketsViewModel(application: Application) : AndroidViewModel(application)
     // Lista filtrada calculada reactivamente
     val filteredTickets: List<Ticket>
         get() = allTickets.filter { ticket ->
-            val matchesSearch = ticket.establishment.contains(searchQuery, ignoreCase = true) || 
-                               ticket.createdAt.contains(searchQuery, ignoreCase = true)
+            val matchesSearch = ticket.establishment.contains(searchQuery, ignoreCase = true)
             
             val matchesCategory = if (selectedCategory == "Todos") {
                 true
