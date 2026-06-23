@@ -96,11 +96,17 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
                     Triple(tickets, expenses, categories)
                 }.collectLatest { (tickets, expenses, categories) ->
                     val now = LocalDate.now()
-                    val currentMonthTickets = tickets.filter { 
-                        try { LocalDate.parse(it.createdAt).monthValue == now.monthValue } catch(e: Exception) { false }
+                    val currentMonthTickets = tickets.filter {
+                        try {
+                            val d = LocalDate.parse(it.createdAt.substringBefore('T'))
+                            d.year == now.year && d.monthValue == now.monthValue
+                        } catch (e: Exception) { false }
                     }
                     val currentMonthExpenses = expenses.filter {
-                        try { LocalDate.parse(it.date).monthValue == now.monthValue } catch(e: Exception) { false }
+                        try {
+                            val d = LocalDate.parse(it.date.substringBefore('T'))
+                            d.year == now.year && d.monthValue == now.monthValue
+                        } catch (e: Exception) { false }
                     }
 
                     val total = currentMonthTickets.sumOf { it.amount.toDouble() } + 
