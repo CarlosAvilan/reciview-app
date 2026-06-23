@@ -77,7 +77,7 @@ class TicketRepository(
                         Log.d(tag, "Inserting new remote ticket: ${dto.establishment}")
                         ticketDao.insertTicket(
                             Ticket(
-                                createdAt = dto.createdAt,
+                                createdAt = dto.createdAt.substringBefore('T'),
                                 userId = dto.userId,
                                 categoryId = localCatId,
                                 establishment = dto.establishment,
@@ -91,7 +91,7 @@ class TicketRepository(
                     } else if (existing.syncStatus == SyncStatus.ACTUALIZADO) {
                         Log.d(tag, "Updating existing remote ticket: ${dto.establishment}")
                         ticketDao.updateTicket(existing.copy(
-                            createdAt = dto.createdAt,
+                            createdAt = dto.createdAt.substringBefore('T'),
                             establishment = dto.establishment,
                             amount = dto.amount,
                             photoUrl = dto.photoUrl,

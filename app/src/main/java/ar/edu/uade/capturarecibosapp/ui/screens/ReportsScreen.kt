@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,7 +28,7 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun ReportsScreen(
-    viewModel: ReportsViewModel = ReportsViewModel(),
+    viewModel: ReportsViewModel = viewModel(),
     onBackClick: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -84,14 +85,27 @@ fun ReportsScreen(
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.Bottom
                     ) {
-                        val maxAmount = viewModel.monthlyEvolution.maxOf { it.amount }
-                        viewModel.monthlyEvolution.forEach { report ->
-                            BarItem(
-                                report = report,
-                                isSelected = viewModel.selectedReport == report,
-                                heightFactor = report.amount / maxAmount,
-                                onClick = { viewModel.onReportSelected(report) }
-                            )
+                        if (viewModel.monthlyEvolution.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Sin gastos registrados",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        } else {
+                            val maxAmount = viewModel.monthlyEvolution.maxOf { it.amount }
+                            viewModel.monthlyEvolution.forEach { report ->
+                                BarItem(
+                                    report = report,
+                                    isSelected = viewModel.selectedReport == report,
+                                    heightFactor = if (maxAmount > 0f) report.amount / maxAmount else 0f,
+                                    onClick = { viewModel.onReportSelected(report) }
+                                )
+                            }
                         }
                     }
                 }

@@ -96,11 +96,17 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
                     Triple(tickets, expenses, categories)
                 }.collectLatest { (tickets, expenses, categories) ->
                     val now = LocalDate.now()
-                    val currentMonthTickets = tickets.filter { 
-                        try { LocalDate.parse(it.createdAt).monthValue == now.monthValue } catch(e: Exception) { false }
+                    val currentMonthTickets = tickets.filter {
+                        try {
+                            val d = LocalDate.parse(it.createdAt.substringBefore('T'))
+                            d.year == now.year && d.monthValue == now.monthValue
+                        } catch (e: Exception) { false }
                     }
                     val currentMonthExpenses = expenses.filter {
-                        try { LocalDate.parse(it.date).monthValue == now.monthValue } catch(e: Exception) { false }
+                        try {
+                            val d = LocalDate.parse(it.date.substringBefore('T'))
+                            d.year == now.year && d.monthValue == now.monthValue
+                        } catch (e: Exception) { false }
                     }
 
                     val total = currentMonthTickets.sumOf { it.amount.toDouble() } + 
@@ -124,9 +130,31 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
                         )
                     }
                     
-                    // Comparación básica (mock o implementar lógica de mes anterior)
-                    monthComparisonText = "0% más que el mes pasado"
-                    isSpendingDown = true
+                    // Comparación con el mes anterior
+                    val previousMonth = now.minusMonths(1)
+                    val previousMonthTotal = tickets.filter {
+                        try {
+                            val d = LocalDate.parse(it.createdAt.substringBefore('T'))
+                            d.year == previousMonth.year && d.monthValue == previousMonth.monthValue
+                        } catch (e: Exception) { false }
+                    }.sumOf { it.amount.toDouble() } +
+                    expenses.filter {
+                        try {
+                            val d = LocalDate.parse(it.date.substringBefore('T'))
+                            d.year == previousMonth.year && d.monthValue == previousMonth.monthValue
+                        } catch (e: Exception) { false }
+                    }.sumOf { it.amount }
+
+                    isSpendingDown = total <= previousMonthTotal
+                    monthComparisonText = when {
+                        previousMonthTotal == 0.0 && total == 0.0 -> "Sin gastos registrados"
+                        previousMonthTotal == 0.0 -> "Primer mes con gastos registrados"
+                        else -> {
+                            val pct = kotlin.math.abs(((total - previousMonthTotal) / previousMonthTotal * 100)).toInt()
+                            if (isSpendingDown) "$pct% menos que el mes pasado"
+                            else "$pct% más que el mes pasado"
+                        }
+                    }
                 }
             }
         }
