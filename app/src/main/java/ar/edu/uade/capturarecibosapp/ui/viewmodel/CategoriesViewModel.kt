@@ -16,11 +16,10 @@ import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class CategoriesViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: CategoryRepository = DependencyProvider.provideCategoryRepository(application)
-    private val expenseRepository = DependencyProvider.provideExpenseRepository(application)
+    private val ticketRepository = DependencyProvider.provideTicketRepository(application)
     private val userId = SessionManager.userId ?: ""
     private val saveCategoryUseCase = SaveCategoryUseCase(repository)
 
@@ -37,30 +36,35 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     // Lista cruda de Room para búsquedas síncronas rápidas (compatibilidad con UI actual)
     private val _rawCategories = MutableStateFlow<List<UserCategory>>(emptyList())
 
-    // Observamos las categorías desde el repositorio y las mapeamos a la UI inyectando el gasto real
-    val categories: StateFlow<List<CategoryItem>> = repository.getCategories(userId)
-        .onEach { _rawCategories.value = it }
-        .flatMapLatest { list ->
-            if (list.isEmpty()) return@flatMapLatest flowOf(emptyList())
-
-            val flows = list.map { category ->
-                expenseRepository.getTotalSpentByCategory(userId, category.name)
-                    .map { spent ->
-                        CategoryItem(
-                            icon = category.icon,
-                            name = category.name,
-                            spent = spent,
-                            budget = category.budget,
-                        )
-                    }
-            }
-            combine(flows) { it.toList() }
+    // Combina categorías con tickets del mes actual para calcular el gasto real por categoría
+    val categories: StateFlow<List<CategoryItem>> = combine(
+        repository.getCategories(userId).onEach { _rawCategories.value = it },
+        ticketRepository.getTickets(userId)
+    ) { categoryList, allTickets ->
+        val now = java.time.LocalDate.now()
+        val currentMonthTickets = allTickets.filter {
+            try {
+                val d = java.time.LocalDate.parse(it.createdAt.substringBefore('T'))
+                d.year == now.year && d.monthValue == now.monthValue
+            } catch (e: Exception) { false }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+        categoryList.map { category ->
+            val spent = currentMonthTickets
+                .filter { it.categoryId == category.id }
+                .sumOf { it.amount.toDouble() }
+            CategoryItem(
+                icon = category.icon,
+                name = category.name,
+                spent = spent,
+                budget = category.budget
+            )
+        }
+    }
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     init {
         // Al iniciar, intentamos sincronizar cambios pendientes

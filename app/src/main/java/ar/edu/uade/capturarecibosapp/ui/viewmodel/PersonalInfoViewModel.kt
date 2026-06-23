@@ -10,13 +10,13 @@ import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
 import ar.edu.uade.capturarecibosapp.events.ProfileNavigationEvent
+import ar.edu.uade.capturarecibosapp.ui.components.LoadingState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class PersonalInfoViewModel(application: Application) : AndroidViewModel(application) {
     private val userRepository: UserRepository = DependencyProvider.provideUserRepository(application)
-    
     private val _navigationEvents = MutableSharedFlow<ProfileNavigationEvent>()
     val navigationEvents = _navigationEvents.asSharedFlow()
 
@@ -25,8 +25,8 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
     var telefono by mutableStateOf("")
     var fechaNacimiento by mutableStateOf("")
     var paisResidencia by mutableStateOf("")
-    
-    var isLoading by mutableStateOf(false)
+    var loadingState by mutableStateOf(LoadingState.NONE)
+
     var errorMessage by mutableStateOf<String?>(null)
 
     init {
@@ -40,10 +40,12 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
             return
         }
 
-        isLoading = true
+        loadingState = LoadingState.LOADING_PROFILE
+
         viewModelScope.launch {
             val result = userRepository.getProfile()
-            isLoading = false
+            loadingState = LoadingState.NONE
+
             result.onSuccess { profile ->
                 nombre = profile.name
                 email = profile.email?.takeIf { it.isNotBlank() } ?: (SessionManager.userEmail ?: "")
@@ -64,8 +66,9 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
     fun onPaisChange(newValue: String) { paisResidencia = newValue }
 
     fun guardarCambios() {
-        isLoading = true
+        loadingState = LoadingState.SAVING_CHANGES
         errorMessage = null
+
         viewModelScope.launch {
             val result = userRepository.updateProfile(
                 name = nombre,
@@ -73,7 +76,8 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
                 country = paisResidencia,
                 phone = telefono
             )
-            isLoading = false
+            loadingState = LoadingState.NONE
+
             if (result.isSuccess) {
                 _navigationEvents.emit(ProfileNavigationEvent.NavigateToProfile)
             } else {
@@ -83,9 +87,15 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun eliminarCuenta() {
+        loadingState = LoadingState.DELETING_ACCOUNT
+        errorMessage = null
+
         viewModelScope.launch {
-            // Lógica para eliminar cuenta
-            _navigationEvents.emit(ProfileNavigationEvent.NavigateToLogin)
+            val result = userRepository.deleteAccount()
+            loadingState = LoadingState.NONE
+
+            if (result.isSuccess) _navigationEvents.emit(ProfileNavigationEvent.NavigateToLogin)
+            else errorMessage = "No se pudo eliminar la cuenta. Por favor, intenta de nuevo más tarde."
         }
     }
 }

@@ -61,7 +61,7 @@ fun TicketsScreen(
                 .height(56.dp),
             placeholder = {
                 Text(
-                    "Buscar por comercio o fecha...",
+                    "Buscar por comercio...",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )

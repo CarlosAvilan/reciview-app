@@ -1,6 +1,7 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -58,6 +59,14 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    init {
+        viewModelScope.launch {
+            try {
+                categoryRepository.syncPendingCategories()
+            } catch (e: Exception) { Log.e("ManualExpenseViewModel", "Error al sincronizar categorías", e) }
+        }
+    }
 
     fun onMontoChange(newValue: String) {
         // Permitir solo números y un punto decimal

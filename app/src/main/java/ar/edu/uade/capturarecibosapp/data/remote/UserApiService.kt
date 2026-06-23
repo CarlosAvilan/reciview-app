@@ -18,6 +18,12 @@ interface UserApiService {
         @Body profile: Map<String, @JvmSuppressWildcards Any>
     ): Response<Unit>
 
+    @PATCH("rest/v1/profiles")
+    suspend fun softDeleteProfile(
+        @Query("user_id") userId: String,
+        @Body body: Map<String, @JvmSuppressWildcards Any> = mapOf("deleted" to true)
+    ): Response<Unit>
+
     @GET("rest/v1/user_preferences")
     suspend fun getUserPreferences(
         @Query("user_id") userId: String,
