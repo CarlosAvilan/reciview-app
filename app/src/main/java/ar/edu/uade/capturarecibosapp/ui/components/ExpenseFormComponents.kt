@@ -16,6 +16,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
+fun FieldErrorText(message: String?) {
+    if (message != null) {
+        Text(
+            text = message,
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+        )
+    }
+}
+
+@Composable
 fun SectionLabel(text: String) {
     Text(
         text = text,

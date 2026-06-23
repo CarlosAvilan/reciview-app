@@ -19,11 +19,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ar.edu.uade.capturarecibosapp.ui.components.TextField
+import ar.edu.uade.capturarecibosapp.R
 import ar.edu.uade.capturarecibosapp.ui.components.Button
+import ar.edu.uade.capturarecibosapp.ui.components.TextField
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.LoginViewModel
-import ar.edu.uade.capturarecibosapp.R
 
 @Composable
 fun LoginScreen(
@@ -39,80 +39,86 @@ fun LoginScreen(
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 24.dp)
             .verticalScroll(rememberScrollState()),
-
         horizontalAlignment = Alignment.CenterHorizontally,
-
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        Spacer(modifier = Modifier.height(4.dp))
 
-            Spacer(modifier = Modifier.height(4.dp))
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = null,
+            modifier = Modifier.size(180.dp)
+        )
 
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = null,
-                modifier = Modifier.size(180.dp)
-            )
+        Text(
+            text = "Tu gestor de recibos inteligente",
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = viewModel.correoElectronico,
+            onValueChange = viewModel::onCorreoElectronicoChange,
+            label = "Correo Electrónico",
+            isError = viewModel.emailError
+        )
+
+        TextField(
+            value = viewModel.contrasenia,
+            onValueChange = viewModel::onContraseniaChange,
+            label = "Contraseña",
+            isPassword = true,
+            isError = viewModel.passwordError
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            TextButton(onClick = onForgotPasswordClick) {
+                Text(
+                    text = "¿Olvidaste tu contraseña?",
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline
+                )
+            }
+        }
+
+        if (viewModel.errorMessage != null) {
             Text(
-                text = "Tu gestor de recibos inteligente",
+                text = viewModel.errorMessage!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp)
+            )
+        }
+
+        Button(
+            text = "Iniciar sesión",
+            onClick = { viewModel.login(context) }
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row {
+            Text(
+                text = "¿No tienes una cuenta?",
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            TextField(
-                value = viewModel.correoElectronico,
-                onValueChange = viewModel::onCorreoElectronicoChange,
-                label = "Correo Electrónico"
+            Text(
+                text = " Regístrate",
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable { onRegisterClick() }
             )
-
-            TextField(
-                value = viewModel.contrasenia,
-                onValueChange = viewModel::onContraseniaChange,
-                label = "Contraseña",
-                isPassword = true
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(
-                    onClick = onForgotPasswordClick
-                ) {
-                    Text(
-                        text = "¿Olvidaste tu contraseña?",
-                        color = MaterialTheme.colorScheme.primary,
-                        textDecoration = TextDecoration.Underline
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Button(
-                text = "Iniciar sesión",
-                onClick = { viewModel.login(context) }
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row {
-                Text(
-                    text = "¿No tienes una cuenta?",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Text(
-                    text = " Regístrate",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { onRegisterClick() }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)

@@ -24,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.Button
+import ar.edu.uade.capturarecibosapp.ui.components.DateField
+import ar.edu.uade.capturarecibosapp.ui.components.FieldErrorText
 import ar.edu.uade.capturarecibosapp.ui.components.LoadingOverlay
 import ar.edu.uade.capturarecibosapp.ui.components.LoadingState
 import ar.edu.uade.capturarecibosapp.ui.components.SectionLabel
@@ -90,8 +92,10 @@ fun PersonalInfoScreen(
                     TextField(
                         value = viewModel.nombre,
                         onValueChange = { viewModel.onNombreChange(it) },
-                        label = "Nombre Completo"
+                        label = "Nombre Completo",
+                        isError = viewModel.nameError != null
                     )
+                    FieldErrorText(viewModel.nameError)
                     Spacer(modifier = Modifier.height(12.dp))
                     TextField(
                         value = viewModel.email,
@@ -108,14 +112,18 @@ fun PersonalInfoScreen(
             TextField(
                 value = viewModel.telefono,
                 onValueChange = { viewModel.onTelefonoChange(it) },
-                label = "Teléfono"
+                label = "Teléfono",
+                isError = viewModel.phoneError != null
             )
+            FieldErrorText(viewModel.phoneError)
             Spacer(modifier = Modifier.height(16.dp))
-            TextField(
+            DateField(
                 value = viewModel.fechaNacimiento,
                 onValueChange = { viewModel.onFechaNacimientoChange(it) },
-                label = "Fecha de Nacimiento"
+                label = "Fecha de Nacimiento",
+                isError = viewModel.birthDateError != null
             )
+            FieldErrorText(viewModel.birthDateError)
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = viewModel.paisResidencia,
