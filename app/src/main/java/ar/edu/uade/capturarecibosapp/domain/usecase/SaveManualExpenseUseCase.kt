@@ -42,7 +42,8 @@ class SaveManualExpenseUseCase(
         descripcion: String,
         fechaUi: String,
         userId: String,
-        categories: List<UserCategory>
+        categories: List<UserCategory>,
+        photoUrl: String? = null
     ): Result {
         val amount = montoRaw.toFloatOrNull()
 
@@ -80,7 +81,7 @@ class SaveManualExpenseUseCase(
             categoryId = selectedCat?.id,
             establishment = establecimiento,
             amount = amount ?: 0f,
-            photoUrl = null,
+            photoUrl = photoUrl,
             description = descripcion,
             syncStatus = SyncStatus.PENDIENTE_AGREGAR
         )

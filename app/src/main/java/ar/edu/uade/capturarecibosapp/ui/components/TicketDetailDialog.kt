@@ -1,6 +1,6 @@
 package ar.edu.uade.capturarecibosapp.ui.components
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,11 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import coil.compose.SubcomposeAsyncImage
 
 @Composable
 fun TicketDetailDialog(
@@ -24,7 +24,7 @@ fun TicketDetailDialog(
     amount: String,
     category: String,
     description: String,
-    imageRes: Int?,
+    photoUrl: String?,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -50,16 +50,37 @@ fun TicketDetailDialog(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                if (imageRes != null) {
-                    Image(
-                        painter = painterResource(id = imageRes),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(250.dp)
-                            .clip(RoundedCornerShape(16.dp)),
-                        contentScale = ContentScale.Fit
-                    )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (!photoUrl.isNullOrEmpty()) {
+                        SubcomposeAsyncImage(
+                            model = photoUrl,
+                            contentDescription = commerce,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit,
+                            error = {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = "X",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                        style = MaterialTheme.typography.displayMedium
+                                    )
+                                }
+                            }
+                        )
+                    } else {
+                        Text(
+                            text = "X",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            style = MaterialTheme.typography.displayMedium
+                        )
+                    }
                 }
                 
                 Spacer(modifier = Modifier.height(24.dp))

@@ -9,7 +9,7 @@ data class ExpenseItem(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     @ColumnInfo(name = "photo_url")
-    val photoUrl: Int,
+    val photoUrl: String? = null,
     @ColumnInfo(name = "user_id")
     val userId: String,
     val title: String,

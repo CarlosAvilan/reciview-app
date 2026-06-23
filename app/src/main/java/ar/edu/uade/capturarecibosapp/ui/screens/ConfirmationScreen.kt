@@ -1,5 +1,6 @@
 package ar.edu.uade.capturarecibosapp.ui.screens
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -16,6 +17,7 @@ import ar.edu.uade.capturarecibosapp.ui.viewmodel.ManualExpenseViewModel
 @Composable
 fun ConfirmationScreen(
     ticket: Ticket,
+    bitmap: Bitmap? = null,
     onCancel: () -> Unit,
     viewModel: ManualExpenseViewModel = viewModel()
 ) {
@@ -23,7 +25,7 @@ fun ConfirmationScreen(
 
     // Inicializar el formulario solo cuando el ticket cambia, no en cada recomposición
     LaunchedEffect(ticket) {
-        viewModel.initializeWithTicket(ticket)
+        viewModel.initializeWithTicket(ticket, bitmap)
     }
 
     Scaffold(

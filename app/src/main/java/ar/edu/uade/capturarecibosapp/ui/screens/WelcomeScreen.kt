@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.data.model.TicketItem
 import ar.edu.uade.capturarecibosapp.ui.components.TicketDetailDialog
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.WelcomeViewModel
@@ -133,7 +132,7 @@ fun WelcomeScreen(
                 amount = ticket.amount.toString(),
                 category = ticket.category,
                 description = ticket.description,
-                imageRes = ticket.imageRes,
+                photoUrl = ticket.photoUrl,
                 onDismiss = { selectedTicket = null }
             )
         }

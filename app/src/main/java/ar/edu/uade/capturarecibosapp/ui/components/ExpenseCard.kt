@@ -1,6 +1,5 @@
 package ar.edu.uade.capturarecibosapp.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,10 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.SubcomposeAsyncImage
 import java.util.Locale
 
 @Composable
@@ -26,7 +25,7 @@ fun ExpenseCard(
     category: String,
     categoryIcon: String = "📁",
     amount: Double,
-    imageRes: Int = 0,
+    photoUrl: String? = null,
     onAddTicketClick: () -> Unit = {}
 ) {
     Card(
@@ -51,15 +50,22 @@ fun ExpenseCard(
                     .size(56.dp)
                     .clip(RoundedCornerShape(14.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .then(if (imageRes <= 0) Modifier.clickable { onAddTicketClick() } else Modifier),
+                    .then(if (photoUrl.isNullOrEmpty()) Modifier.clickable { onAddTicketClick() } else Modifier),
                 contentAlignment = Alignment.Center
             ) {
-                if (imageRes > 0) {
-                    Image(
-                        painter = painterResource(id = imageRes),
+                if (!photoUrl.isNullOrEmpty()) {
+                    SubcomposeAsyncImage(
+                        model = photoUrl,
                         contentDescription = "Ticket",
                         modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        error = {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Error al cargar ticket",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     )
                 } else {
                     Icon(

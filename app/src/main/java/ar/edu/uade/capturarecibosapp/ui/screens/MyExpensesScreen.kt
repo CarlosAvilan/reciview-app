@@ -88,7 +88,7 @@ fun MyExpensesScreen(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     SuggestionChip(
-                        onClick = { /* Opcional */ },
+                        onClick = { },
                         label = {
                             Text(
                                 text = estadistica,
@@ -129,7 +129,6 @@ fun MyExpensesScreen(
             }
         }
 
-        // Lista dinámica de tarjetas de gastos
         items(transacciones) { transaccion ->
             ExpenseCard(
                 title = transaccion.title,
@@ -137,7 +136,7 @@ fun MyExpensesScreen(
                 category = transaccion.category,
                 categoryIcon = viewModel.getIconForCategory(transaccion.category),
                 amount = transaccion.amount,
-                imageRes = transaccion.photoUrl,
+                photoUrl = transaccion.photoUrl,
                 onAddTicketClick = {
                     onScanClick()
                 }

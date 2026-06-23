@@ -126,6 +126,7 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
                             date = ticket.createdAt,
                             amount = ticket.amount,
                             category = catName,
+                            photoUrl = ticket.photoUrl,
                             description = ticket.description
                         )
                     }

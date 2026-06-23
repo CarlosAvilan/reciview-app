@@ -58,7 +58,7 @@ fun AllExpensesScreen(
                     category = transaccion.category,
                     categoryIcon = viewModel.getIconForCategory(transaccion.category),
                     amount = transaccion.amount,
-                    imageRes = transaccion.photoUrl,
+                    photoUrl = transaccion.photoUrl,
                     onAddTicketClick = {
                         onScanClick()
                     }

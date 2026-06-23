@@ -33,7 +33,7 @@ class MyExpensesViewModel(application: Application) : AndroidViewModel(applicati
             list.map { (ticket, category) ->
                 ExpenseItem(
                     id = ticket.id,
-                    photoUrl = 0, // Ticket usa String photoUrl, ExpenseItem usa Int. Por ahora 0.
+                    photoUrl = ticket.photoUrl,
                     userId = ticket.userId,
                     title = ticket.establishment,
                     date = formatTicketDate(ticket.createdAt),
@@ -73,9 +73,10 @@ class MyExpensesViewModel(application: Application) : AndroidViewModel(applicati
         return userCategories.value.find { it.name == categoryName }?.icon ?: "📁"
     }
 
-    fun associateTicketToExpense(expense: ExpenseItem, photoRes: Int) {
+    // Nota: associateTicketToExpense ya no es necesario o debería usar photoUrl String
+    fun associateTicketToExpense(expense: ExpenseItem, photoPath: String) {
         viewModelScope.launch {
-            expenseRepository.saveExpense(expense.copy(photoUrl = photoRes))
+            expenseRepository.saveExpense(expense.copy(photoUrl = photoPath))
         }
     }
 

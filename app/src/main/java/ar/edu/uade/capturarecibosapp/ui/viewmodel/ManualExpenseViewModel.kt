@@ -1,6 +1,7 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
 import android.app.Application
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,10 +12,10 @@ import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
-import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
 import ar.edu.uade.capturarecibosapp.events.ManualExpenseNavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ar.edu.uade.capturarecibosapp.domain.usecase.SaveManualExpenseUseCase
+import ar.edu.uade.capturarecibosapp.utils.ImageStorage
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -40,6 +41,10 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
     var descripcion by mutableStateOf("")
     var fecha by mutableStateOf(LocalDate.now().format(uiFormatter))
     var photoUrl by mutableStateOf("")
+    
+    // Almacenamos el bitmap temporalmente si viene de un escaneo
+    var bitmapToSave by mutableStateOf<Bitmap?>(null)
+
     var montoError by mutableStateOf<String?>(null)
         private set
     var establecimientoError by mutableStateOf<String?>(null)
@@ -97,11 +102,12 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
         fecha = newValue
     }
 
-    fun initializeWithTicket(ticket: Ticket) {
+    fun initializeWithTicket(ticket: Ticket, bitmap: Bitmap? = null) {
         monto = ticket.amount.toString()
         establecimiento = ticket.establishment
         descripcion = ticket.description
         photoUrl = ticket.photoUrl ?: ""
+        bitmapToSave = bitmap
 
         // Formatear fecha de la API (yyyy-MM-dd) a la UI (dd/MM/yyyy)
         fecha = try {
@@ -127,8 +133,14 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
         establecimientoError = null
         categoriaError = null
         errorMessage = null
+        isLoading = true
 
         viewModelScope.launch {
+            // Si hay un bitmap, lo guardamos localmente primero
+            val localPhotoPath = bitmapToSave?.let {
+                ImageStorage.saveInternalImage(getApplication(), it)
+            } ?: if (photoUrl.isNotEmpty()) photoUrl else null
+
             when (val result = saveManualExpenseUseCase(
                 montoRaw = monto,
                 establecimiento = establecimiento,
@@ -136,7 +148,8 @@ class ManualExpenseViewModel(application: Application) : AndroidViewModel(applic
                 descripcion = descripcion,
                 fechaUi = fecha,
                 userId = userId,
-                categories = categories.value
+                categories = categories.value,
+                photoUrl = localPhotoPath
             )) {
                 is SaveManualExpenseUseCase.Result.Success -> {
                     isLoading = false
