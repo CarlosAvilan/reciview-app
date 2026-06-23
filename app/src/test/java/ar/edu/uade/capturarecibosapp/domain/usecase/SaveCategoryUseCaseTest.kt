@@ -21,7 +21,7 @@ class SaveCategoryUseCaseTest {
     }
 
     @Test
-    fun `blank name returns ValidationError with nameError true`() = runTest {
+    fun SaveCategoryUseCaseTest_NombreEnBlanco_RetornaErrorDeValidacionConNombreErrorVerdadero() = runTest {
         val result = useCase("  ", "1000", "📁", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.ValidationError)
         val error = result as SaveCategoryUseCase.Result.ValidationError
@@ -30,7 +30,7 @@ class SaveCategoryUseCaseTest {
     }
 
     @Test
-    fun `non-numeric budget returns ValidationError with budgetError true`() = runTest {
+    fun SaveCategoryUseCaseTest_PresupuestoNoNumerico_RetornaErrorDeValidacionConPresupuestoErrorVerdadero() = runTest {
         val result = useCase("Comida", "abc", "📁", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.ValidationError)
         val error = result as SaveCategoryUseCase.Result.ValidationError
@@ -39,21 +39,21 @@ class SaveCategoryUseCaseTest {
     }
 
     @Test
-    fun `negative budget returns ValidationError with budgetError true`() = runTest {
+    fun SaveCategoryUseCaseTest_PresupuestoNegativo_RetornaErrorDeValidacionConPresupuestoErrorVerdadero() = runTest {
         val result = useCase("Comida", "-500", "📁", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.ValidationError)
         assertTrue((result as SaveCategoryUseCase.Result.ValidationError).budgetError)
     }
 
     @Test
-    fun `valid data creates new category and returns Success`() = runTest {
+    fun SaveCategoryUseCaseTest_DatosValidos_CreaNuevaCategoriaYRetornaExito() = runTest {
         coEvery { categoryRepository.saveCategory(any()) } returns Result.success(Unit)
         val result = useCase("Transporte", "5000", "🚗", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.Success)
     }
 
     @Test
-    fun `valid data with existing category updates it preserving the original id`() = runTest {
+    fun SaveCategoryUseCaseTest_DatosValidosConCategoriaExistente_LaActualizaPreservandoElIdOriginal() = runTest {
         val existing = UserCategory(id = 10L, name = "Viejo", icon = "📁", budget = 1000.0, userId = "user1")
         coEvery { categoryRepository.saveCategory(any()) } returns Result.success(Unit)
 
@@ -68,7 +68,7 @@ class SaveCategoryUseCaseTest {
     }
 
     @Test
-    fun `Argentine format 1 dot 234 comma 56 is parsed as 1234 point 56`() = runTest {
+    fun SaveCategoryUseCaseTest_FormatoConPuntoYComa_EsParseadoCorrectamente() = runTest {
         coEvery { categoryRepository.saveCategory(any()) } returns Result.success(Unit)
         val result = useCase("Comida", "1.234,56", "🍔", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.Success)
@@ -76,7 +76,7 @@ class SaveCategoryUseCaseTest {
     }
 
     @Test
-    fun `budget with peso sign is parsed correctly`() = runTest {
+    fun SaveCategoryUseCaseTest_PresupuestoConSignoPeso_EsParseadoCorrectamente() = runTest {
         coEvery { categoryRepository.saveCategory(any()) } returns Result.success(Unit)
         val result = useCase("Salud", "\$5000", "💊", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.Success)
@@ -84,14 +84,14 @@ class SaveCategoryUseCaseTest {
     }
 
     @Test
-    fun `zero budget is valid`() = runTest {
+    fun SaveCategoryUseCaseTest_PresupuestoEnCero_EsValidoYRetornaExito() = runTest {
         coEvery { categoryRepository.saveCategory(any()) } returns Result.success(Unit)
         val result = useCase("Sin límite", "0", "📁", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.Success)
     }
 
     @Test
-    fun `repository failure returns Failure`() = runTest {
+    fun SaveCategoryUseCaseTest_FalloDelRepositorio_RetornaFallo() = runTest {
         coEvery { categoryRepository.saveCategory(any()) } returns Result.failure(Exception("DB error"))
         val result = useCase("Comida", "1000", "📁", "user1")
         assertTrue(result is SaveCategoryUseCase.Result.Failure)
