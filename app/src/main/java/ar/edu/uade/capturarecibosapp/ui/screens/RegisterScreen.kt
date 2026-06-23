@@ -29,6 +29,7 @@ import ar.edu.uade.capturarecibosapp.ui.components.TopBar
 import ar.edu.uade.capturarecibosapp.ui.components.TextField
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.components.DateField
+import ar.edu.uade.capturarecibosapp.ui.components.FieldErrorText
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterViewModel
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterState
@@ -92,8 +93,10 @@ fun RegisterScreen(
             TextField(
                 value = viewModel.nombreCompleto,
                 onValueChange = { viewModel.onNombreChange(it) },
-                label = "Nombre completo"
+                label = "Nombre completo",
+                isError = viewModel.nameError
             )
+            FieldErrorText(if (viewModel.nameError) "El nombre no puede estar vacío" else null)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -135,10 +138,10 @@ fun RegisterScreen(
                         Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     },
                     readOnly = true,
+                    isError = viewModel.countryError,
                     modifier = Modifier.clickable { showCountryDropdown = true }
                 )
                 
-                // Overlay para asegurar el click en el campo readOnly
                 Box(modifier = Modifier.matchParentSize().clickable { showCountryDropdown = true })
 
                 DropdownMenu(
@@ -157,6 +160,7 @@ fun RegisterScreen(
                     }
                 }
             }
+            FieldErrorText(if (viewModel.countryError) "Seleccioná un país de residencia" else null)
 
             Spacer(modifier = Modifier.height(32.dp))
 

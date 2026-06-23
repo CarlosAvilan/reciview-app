@@ -212,14 +212,3 @@ fun ExpenseForm(
     }
 }
 
-@Composable
-private fun FieldErrorText(message: String?) {
-    if (message != null) {
-        Text(
-            text = message,
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(start = 4.dp, top = 4.dp)
-        )
-    }
-}

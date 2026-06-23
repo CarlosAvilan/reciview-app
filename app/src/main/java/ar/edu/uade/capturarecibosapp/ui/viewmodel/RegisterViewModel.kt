@@ -1,20 +1,17 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
-import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
+import ar.edu.uade.capturarecibosapp.domain.usecase.RegisterUserUseCase
 import ar.edu.uade.capturarecibosapp.events.AuthNavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import ar.edu.uade.capturarecibosapp.domain.usecase.RegisterUserUseCase
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 sealed class RegisterState {
     object Idle : RegisterState()
@@ -37,9 +34,10 @@ class RegisterViewModel : ViewModel() {
     var paisNacimiento by mutableStateOf("")
     var password by mutableStateOf("")
 
-    // Estados de validación para la UI
-    var passwordError by mutableStateOf(false)
+    var nameError by mutableStateOf(false)
     var emailError by mutableStateOf(false)
+    var passwordError by mutableStateOf(false)
+    var countryError by mutableStateOf(false)
     var birthDateError by mutableStateOf(false)
 
     var terminosAceptados by mutableStateOf(false)
@@ -51,6 +49,7 @@ class RegisterViewModel : ViewModel() {
 
     fun onNombreChange(newValue: String) {
         nombreCompleto = newValue
+        nameError = false
     }
 
     fun onCorreoChange(newValue: String) {
@@ -70,6 +69,7 @@ class RegisterViewModel : ViewModel() {
 
     fun onPaisChange(newValue: String) {
         paisNacimiento = newValue
+        countryError = false
     }
 
     fun onTerminosAceptadosChange(newValue: Boolean) {
@@ -85,8 +85,10 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun registrarse() {
-        passwordError = false
+        nameError = false
         emailError = false
+        passwordError = false
+        countryError = false
         birthDateError = false
         uiState = RegisterState.Loading
 
@@ -103,12 +105,20 @@ class RegisterViewModel : ViewModel() {
                     uiState = RegisterState.Success(result.email)
                     _navigationEvents.emit(AuthNavigationEvent.NavigateToRegisterSuccess)
                 }
-                is RegisterUserUseCase.Result.PasswordError -> {
-                    passwordError = true
+                is RegisterUserUseCase.Result.NameError -> {
+                    nameError = true
                     uiState = RegisterState.Error(result.message)
                 }
                 is RegisterUserUseCase.Result.EmailError -> {
                     emailError = true
+                    uiState = RegisterState.Error(result.message)
+                }
+                is RegisterUserUseCase.Result.PasswordError -> {
+                    passwordError = true
+                    uiState = RegisterState.Error(result.message)
+                }
+                is RegisterUserUseCase.Result.CountryError -> {
+                    countryError = true
                     uiState = RegisterState.Error(result.message)
                 }
                 is RegisterUserUseCase.Result.BirthDateError -> {

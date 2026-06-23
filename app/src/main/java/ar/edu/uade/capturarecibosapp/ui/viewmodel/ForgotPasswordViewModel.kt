@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import ar.edu.uade.capturarecibosapp.data.DependencyProvider
 import ar.edu.uade.capturarecibosapp.data.enums.ForgotPasswordStep
 import ar.edu.uade.capturarecibosapp.data.repository.AuthRepository
+import ar.edu.uade.capturarecibosapp.domain.InputValidator
 import ar.edu.uade.capturarecibosapp.events.ForgotPasswordNavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -54,7 +55,7 @@ class ForgotPasswordViewModel(
     }
 
     fun sendCode() {
-        if (email.isBlank() || !email.contains("@")) {
+        if (!InputValidator.isValidEmail(email)) {
             errorMessage = "Ingresá un mail válido"
             return
         }
@@ -96,6 +97,10 @@ class ForgotPasswordViewModel(
             errorMessage = "La contraseña no puede estar vacía"
             return
         }
+        if (!InputValidator.isValidPassword(newPassword)) {
+            errorMessage = "La contraseña debe tener al menos 6 caracteres"
+            return
+        }
         if (newPassword != repeatPassword) {
             errorMessage = "Las contraseñas no coinciden"
             return
@@ -103,7 +108,7 @@ class ForgotPasswordViewModel(
 
         isLoading = true
         viewModelScope.launch {
-            val result = Result.success(Unit) 
+            val result = Result.success(Unit)
             isLoading = false
             if (result.isSuccess) {
                 currentStep = ForgotPasswordStep.SUCCESS

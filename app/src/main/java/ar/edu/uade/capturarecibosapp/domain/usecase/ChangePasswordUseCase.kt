@@ -1,5 +1,4 @@
 package ar.edu.uade.capturarecibosapp.domain.usecase
-
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.repository.AuthRepository
 
