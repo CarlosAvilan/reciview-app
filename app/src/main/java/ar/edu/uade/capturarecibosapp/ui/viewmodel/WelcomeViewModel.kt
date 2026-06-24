@@ -60,10 +60,14 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
 
     private fun loadData() {
         val userId = SessionManager.userId ?: return
-        
+
         viewModelScope.launch {
             // Sincronizar preferencias de Supabase
             userRepository.fetchAndCachePreferences()
+
+            // Poblar Room con datos remotos para que los Flows de abajo emitan inmediatamente
+            launch { try { categoryRepository.syncPendingCategories() } catch (e: Exception) { } }
+            launch { try { ticketRepository.syncPendingTickets() } catch (e: Exception) { } }
 
             launch {
                 userRepository.getProfile()
