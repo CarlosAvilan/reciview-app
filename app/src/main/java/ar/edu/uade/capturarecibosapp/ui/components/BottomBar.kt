@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.navigation.Screen
 
 @Composable
@@ -86,12 +85,11 @@ fun BottomBar(
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = "ESCANEAR",
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary,
             )
         }
@@ -118,7 +116,7 @@ fun RowScope.BottomNavItem(
         label = {
             Text(
                 text = label,
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.labelMedium,
                 color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
         },

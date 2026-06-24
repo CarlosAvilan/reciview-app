@@ -15,7 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.theme.success
@@ -69,10 +68,7 @@ fun CategoryDeleteSuccessScreen(
 
             Text(
                 text = "¡Categoría eliminada!",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp
-                ),
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
@@ -81,9 +77,7 @@ fun CategoryDeleteSuccessScreen(
 
             Text(
                 text = "La categoría se eliminó correctamente.",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 16.sp
-                ),
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )

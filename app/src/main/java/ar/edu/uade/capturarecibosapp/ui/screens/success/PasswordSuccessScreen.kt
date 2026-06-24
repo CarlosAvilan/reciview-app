@@ -63,10 +63,7 @@ fun PasswordSuccessScreen(
 
             Text(
                 text = "¡Contraseña Cambiada!",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp
-                ),
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
@@ -75,9 +72,7 @@ fun PasswordSuccessScreen(
 
             Text(
                 text = "Tu cuenta ha sido actualizada correctamente.\nYa podés iniciar sesión con tu nueva credencial.",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 16.sp
-                ),
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )

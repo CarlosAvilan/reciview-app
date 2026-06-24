@@ -14,7 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 
@@ -61,8 +60,7 @@ fun ForgotPasswordEmailSent(
             Text(
                 text = "¡Correo enviado!",
                 style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp
+                    fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
@@ -72,9 +70,7 @@ fun ForgotPasswordEmailSent(
 
             Text(
                 text = "En caso de que el usuario sea válido, te enviaremos un correo con las instrucciones para continuar.",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    lineHeight = 24.sp
-                ),
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )

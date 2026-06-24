@@ -100,8 +100,10 @@ fun WelcomeScreen(
                 )
             }
 
+
             // ACTIVIDAD RECIENTE
             item {
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Actividad Reciente",
                     fontWeight = FontWeight.Bold,
@@ -158,7 +160,7 @@ private fun WelcomeHeader(
             )
             Text(
                 text = "Bienvenido a ReciView",
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -225,7 +227,7 @@ private fun TotalSpentCard(
                 Text(
                     text = " $comparisonText",
                     color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelMedium
                 )
             }
         }
@@ -235,6 +237,7 @@ private fun TotalSpentCard(
 @Composable
 private fun BudgetProgressCard(budgetPercentage: Float, monthlyMax: String) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Tu Presupuesto Mensual",
             fontWeight = FontWeight.Bold,
@@ -252,7 +255,7 @@ private fun BudgetProgressCard(budgetPercentage: Float, monthlyMax: String) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Límite: $monthlyMax", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                    Text("Límite: $monthlyMax", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                     Text("${(budgetPercentage * 100).toInt()}%", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -281,17 +284,24 @@ private fun QuickActionsRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        QuickActionItem(icon = Icons.Default.Add, label = "Manual", onClick = onManualClick)
+
+        QuickActionItem(
+            icon = Icons.Default.Add,
+            label = "Manual",
+            onClick = onManualClick)
+
         QuickActionItem(
             icon = Icons.Default.Category,
             label = "Categorías",
             onClick = onCategoriesClick
         )
+
         QuickActionItem(
             icon = Icons.Default.BarChart,
             label = "Reportes",
             onClick = onReportsClick
         )
+
         QuickActionItem(
             icon = Icons.AutoMirrored.Filled.HelpOutline,
             label = "Ayuda",

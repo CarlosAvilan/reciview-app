@@ -32,8 +32,8 @@ fun SectionLabel(text: String) {
     Text(
         text = text,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold,
-        fontSize = 12.sp,
         modifier = Modifier.padding(bottom = 8.dp)
     )
 }

@@ -62,10 +62,7 @@ fun TicketRegisteredScreen(
 
             Text(
                 text = "¡Gasto confirmado!",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp
-                ),
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
@@ -74,9 +71,7 @@ fun TicketRegisteredScreen(
 
             Text(
                 text = "Tu ticket ha sido registrado correctamente.",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 16.sp
-                ),
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )

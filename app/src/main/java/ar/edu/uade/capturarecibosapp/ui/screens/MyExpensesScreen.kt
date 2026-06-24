@@ -15,11 +15,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.ExpenseCard
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
@@ -49,10 +47,7 @@ fun MyExpensesScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Mis Gastos",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp
-                ),
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
@@ -82,7 +77,7 @@ fun MyExpensesScreen(
                     Text(
                         text = totalGastado,
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 32.sp,
+                        style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
@@ -93,7 +88,7 @@ fun MyExpensesScreen(
                             Text(
                                 text = estadistica,
                                 color = MaterialTheme.colorScheme.onPrimary,
-                                fontSize = 13.sp,
+                                style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.SemiBold
                             )
                         },
@@ -123,6 +118,7 @@ fun MyExpensesScreen(
                 Text(
                     text = "Ver todo",
                     color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.clickable(onClickLabel = "Ver todas las transacciones") { onViewAllClick() }
                 )

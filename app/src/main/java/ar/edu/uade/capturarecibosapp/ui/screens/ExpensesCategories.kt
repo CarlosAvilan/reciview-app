@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.ui.components.CategoryCard
 import ar.edu.uade.capturarecibosapp.ui.components.CategoryItem
@@ -99,7 +98,7 @@ fun NewCategoryButton(onClick: () -> Unit) {
             text = "+ Nueva Categoria",
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Medium,
-            fontSize = 14.sp
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

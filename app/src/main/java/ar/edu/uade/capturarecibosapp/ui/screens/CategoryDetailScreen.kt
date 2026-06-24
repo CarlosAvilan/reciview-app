@@ -144,7 +144,7 @@ fun CategoryDetailScreen(
                                             .clickable { viewModel.editIcon = emoji },
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Text(text = emoji, fontSize = 24.sp)
+                                        Text(text = emoji, style = MaterialTheme.typography.headlineSmall)
                                     }
                                 }
                             }

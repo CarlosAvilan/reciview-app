@@ -35,8 +35,7 @@ fun Button(
         Text(
             text = text,
             style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                fontWeight = FontWeight.Bold
             )
         )
     }

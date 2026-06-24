@@ -13,7 +13,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.SubcomposeAsyncImage
 
@@ -97,14 +96,14 @@ fun TicketDetailDialog(
                 ) {
                     Text(
                         text = "TOTAL",
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = amount,
+                        style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold, 
-                        fontSize = 22.sp,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -132,11 +131,15 @@ fun DetailRow(label: String, value: String) {
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Text(
             text = value,
+            style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface
         )
     }

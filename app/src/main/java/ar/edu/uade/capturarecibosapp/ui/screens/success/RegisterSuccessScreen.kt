@@ -70,10 +70,7 @@ fun RegisterSuccessScreen(
 
             Text(
                 text = "¡Registro Exitoso!",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp
-                ),
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
@@ -82,9 +79,7 @@ fun RegisterSuccessScreen(
 
             Text(
                 text = "¡Bienvenido a ReciView!\nTu cuenta ha sido creada correctamente.\nEn unos segundos serás redirigido.",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 16.sp
-                ),
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )

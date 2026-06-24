@@ -110,7 +110,7 @@ fun EditCategoriesScreen(
                             .clickable { selectedEmoji = emoji },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = emoji, fontSize = 24.sp)
+                        Text(text = emoji, style = MaterialTheme.typography.headlineSmall)
                     }
                 }
             }

@@ -14,7 +14,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import java.util.Locale
 
 // El "molde" para los datos de la categoría
@@ -58,7 +57,10 @@ fun CategoryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = category.icon, fontSize = 20.sp)
+                    Text(
+                        text = category.icon,
+                        style = MaterialTheme.typography.titleLarge
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = category.name,
@@ -73,7 +75,7 @@ fun CategoryCard(
                     text = "$${String.format(Locale.getDefault(), "%,.0f", category.spent).replace(',', '.')} / $${String.format(Locale.getDefault(), "%,.0f", category.budget).replace(',', '.')}",
                     color = accentColor,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
             

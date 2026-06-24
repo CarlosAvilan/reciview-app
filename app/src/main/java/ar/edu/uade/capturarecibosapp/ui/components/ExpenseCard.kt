@@ -15,6 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ar.edu.uade.capturarecibosapp.ui.theme.Typography
 import coil.compose.SubcomposeAsyncImage
 import java.util.Locale
 
@@ -85,19 +86,19 @@ fun ExpenseCard(
                 Text(
                     text = title,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "$date • $category ",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 14.sp
+                        style = MaterialTheme.typography.titleSmall
                     )
                     Text(
                         text = categoryIcon,
-                        fontSize = 14.sp
+                        style = MaterialTheme.typography.titleSmall
                     )
                 }
             }
@@ -106,8 +107,7 @@ fun ExpenseCard(
             Text(
                 text = "$${String.format(Locale.getDefault(), "%,.0f", amount).replace(',', '.')}",
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
+                style = MaterialTheme.typography.bodyLarge,
             )
         }
     }

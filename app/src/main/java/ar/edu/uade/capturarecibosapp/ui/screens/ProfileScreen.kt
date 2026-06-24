@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.ui.components.SectionLabel
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.ProfileViewModel
@@ -41,8 +40,7 @@ fun ProfileScreen(
         Text(
             text = "Perfil",
             style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontWeight = FontWeight.Bold
             ),
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -70,9 +68,7 @@ fun ProfileScreen(
 
         Text(
             text = viewModel.nombre,
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground
         )
         Text(

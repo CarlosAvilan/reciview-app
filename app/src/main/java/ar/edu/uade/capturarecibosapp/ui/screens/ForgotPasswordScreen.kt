@@ -16,7 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.uade.capturarecibosapp.data.enums.ForgotPasswordStep
 import ar.edu.uade.capturarecibosapp.ui.components.Button
@@ -76,8 +75,7 @@ fun ForgotPasswordScreen(
             Text(
                 text = "Olvidé mi contraseña",
                 style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp
+                    fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth()

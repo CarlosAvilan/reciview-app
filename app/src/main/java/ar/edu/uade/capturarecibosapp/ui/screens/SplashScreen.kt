@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.R
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.SplashViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -67,7 +66,7 @@ fun SplashScreen(
             Text(
                 text = "Tu gestor inteligente de gastos",
                 color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 18.sp,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Medium
             )
         }
