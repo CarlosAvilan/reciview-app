@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ fun MyExpensesScreen(
 ) {
     val totalGastado by viewModel.totalSpent.collectAsState()
     val estadistica = viewModel.statistics
+    val isOverBudget = viewModel.isOverBudget
     val transacciones by viewModel.transactions.collectAsState()
     val userCategories by viewModel.userCategories.collectAsState() // Suscribirse para reaccionar a cambios
 
@@ -102,7 +104,10 @@ fun MyExpensesScreen(
                         },
                         shape = CircleShape,
                         colors = SuggestionChipDefaults.suggestionChipColors(
-                            containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
+                            containerColor = if (isOverBudget)
+                                Color.Red.copy(alpha = 0.3f)
+                            else
+                                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
                         ),
                         border = null
                     )

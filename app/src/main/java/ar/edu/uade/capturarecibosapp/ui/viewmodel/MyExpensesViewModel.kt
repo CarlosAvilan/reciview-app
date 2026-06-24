@@ -100,6 +100,9 @@ class MyExpensesViewModel(application: Application) : AndroidViewModel(applicati
     var statistics by mutableStateOf("Calculando...")
         private set
 
+    var isOverBudget by mutableStateOf(false)
+        private set
+
     init {
         viewModelScope.launch {
             val monthlyMaxFlow = userRepository.getLocalPreferences()
@@ -115,12 +118,20 @@ class MyExpensesViewModel(application: Application) : AndroidViewModel(applicati
                     } catch (e: Exception) { false }
                 }.sumOf { it.amount }
 
-                if (monthlyMax <= 0f) "Sin presupuesto configurado"
-                else {
-                    val pct = ((total / monthlyMax) * 100).toInt().coerceIn(0, 100)
-                    "Vas por el $pct% de tu presupuesto"
+                val exceeded = monthlyMax > 0f && total > monthlyMax
+                val text = when {
+                    monthlyMax <= 0f -> "Sin presupuesto configurado"
+                    exceeded -> "Has excedido tu presupuesto"
+                    else -> {
+                        val pct = ((total / monthlyMax) * 100).toInt()
+                        "Vas por el $pct% de tu presupuesto"
+                    }
                 }
-            }.collect { text -> statistics = text }
+                Pair(text, exceeded)
+            }.collect { (text, exceeded) ->
+                statistics = text
+                isOverBudget = exceeded
+            }
         }
     }
 }
