@@ -1,14 +1,14 @@
 package ar.edu.uade.capturarecibosapp.data.repository
 
-import androidx.compose.runtime.LaunchedEffect
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.enums.SyncStatus
 import ar.edu.uade.capturarecibosapp.data.local.daos.UserDao
+import ar.edu.uade.capturarecibosapp.data.model.User
 import ar.edu.uade.capturarecibosapp.data.model.UserPreferences
 import ar.edu.uade.capturarecibosapp.data.remote.UserApiService
 import ar.edu.uade.capturarecibosapp.data.remote.dto.ProfileDTO
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class UserRepository(
     private val apiService: UserApiService,
@@ -16,8 +16,13 @@ class UserRepository(
 ) {
 
     fun getLocalPreferences(): Flow<UserPreferences?> {
-        val userId = SessionManager.userId ?: return kotlinx.coroutines.flow.flowOf(null)
+        val userId = SessionManager.userId ?: return flowOf(null)
         return userDao.getPreferencesByUserId(userId)
+    }
+
+    fun getUserProfile(): Flow<User?> {
+        val userId = SessionManager.userId ?: return flowOf(null)
+        return userDao.getUserById(userId)
     }
 
     suspend fun getProfile(): Result<ProfileDTO> {
@@ -25,9 +30,10 @@ class UserRepository(
         return try {
             val response = apiService.getProfile("eq.$userId")
             if (response.isSuccessful) {
-                val profiles = response.body()
-                if (!profiles.isNullOrEmpty()) {
-                    Result.success(profiles[0])
+                val profile = response.body()?.firstOrNull()
+                if (profile != null) {
+                    userDao.insertUser(profile.toLocalUser())
+                    Result.success(profile)
                 } else {
                     Result.failure(Exception("Perfil no encontrado"))
                 }
@@ -38,6 +44,11 @@ class UserRepository(
             Result.failure(e)
         }
     }
+
+    suspend fun fetchAndCacheProfile(): Result<Unit> = getProfile().fold(
+        onSuccess = { Result.success(Unit) },
+        onFailure = { Result.failure(it) }
+    )
 
     suspend fun fetchAndCachePreferences(): Result<UserPreferences> {
         val userId = SessionManager.userId ?: return Result.failure(Exception("Usuario no autenticado"))
@@ -89,26 +100,20 @@ class UserRepository(
         val budgetFloat = newBudget.replace(".", "").replace(",", ".").toFloatOrNull()
             ?: return Result.failure(Exception("Presupuesto inválido"))
 
-        // 1. Actualización local inmediata (Offline-First)
         userDao.updateBudgetWithStatus(userId, budgetFloat, SyncStatus.PENDIENTE_CAMBIO)
 
         return try {
-            // 2. Intento de sincronización remota
             val updateMap = mapOf("monthly_max" to budgetFloat)
-            // Usamos QueryMap para que el parámetro se envíe exactamente como 'user_id=eq.UUID'
             val filters = mapOf("user_id" to "eq.$userId")
             val response = apiService.updateUserPreferences(filters, updateMap)
-            
+
             if (response.isSuccessful) {
-                // 3. Sincronización exitosa
                 userDao.updateSyncStatus(userId, SyncStatus.ACTUALIZADO)
                 Result.success(Unit)
             } else {
-                // 4. Error de servidor (se queda como pendiente para reintento manual o por Worker)
                 Result.failure(Exception("Error al sincronizar con el servidor: ${response.code()}"))
             }
         } catch (e: Exception) {
-            // 5. Error de red (se queda como pendiente)
             Result.failure(e)
         }
     }
@@ -135,11 +140,9 @@ class UserRepository(
             val userId = SessionManager.userId
                 ?: return Result.failure(Exception("No hay sesión activa"))
 
-            // Borrado lógico del backend
             val response = apiService.softDeleteProfile("eq.$userId")
 
             if (response.isSuccessful) {
-                // Si el servidor confirmó el cambio, eliminamos datos locales
                 userDao.deletePreferencesByUserId(userId)
                 userDao.deleteCategoriesByUserId(userId)
                 userDao.deleteExpensesByUserId(userId)
@@ -147,7 +150,6 @@ class UserRepository(
                 userDao.deleteTicketsByUserId(userId)
                 userDao.deleteUserById(userId)
 
-                // Limpiar sesión global
                 SessionManager.clear()
                 Result.success(Unit)
             } else {
@@ -159,5 +161,13 @@ class UserRepository(
         }
     }
 
-
+    private fun ProfileDTO.toLocalUser() = User(
+        userId = userId,
+        createdAt = "",
+        name = name,
+        email = email ?: SessionManager.userEmail ?: "",
+        phone = phone,
+        birth = birth,
+        country = country
+    )
 }
