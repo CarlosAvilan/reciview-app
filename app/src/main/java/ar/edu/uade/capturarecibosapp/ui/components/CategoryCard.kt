@@ -31,7 +31,7 @@ fun CategoryCard(
 ) {
     val isOverBudget = category.spent > category.budget
     val accentColor = if (isOverBudget) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-    val backgroundColor = if (isOverBudget) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f) else MaterialTheme.colorScheme.surface
+    val backgroundColor = if (isOverBudget) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceVariant
     val progress = if (category.budget > 0) (category.spent / category.budget).coerceIn(0.0, 1.0).toFloat() else 0f
 
     Card(
@@ -89,7 +89,6 @@ fun CategoryCard(
                     .height(8.dp)
                     .clip(CircleShape),
                 color = accentColor,
-                trackColor = if (isOverBudget) MaterialTheme.colorScheme.error.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant
             )
         }
     }
