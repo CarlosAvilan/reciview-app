@@ -175,7 +175,7 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun updateBudgetPercentage() {
-        budgetPercentage = (totalSpentValue / monthlyMax).coerceIn(0f, 1f)
+        budgetPercentage = (totalSpentValue / monthlyMax).coerceAtLeast(0f)
     }
 
     private fun formatMonto(amount: Double): String =
