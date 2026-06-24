@@ -20,36 +20,36 @@ private val DarkColorScheme = darkColorScheme(
     primary = BluePrimary,
     secondary = BlueSecondary,
     tertiary = Pink80,
-    background = Color(0xFF121212), // Fondo oscuro profundo
-    surface = Color(0xFF333333),    // Superficie más clara para que las tarjetas resalten (Antes 0xFF2C2C2C)
+    background = DarkBackground,
+    surface = DarkSurface,
     onPrimary = Color.White,
     onSecondary = Color.White,
-    onBackground = Color(0xFFE6E1E5),
-    onSurface = Color(0xFFE6E1E5),
-    surfaceVariant = Color(0xFF454545), // Para elementos como contenedores de iconos
-    onSurfaceVariant = Color(0xFFCAC4D0),
+    onBackground = DarkOnBackground,
+    onSurface = DarkOnSurface,
+    surfaceVariant = DarkSurfaceVariant,
+    onSurfaceVariant = DarkOnSurfaceVariant,
     primaryContainer = Color(0xFF004A77),
     onPrimaryContainer = Color(0xFFC2E8FF),
-    errorContainer = Color(0xFF8B0000),
-    onErrorContainer = Color(0xFFFFDAD6)
+    errorContainer = DarkErrorContainer,
+    onErrorContainer = DarkOnErrorContainer
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = BluePrimary,
     secondary = BlueSecondary,
     tertiary = Pink40,
-    background = Color(0xFFF8F9FA),
-    surface = Color.White,
+    background = LightBackground,
+    surface = LightSurface,
     onPrimary = Color.White,
-    onSecondary = BluePrimary,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    surfaceVariant = Color(0xFFF1F3F5),
-    onSurfaceVariant = Color.Gray,
+    onSecondary = Color.White,
+    onBackground = LightOnBackground,
+    onSurface = LightOnSurface,
+    surfaceVariant = LightSurfaceVariant,
+    onSurfaceVariant = LightOnSurfaceVariant,
     primaryContainer = Color(0xFFE0E7FF),
     onPrimaryContainer = BluePrimary,
-    errorContainer = Color(0xFFFFEBEE),
-    onErrorContainer = Color(0xFFEF5350)
+    errorContainer = LightErrorContainer,
+    onErrorContainer = LightOnErrorContainer
 )
 
 @Composable
