@@ -291,6 +291,14 @@ fun AppNavigation(
             )
         }
 
+        composable(Screen.CategoryDeleteSuccess.route) {
+            CategoryDeleteSuccessScreen(
+                onFinish = {
+                    navController.popBackStack(Screen.Categories.route, inclusive = false)
+                }
+            )
+        }
+
         // --- REGISTRO Y TÉRMINOS ---
         composable(Screen.Register.route) {
             val registerViewModel: RegisterViewModel = viewModel()
