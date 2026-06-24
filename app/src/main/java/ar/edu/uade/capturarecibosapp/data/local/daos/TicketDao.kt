@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TicketDao {
     // Cabecera del Ticket
-    @Query("SELECT * FROM tickets WHERE user_id = :userId AND sync_status != 'PENDIENTE_ELIMINACION' ORDER BY created_at DESC")
+    @Query("SELECT * FROM tickets WHERE user_id = :userId AND sync_status != 'PENDIENTE_ELIMINACION' ORDER BY created_at DESC, id DESC")
     fun getTicketsForUser(userId: String): Flow<List<Ticket>>
 
     @Query("SELECT * FROM tickets WHERE sync_status != 'ACTUALIZADO'")
