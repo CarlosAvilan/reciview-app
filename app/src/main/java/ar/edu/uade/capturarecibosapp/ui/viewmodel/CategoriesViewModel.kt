@@ -96,7 +96,11 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
             when (val result = saveCategoryUseCase(nombre, limite, icon, userId, existingCategory)) {
                 is SaveCategoryUseCase.Result.Success -> {
-                    _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
+                    if (existingCategory == null) {
+                        _navigationEvents.emit(CategoryNavigationEvent.NavigateToCreatedSuccess)
+                    } else {
+                        _navigationEvents.emit(CategoryNavigationEvent.NavigateToSuccess)
+                    }
                 }
                 is SaveCategoryUseCase.Result.ValidationError -> {
                     nameError = result.nameError

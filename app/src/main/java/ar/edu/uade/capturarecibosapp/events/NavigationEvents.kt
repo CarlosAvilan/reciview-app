@@ -12,6 +12,7 @@ sealed class AuthNavigationEvent {
 
 sealed class CategoryNavigationEvent {
     data object NavigateToSuccess : CategoryNavigationEvent()
+    data object NavigateToCreatedSuccess : CategoryNavigationEvent()
     data object NavigateToDeleteSuccess : CategoryNavigationEvent()
 }
 

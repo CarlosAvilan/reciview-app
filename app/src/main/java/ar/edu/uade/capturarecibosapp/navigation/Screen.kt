@@ -27,6 +27,7 @@ sealed class Screen(val route: String) {
     }
     object CreateCategory : Screen("create_category")
     object CategorySuccess : Screen("category_success")
+    object CategoryCreatedSuccess : Screen("category_created_success")
     object CategoryDeleteSuccess : Screen("category_delete_success")
     
     // Recupero de contraseña

@@ -61,6 +61,7 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
 
     private var currentCategory: UserCategory? = null
     private val categoryIdFlow = MutableStateFlow<Long?>(null)
+    private var isDeleting = false
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     fun loadCategory(categoryName: String) {
@@ -85,7 +86,12 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
                         expenseRepository.getExpensesForUser(userId)
                     ) { category, allExpenses ->
                         if (category == null) {
-                            CategoryDetailUiState.Error("Categoría no encontrada")
+                            if (isDeleting) {
+                                // Si estamos borrando, mantenemos el estado actual para evitar el flash de "Error"
+                                _uiState.value
+                            } else {
+                                CategoryDetailUiState.Error("Categoría no encontrada")
+                            }
                         } else {
                             currentCategory = category
                             // Solo actualizamos los campos de edición si no están siendo manipulados
@@ -153,11 +159,13 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
 
     fun deleteCategory() {
         val category = currentCategory ?: return
+        isDeleting = true
         viewModelScope.launch {
             val result = categoryRepository.deleteCategory(category)
             if (result.isSuccess) {
                 _navigationEvents.emit(CategoryNavigationEvent.NavigateToDeleteSuccess)
             } else {
+                isDeleting = false
                 _uiState.value = CategoryDetailUiState.Error("Error al eliminar la categoría")
             }
         }

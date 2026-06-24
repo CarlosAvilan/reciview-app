@@ -69,7 +69,8 @@ class MyExpensesViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun getIconForCategory(categoryName: String): String {
+    fun getIconForCategory(categoryName: String): String? {
+        if (categoryName == "Sin categoría") return null
         return userCategories.value.find { it.name == categoryName }?.icon ?: "📁"
     }
 
