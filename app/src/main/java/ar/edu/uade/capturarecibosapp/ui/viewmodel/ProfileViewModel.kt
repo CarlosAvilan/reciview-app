@@ -14,6 +14,7 @@ import ar.edu.uade.capturarecibosapp.events.ProfileNavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
 import java.util.Locale
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
@@ -132,6 +133,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     fun cerrarSesion() {
         SessionManager.clear()
+        SharedPreferencesManager(getApplication()).clearSession()
         viewModelScope.launch {
             _navigationEvents.emit(ProfileNavigationEvent.NavigateToLogin)
         }
