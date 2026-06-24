@@ -40,7 +40,6 @@ fun MyExpensesScreen(
     val estadistica = viewModel.statistics
     val isOverBudget = viewModel.isOverBudget
     val transacciones by viewModel.transactions.collectAsState()
-    val userCategories by viewModel.userCategories.collectAsState() // Suscribirse para reaccionar a cambios
 
     var selectedTransaccion by remember { mutableStateOf<ExpenseItem?>(null) }
 
@@ -146,9 +145,6 @@ fun MyExpensesScreen(
                 categoryIcon = viewModel.getIconForCategory(transaccion.category),
                 amount = transaccion.amount,
                 photoUrl = transaccion.photoUrl,
-                onAddTicketClick = {
-                    onScanClick()
-                },
                 onCardClick = { selectedTransaccion = transaccion }
             )
         }

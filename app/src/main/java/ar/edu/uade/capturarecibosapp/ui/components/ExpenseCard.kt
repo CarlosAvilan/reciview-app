@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -62,7 +63,7 @@ fun ExpenseCard(
                         contentScale = ContentScale.Crop,
                         error = {
                             Icon(
-                                imageVector = Icons.Default.Add,
+                                imageVector = Icons.Default.MonetizationOn,
                                 contentDescription = "Error al cargar ticket",
                                 tint = MaterialTheme.colorScheme.primary
                             )
@@ -70,7 +71,7 @@ fun ExpenseCard(
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        imageVector = Icons.Default.MonetizationOn,
                         contentDescription = "Asociar Ticket",
                         tint = MaterialTheme.colorScheme.primary
                     )
