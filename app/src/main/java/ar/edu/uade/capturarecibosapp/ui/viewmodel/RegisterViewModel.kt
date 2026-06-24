@@ -32,6 +32,8 @@ class RegisterViewModel : ViewModel() {
     var fechaNacimiento by mutableStateOf<LocalDate?>(null)
         private set
     var paisNacimiento by mutableStateOf("")
+    var countrySearchText by mutableStateOf("")
+    var isCountrySheetVisible by mutableStateOf(false)
     var password by mutableStateOf("")
 
     var nameError by mutableStateOf(false)
@@ -70,7 +72,33 @@ class RegisterViewModel : ViewModel() {
     fun onPaisChange(newValue: String) {
         paisNacimiento = newValue
         countryError = false
+        isCountrySheetVisible = false
+        countrySearchText = ""
     }
+
+    fun onCountrySearchChange(newValue: String) {
+        countrySearchText = newValue
+    }
+
+    fun toggleCountrySheet(visible: Boolean) {
+        isCountrySheetVisible = visible
+        if (!visible) countrySearchText = ""
+    }
+
+    val filteredCountries: List<String>
+        get() {
+            val allCountries = java.util.Locale.getISOCountries().map { code ->
+                java.util.Locale("", code).displayCountry
+            }.sorted()
+            
+            return if (countrySearchText.isEmpty()) {
+                allCountries
+            } else {
+                allCountries.filter { 
+                    it.contains(countrySearchText, ignoreCase = true) 
+                }
+            }
+        }
 
     fun onTerminosAceptadosChange(newValue: Boolean) {
         terminosAceptados = newValue
