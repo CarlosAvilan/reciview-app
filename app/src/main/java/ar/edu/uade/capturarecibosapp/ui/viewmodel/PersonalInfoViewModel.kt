@@ -1,6 +1,7 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +13,7 @@ import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
 import ar.edu.uade.capturarecibosapp.domain.usecase.UpdatePersonalInfoUseCase
 import ar.edu.uade.capturarecibosapp.events.ProfileNavigationEvent
 import ar.edu.uade.capturarecibosapp.ui.components.LoadingState
+import ar.edu.uade.capturarecibosapp.utils.getInitials
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -28,6 +30,7 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
     private val apiDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     var nombre by mutableStateOf("")
+    val iniciales by derivedStateOf { getInitials(nombre) }
     var email by mutableStateOf("")
     var telefono by mutableStateOf("")
     var fechaNacimiento by mutableStateOf<LocalDate?>(null)

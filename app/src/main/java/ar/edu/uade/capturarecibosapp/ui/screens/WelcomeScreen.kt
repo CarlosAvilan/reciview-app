@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import ar.edu.uade.capturarecibosapp.data.model.TicketItem
 import ar.edu.uade.capturarecibosapp.ui.components.TicketDetailDialog
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.WelcomeViewModel
+import ar.edu.uade.capturarecibosapp.utils.getInitials
 
 @Composable
 fun WelcomeScreen(
@@ -45,10 +46,7 @@ fun WelcomeScreen(
 
     var selectedTicket by remember { mutableStateOf<TicketItem?>(null) }
 
-    val initials = userName.split(" ")
-        .filter { it.isNotBlank() }
-        .take(2)
-        .joinToString("") { it.take(1).uppercase() }
+    val initials = remember(userName) { getInitials(userName) }
 
     Box(
         modifier = Modifier

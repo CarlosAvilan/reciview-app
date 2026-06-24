@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
+import ar.edu.uade.capturarecibosapp.utils.getInitials
 import java.util.Locale
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
@@ -33,20 +34,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     var budgetError by mutableStateOf<String?>(null)
 
     // Iniciales dinámicas basadas en el nombre real
-    val iniciales by derivedStateOf {
-        if (nombre.isEmpty() || nombre == "Cargando..." || nombre == "Error al cargar") {
-            "?"
-        } else {
-            val words = nombre.trim().split(" ")
-            if (words.size >= 2) {
-                "${words[0].first()}${words[1].first()}".uppercase()
-            } else if (words.isNotEmpty()) {
-                words[0].first().toString().uppercase()
-            } else {
-                "?"
-            }
-        }
-    }
+    val iniciales by derivedStateOf { getInitials(nombre) }
 
     init {
         loadUserProfile()

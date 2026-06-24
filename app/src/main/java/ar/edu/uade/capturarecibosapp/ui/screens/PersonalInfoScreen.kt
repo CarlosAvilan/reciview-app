@@ -77,7 +77,7 @@ fun PersonalInfoScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "JP",
+                        text = viewModel.iniciales,
                         style = MaterialTheme.typography.headlineMedium.copy(
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.Bold
