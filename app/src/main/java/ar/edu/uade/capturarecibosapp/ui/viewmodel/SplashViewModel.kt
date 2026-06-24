@@ -18,8 +18,7 @@ class SplashViewModel : ViewModel() {
 
     private fun startTimer() {
         viewModelScope.launch {
-            // Simulamos la carga inicial (ej: chequear sesión, cargar caché, etc)
-            delay(2000)
+            delay(400)
             _navigateToNext.emit(Unit)
         }
     }
