@@ -17,7 +17,7 @@ class ReportCalculatorTest {
     )
 
     private fun expense(date: String, amount: Double) = ExpenseItem(
-        photoUrl = 0,
+        photoUrl = "0",
         userId = "u1",
         title = "Test",
         date = date,

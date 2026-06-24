@@ -1,11 +1,13 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
+import android.app.Application
 import ar.edu.uade.capturarecibosapp.data.local.seeders.ExpenseSeeder
 import ar.edu.uade.capturarecibosapp.data.local.seeders.TicketSeeder
 import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
 import ar.edu.uade.capturarecibosapp.data.model.MonthlyReport
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
 import io.mockk.every
+import io.mockk.mockkClass
 import io.mockk.mockkConstructor
 import io.mockk.unmockkAll
 import org.junit.After
@@ -33,7 +35,7 @@ class ReportsViewModelMockTest {
             userId = "user1",
             amount = 500.0,
             title = "Test Expense",
-            photoUrl = 21,
+            photoUrl = "21",
             category = "1"
         )
     )
@@ -50,7 +52,7 @@ class ReportsViewModelMockTest {
         every { anyConstructed<TicketSeeder>().provideInitialTickets() } returns mockTickets
         every { anyConstructed<ExpenseSeeder>().provideInitialExpenses() } returns mockExpenses
 
-        viewModel = ReportsViewModel()
+        viewModel = ReportsViewModel(mockkClass(Application::class))
     }
 
     @After
