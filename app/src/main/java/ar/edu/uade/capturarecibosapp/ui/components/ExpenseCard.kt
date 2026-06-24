@@ -28,11 +28,13 @@ fun ExpenseCard(
     categoryIcon: String? = null,
     amount: Double,
     photoUrl: String? = null,
-    onAddTicketClick: () -> Unit = {}
+    onAddTicketClick: () -> Unit = {},
+    onCardClick: () -> Unit = {}
 ) {
     Card(
         Modifier
-            .fillMaxWidth(), RoundedCornerShape(24.dp), CardDefaults.cardColors(
+            .fillMaxWidth()
+            .clickable { onCardClick() }, RoundedCornerShape(24.dp), CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface
         ), CardDefaults.cardElevation(defaultElevation = 1.dp)

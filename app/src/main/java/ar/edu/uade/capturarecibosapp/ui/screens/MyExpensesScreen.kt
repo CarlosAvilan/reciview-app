@@ -13,13 +13,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
 import ar.edu.uade.capturarecibosapp.ui.components.ExpenseCard
+import ar.edu.uade.capturarecibosapp.ui.components.TicketDetailDialog
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.MyExpensesViewModel
 
@@ -35,6 +40,9 @@ fun MyExpensesScreen(
     val transacciones by viewModel.transactions.collectAsState()
     val userCategories by viewModel.userCategories.collectAsState() // Suscribirse para reaccionar a cambios
 
+    var selectedTransaccion by remember { mutableStateOf<ExpenseItem?>(null) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -135,7 +143,8 @@ fun MyExpensesScreen(
                 photoUrl = transaccion.photoUrl,
                 onAddTicketClick = {
                     onScanClick()
-                }
+                },
+                onCardClick = { selectedTransaccion = transaccion }
             )
         }
 
@@ -173,6 +182,20 @@ fun MyExpensesScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+
+    selectedTransaccion?.let { transaccion ->
+        TicketDetailDialog(
+            title = "Detalle del Gasto",
+            commerce = transaccion.title,
+            date = transaccion.date,
+            amount = transaccion.amount.toString(),
+            category = transaccion.category,
+            description = "",
+            photoUrl = transaccion.photoUrl,
+            onDismiss = { selectedTransaccion = null }
+        )
+    }
+    } // Box
 }
 
 @Preview(showBackground = true, showSystemUi = true)
