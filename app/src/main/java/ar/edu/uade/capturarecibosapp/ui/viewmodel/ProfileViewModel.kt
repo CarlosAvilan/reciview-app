@@ -13,8 +13,10 @@ import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
 import ar.edu.uade.capturarecibosapp.events.ProfileNavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ar.edu.uade.capturarecibosapp.data.local.SharedPreferencesManager
+import ar.edu.uade.capturarecibosapp.utils.getInitials
 import java.util.Locale
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
@@ -25,6 +27,10 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     var nombre by mutableStateOf("Cargando...")
     var email by mutableStateOf("")
+    var telefono by mutableStateOf("")
+    var fechaNacimiento by mutableStateOf("")
+    var pais by mutableStateOf("")
+    
     var presupuestoMensual by mutableStateOf("0.00")
     var notificacionesEnabled by mutableStateOf(true)
 
@@ -33,24 +39,26 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     var budgetError by mutableStateOf<String?>(null)
 
     // Iniciales dinámicas basadas en el nombre real
-    val iniciales by derivedStateOf {
-        if (nombre.isEmpty() || nombre == "Cargando..." || nombre == "Error al cargar") {
-            "?"
-        } else {
-            val words = nombre.trim().split(" ")
-            if (words.size >= 2) {
-                "${words[0].first()}${words[1].first()}".uppercase()
-            } else if (words.isNotEmpty()) {
-                words[0].first().toString().uppercase()
-            } else {
-                "?"
-            }
-        }
-    }
+    val iniciales by derivedStateOf { getInitials(nombre) }
 
     init {
-        loadUserProfile()
+        observeProfile()
         observePreferences()
+        loadData()
+    }
+
+    private fun observeProfile() {
+        viewModelScope.launch {
+            userRepository.getUserProfile().collectLatest { user ->
+                user?.let {
+                    nombre = it.name
+                    email = it.email
+                    telefono = it.phone ?: ""
+                    fechaNacimiento = it.birth
+                    pais = it.country ?: ""
+                }
+            }
+        }
     }
 
     private fun observePreferences() {
@@ -68,34 +76,27 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    private fun loadData() {
+        if (SessionManager.userId == null) {
+            nombre = "No identificado"
+            return
+        }
+        viewModelScope.launch {
+            userRepository.fetchAndCacheProfile()
+            userRepository.fetchAndCachePreferences()
+        }
+    }
+
+    @Deprecated("Usar observeProfile y loadData", ReplaceWith("loadData()"))
+    fun loadUserProfile() {
+        loadData()
+    }
+
     fun onBudgetInputChange(newValue: String) {
         // Solo permitir números y un punto decimal
         if (newValue.isEmpty() || newValue.matches(Regex("""^\d*\.?\d*$"""))) {
             budgetInput = newValue
             budgetError = null
-        }
-    }
-
-    fun loadUserProfile() {
-        val id = SessionManager.userId
-        if (id == null) {
-            nombre = "No identificado"
-            return
-        }
-
-        viewModelScope.launch {
-            // Cargar perfil básico
-            val result = userRepository.getProfile()
-            result.onSuccess { profile ->
-                nombre = profile.name
-                email = profile.email ?: SessionManager.userEmail ?: ""
-            }.onFailure {
-                nombre = "Error al cargar"
-                email = SessionManager.userEmail ?: ""
-            }
-
-            // Sincronizar preferencias de Supabase
-            userRepository.fetchAndCachePreferences()
         }
     }
 
@@ -107,15 +108,11 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         }
 
         viewModelScope.launch {
-            // En Offline-First, el éxito local es suficiente para proceder en la UI
-            // La sincronización ocurre en segundo plano dentro del repositorio
             val result = userRepository.updateBudget(budgetInput)
             
             result.onSuccess {
                 _navigationEvents.emit(ProfileNavigationEvent.NavigateToBudgetSuccess)
             }.onFailure {
-                // Si falla la sincronización, igual ya se guardó en Room (Offline-First)
-                // Pero logueamos el error para depuración
                 android.util.Log.e("ProfileViewModel", "Error sincronizando presupuesto: ${it.message}")
                 _navigationEvents.emit(ProfileNavigationEvent.NavigateToBudgetSuccess)
             }

@@ -44,6 +44,6 @@ class UpdatePersonalInfoUseCase(
             phone = telefono
         )
         return if (result.isSuccess) Result.Success
-        else Result.Failure("Error al actualizar perfil")
+        else Result.Failure("Error al actualizar perfil, se necesita conexión a internet")
     }
 }

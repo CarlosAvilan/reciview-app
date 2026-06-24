@@ -1,6 +1,7 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,8 +13,10 @@ import ar.edu.uade.capturarecibosapp.data.repository.UserRepository
 import ar.edu.uade.capturarecibosapp.domain.usecase.UpdatePersonalInfoUseCase
 import ar.edu.uade.capturarecibosapp.events.ProfileNavigationEvent
 import ar.edu.uade.capturarecibosapp.ui.components.LoadingState
+import ar.edu.uade.capturarecibosapp.utils.getInitials
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -28,6 +31,7 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
     private val apiDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     var nombre by mutableStateOf("")
+    val iniciales by derivedStateOf { getInitials(nombre) }
     var email by mutableStateOf("")
     var telefono by mutableStateOf("")
     var fechaNacimiento by mutableStateOf<LocalDate?>(null)
@@ -58,21 +62,30 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
 
         loadingState = LoadingState.LOADING_PROFILE
 
+        // Mostrar datos locales de Room en cuanto estén disponibles
         viewModelScope.launch {
-            val result = userRepository.getProfile()
-            loadingState = LoadingState.NONE
-
-            result.onSuccess { profile ->
-                nombre = profile.name
-                email = profile.email?.takeIf { it.isNotBlank() } ?: (SessionManager.userEmail ?: "")
-                telefono = profile.phone ?: ""
-                fechaNacimiento = profile.birth.takeIf { it.isNotBlank() }?.let {
-                    try { LocalDate.parse(it, apiDateFormatter) } catch (e: Exception) { null }
+            userRepository.getUserProfile().collectLatest { user ->
+                user?.let {
+                    loadingState = LoadingState.NONE
+                    nombre = it.name
+                    email = it.email.takeIf { e -> e.isNotBlank() } ?: (SessionManager.userEmail ?: "")
+                    telefono = it.phone ?: ""
+                    fechaNacimiento = it.birth.takeIf { b -> b.isNotBlank() }?.let { b ->
+                        try { LocalDate.parse(b, apiDateFormatter) } catch (e: Exception) { null }
+                    }
+                    paisResidencia = it.country ?: ""
                 }
-                paisResidencia = profile.country ?: ""
-            }.onFailure {
-                errorMessage = "No se pudo cargar la información"
-                email = SessionManager.userEmail ?: ""
+            }
+        }
+
+        // Sincronizar desde remoto; Room se actualiza y el Flow de arriba emite automáticamente
+        viewModelScope.launch {
+            userRepository.fetchAndCacheProfile().onFailure {
+                if (loadingState == LoadingState.LOADING_PROFILE) {
+                    loadingState = LoadingState.NONE
+                    errorMessage = "No se pudo cargar la información"
+                    email = SessionManager.userEmail ?: ""
+                }
             }
         }
     }
