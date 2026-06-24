@@ -128,6 +128,7 @@ fun WelcomeScreen(
         // Diálogo de detalle - Actualizado para usar parámetros puros
         selectedTicket?.let { ticket ->
             TicketDetailDialog(
+                title = "Detalle del Gasto",
                 commerce = ticket.commerce,
                 date = ticket.date,
                 amount = ticket.amount.toString(),

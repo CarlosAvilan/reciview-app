@@ -7,5 +7,9 @@ object InputValidator {
 
     fun isValidPassword(password: String): Boolean = password.length >= 6
 
-    fun isValidPhone(phone: String): Boolean = phone.isBlank() || phone.trim().length >= 7
+    fun isValidPhone(phone: String): Boolean {
+        if (phone.isBlank()) return true
+        val phoneRegex = Regex("""^\+?\d{7,15}$""")
+        return phoneRegex.matches(phone.trim())
+    }
 }

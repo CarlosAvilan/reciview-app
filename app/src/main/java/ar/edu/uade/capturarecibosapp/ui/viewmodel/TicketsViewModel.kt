@@ -44,7 +44,9 @@ class TicketsViewModel(application: Application) : AndroidViewModel(application)
                 cat?.id == ticket.categoryId
             }
             
-            matchesSearch && matchesCategory
+            val hasPhoto = !ticket.photoUrl.isNullOrEmpty()
+            
+            matchesSearch && matchesCategory && hasPhoto
         }
 
     init {

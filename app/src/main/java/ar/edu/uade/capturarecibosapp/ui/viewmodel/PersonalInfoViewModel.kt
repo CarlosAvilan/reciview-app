@@ -98,8 +98,11 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
     fun onEmailChange(newValue: String) { email = newValue }
 
     fun onTelefonoChange(newValue: String) {
-        telefono = newValue
-        phoneError = null
+        // Validación reactiva: solo permitir números y el símbolo + al inicio
+        if (newValue.isEmpty() || newValue.matches(Regex("""^\+?\d*$"""))) {
+            telefono = newValue
+            phoneError = null
+        }
     }
 
     fun onFechaNacimientoChange(newValue: LocalDate) {
