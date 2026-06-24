@@ -30,6 +30,7 @@ import ar.edu.uade.capturarecibosapp.ui.components.TextField
 import ar.edu.uade.capturarecibosapp.ui.components.Button
 import ar.edu.uade.capturarecibosapp.ui.components.DateField
 import ar.edu.uade.capturarecibosapp.ui.components.FieldErrorText
+import ar.edu.uade.capturarecibosapp.ui.components.CountrySelectorBottomSheet
 import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterViewModel
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.RegisterState
@@ -42,9 +43,6 @@ fun RegisterScreen(
 ) {
     val context = LocalContext.current
 
-    var showCountryDropdown by remember { mutableStateOf(false) }
-    val countries = listOf("Argentina", "Brasil", "Chile", "Uruguay", "Colombia", "México")
-
     Scaffold(
         topBar = {
             TopBar(
@@ -54,6 +52,16 @@ fun RegisterScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
+        // Bottom Sheet de Selección de País
+        CountrySelectorBottomSheet(
+            isVisible = viewModel.isCountrySheetVisible,
+            onDismissRequest = { viewModel.toggleCountrySheet(false) },
+            searchText = viewModel.countrySearchText,
+            onSearchTextChange = { viewModel.onCountrySearchChange(it) },
+            countries = viewModel.filteredCountries,
+            onCountrySelected = { viewModel.onPaisChange(it) }
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -128,39 +136,23 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // País de residencia
+            // País de nacimiento
             Box(modifier = Modifier.fillMaxWidth()) {
                 TextField(
                     value = viewModel.paisNacimiento,
                     onValueChange = { },
-                    label = "País de residencia",
+                    label = "País de nacimiento",
                     trailingIcon = {
                         Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Seleccionar país", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     },
                     readOnly = true,
                     isError = viewModel.countryError,
-                    modifier = Modifier.clickable { showCountryDropdown = true }
+                    modifier = Modifier.clickable { viewModel.toggleCountrySheet(true) }
                 )
                 
-                Box(modifier = Modifier.matchParentSize().clickable { showCountryDropdown = true })
-
-                DropdownMenu(
-                    expanded = showCountryDropdown,
-                    onDismissRequest = { showCountryDropdown = false },
-                    modifier = Modifier.fillMaxWidth(0.8f).background(MaterialTheme.colorScheme.surface)
-                ) {
-                    countries.forEach { country ->
-                        DropdownMenuItem(
-                            text = { Text(country, color = MaterialTheme.colorScheme.onSurface) },
-                            onClick = {
-                                viewModel.onPaisChange(country)
-                                showCountryDropdown = false
-                            }
-                        )
-                    }
-                }
+                Box(modifier = Modifier.matchParentSize().clickable { viewModel.toggleCountrySheet(true) })
             }
-            FieldErrorText(if (viewModel.countryError) "Seleccioná un país de residencia" else null)
+            FieldErrorText(if (viewModel.countryError) "Seleccioná un país de nacimiento" else null)
 
             Spacer(modifier = Modifier.height(32.dp))
 

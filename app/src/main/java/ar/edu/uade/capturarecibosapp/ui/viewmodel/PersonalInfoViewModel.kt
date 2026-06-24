@@ -33,6 +33,8 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
     var fechaNacimiento by mutableStateOf<LocalDate?>(null)
         private set
     var paisResidencia by mutableStateOf("")
+    var countrySearchText by mutableStateOf("")
+    var isCountrySheetVisible by mutableStateOf(false)
     var loadingState by mutableStateOf(LoadingState.NONE)
 
     var errorMessage by mutableStateOf<String?>(null)
@@ -92,7 +94,35 @@ class PersonalInfoViewModel(application: Application) : AndroidViewModel(applica
         birthDateError = null
     }
 
-    fun onPaisChange(newValue: String) { paisResidencia = newValue }
+    fun onPaisChange(newValue: String) {
+        paisResidencia = newValue
+        isCountrySheetVisible = false
+        countrySearchText = ""
+    }
+
+    fun onCountrySearchChange(newValue: String) {
+        countrySearchText = newValue
+    }
+
+    fun toggleCountrySheet(visible: Boolean) {
+        isCountrySheetVisible = visible
+        if (!visible) countrySearchText = ""
+    }
+
+    val filteredCountries: List<String>
+        get() {
+            val allCountries = java.util.Locale.getISOCountries().map { code ->
+                java.util.Locale("", code).displayCountry
+            }.sorted()
+            
+            return if (countrySearchText.isEmpty()) {
+                allCountries
+            } else {
+                allCountries.filter { 
+                    it.contains(countrySearchText, ignoreCase = true) 
+                }
+            }
+        }
 
     fun guardarCambios() {
         nameError = null
