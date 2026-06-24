@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -256,16 +257,20 @@ private fun BudgetProgressCard(budgetPercentage: Float, monthlyMax: String) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text("Límite: $monthlyMax", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
-                    Text("${(budgetPercentage * 100).toInt()}%", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                    Text(
+                        text = if (budgetPercentage > 1f) "Excedido" else "${(budgetPercentage * 100).toInt()}%",
+                        fontWeight = FontWeight.Bold,
+                        color = if (budgetPercentage > 1f) Color.Red else MaterialTheme.colorScheme.onSurface
+                    )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 LinearProgressIndicator(
-                    progress = { budgetPercentage },
+                    progress = { budgetPercentage.coerceAtMost(1f) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(8.dp)
                         .clip(CircleShape),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = if (budgetPercentage > 1f) Color.Red else MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
