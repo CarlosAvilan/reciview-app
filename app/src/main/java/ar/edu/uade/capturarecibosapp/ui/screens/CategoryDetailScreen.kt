@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.style.TextOverflow
+import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
 import ar.edu.uade.capturarecibosapp.ui.components.*
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.CategoryDetailUiState
 import ar.edu.uade.capturarecibosapp.ui.viewmodel.CategoryDetailViewModel
@@ -39,6 +40,7 @@ fun CategoryDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var selectedExpense by remember { mutableStateOf<ExpenseItem?>(null) }
 
     LaunchedEffect(categoryId) {
         viewModel.loadCategory(categoryId)
@@ -233,7 +235,8 @@ fun CategoryDetailScreen(
                                     photoUrl = expense.photoUrl,
                                     onAddTicketClick = {
                                         onScanClick()
-                                    }
+                                    },
+                                    onCardClick = { selectedExpense = expense }
                                 )
                             }
                         }
@@ -243,6 +246,19 @@ fun CategoryDetailScreen(
                 }
             }
         }
+    }
+
+    selectedExpense?.let { expense ->
+        TicketDetailDialog(
+            title = "Detalle del Gasto",
+            commerce = expense.title,
+            date = expense.date,
+            amount = expense.amount.toString(),
+            category = expense.category,
+            description = "",
+            photoUrl = expense.photoUrl,
+            onDismiss = { selectedExpense = null }
+        )
     }
 
     if (showDatePicker) {

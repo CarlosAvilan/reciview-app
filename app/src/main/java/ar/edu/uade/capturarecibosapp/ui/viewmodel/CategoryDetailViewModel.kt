@@ -12,7 +12,7 @@ import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
 import ar.edu.uade.capturarecibosapp.data.model.UserCategory
 import ar.edu.uade.capturarecibosapp.data.repository.CategoryRepository
-import ar.edu.uade.capturarecibosapp.data.repository.ExpenseRepository
+import ar.edu.uade.capturarecibosapp.data.repository.TicketRepository
 import ar.edu.uade.capturarecibosapp.events.CategoryNavigationEvent
 import ar.edu.uade.capturarecibosapp.domain.usecase.SaveCategoryUseCase
 import kotlinx.coroutines.flow.*
@@ -32,7 +32,7 @@ sealed class CategoryDetailUiState {
 
 class CategoryDetailViewModel(application: Application) : AndroidViewModel(application) {
     private val categoryRepository: CategoryRepository = DependencyProvider.provideCategoryRepository(application)
-    private val expenseRepository: ExpenseRepository = DependencyProvider.provideExpenseRepository(application)
+    private val ticketRepository: TicketRepository = DependencyProvider.provideTicketRepository(application)
     private val userId = SessionManager.userId ?: ""
     private val saveCategoryUseCase = SaveCategoryUseCase(categoryRepository)
 
@@ -55,6 +55,8 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
     // Filtro de fecha
     var dateFilterStart by mutableStateOf<LocalDate?>(null)
     var dateFilterEnd by mutableStateOf<LocalDate?>(null)
+    private val _dateFilterStart = MutableStateFlow<LocalDate?>(null)
+    private val _dateFilterEnd = MutableStateFlow<LocalDate?>(null)
 
     private val _uiState = MutableStateFlow<CategoryDetailUiState>(CategoryDetailUiState.Loading)
     val uiState: StateFlow<CategoryDetailUiState> = _uiState.asStateFlow()
@@ -83,8 +85,10 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
                 else {
                     combine(
                         categoryRepository.categoryDao.getCategoryByIdFlow(id),
-                        expenseRepository.getExpensesForUser(userId)
-                    ) { category, allExpenses ->
+                        ticketRepository.getTicketsWithCategories(userId),
+                        _dateFilterStart,
+                        _dateFilterEnd
+                    ) { category, allTickets, filterStart, filterEnd ->
                         if (category == null) {
                             if (isDeleting) {
                                 // Si estamos borrando, mantenemos el estado actual para evitar el flash de "Error"
@@ -98,11 +102,22 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
                             // O simplemente los inicializamos la primera vez
                             if (editName.isEmpty()) editName = category.name
                             if (editBudget.isEmpty()) editBudget = category.budget.toString()
-                            
+
                             editIcon = category.icon
-                            
+
+                            val allExpenses = allTickets.map { (ticket, cat) ->
+                                ExpenseItem(
+                                    id = ticket.id,
+                                    photoUrl = ticket.photoUrl,
+                                    userId = ticket.userId,
+                                    title = ticket.establishment,
+                                    date = formatTicketDate(ticket.createdAt),
+                                    category = cat?.name ?: "Sin categoría",
+                                    amount = ticket.amount.toDouble()
+                                )
+                            }
                             val categoryExpenses = allExpenses.filter { it.category == category.name }
-                            val filteredExpenses = filterExpenses(categoryExpenses)
+                            val filteredExpenses = filterExpenses(categoryExpenses, filterStart, filterEnd)
                             CategoryDetailUiState.Success(
                                 category = category,
                                 expenses = filteredExpenses,
@@ -117,13 +132,24 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
         }
     }
 
-    private fun filterExpenses(expenses: List<ExpenseItem>): List<ExpenseItem> {
+    private fun formatTicketDate(apiDate: String): String {
+        return try {
+            val cleanDate = apiDate.substringBefore('T')
+            val apiFormatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val uiFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            java.time.LocalDate.parse(cleanDate, apiFormatter).format(uiFormatter)
+        } catch (e: Exception) {
+            apiDate
+        }
+    }
+
+    private fun filterExpenses(expenses: List<ExpenseItem>, start: LocalDate?, end: LocalDate?): List<ExpenseItem> {
         val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         return expenses.filter { expense ->
             try {
                 val expenseDate = LocalDate.parse(expense.date, formatter)
-                val afterStart = dateFilterStart?.let { !expenseDate.isBefore(it) } ?: true
-                val beforeEnd = dateFilterEnd?.let { !expenseDate.isAfter(it) } ?: true
+                val afterStart = start?.let { !expenseDate.isBefore(it) } ?: true
+                val beforeEnd = end?.let { !expenseDate.isAfter(it) } ?: true
                 afterStart && beforeEnd
             } catch (e: Exception) {
                 true // Si falla el parseo, lo mostramos igual
@@ -134,7 +160,8 @@ class CategoryDetailViewModel(application: Application) : AndroidViewModel(appli
     fun updateDateFilter(start: LocalDate?, end: LocalDate?) {
         dateFilterStart = start
         dateFilterEnd = end
-        currentCategory?.let { loadCategory(it.name) }
+        _dateFilterStart.value = start
+        _dateFilterEnd.value = end
     }
 
     fun saveChanges() {
