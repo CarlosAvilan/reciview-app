@@ -18,6 +18,7 @@ import coil.compose.SubcomposeAsyncImage
 
 @Composable
 fun TicketDetailDialog(
+    title: String = "Detalle del Ticket",
     commerce: String,
     date: String,
     amount: String,
@@ -41,7 +42,7 @@ fun TicketDetailDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Detalle del Ticket",
+                    text = title,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface

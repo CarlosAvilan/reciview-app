@@ -25,7 +25,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _navigationEvents = MutableSharedFlow<ProfileNavigationEvent>()
     val navigationEvents = _navigationEvents.asSharedFlow()
 
-    var nombre by mutableStateOf("Cargando...")
+    var nombre by mutableStateOf("")
     var email by mutableStateOf("")
     var telefono by mutableStateOf("")
     var fechaNacimiento by mutableStateOf("")

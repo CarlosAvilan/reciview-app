@@ -27,7 +27,7 @@ class UpdatePersonalInfoUseCase(
         telefono: String
     ): Result {
         val nameError = if (nombre.isBlank()) "El nombre no puede estar vacío" else null
-        val phoneError = if (!InputValidator.isValidPhone(telefono)) "Teléfono inválido (mínimo 7 dígitos)" else null
+        val phoneError = if (!InputValidator.isValidPhone(telefono)) "Teléfono inválido (solo números y +)" else null
         val birthDateError = if (fechaNacimiento != null && !fechaNacimiento.isBefore(LocalDate.now()))
             "La fecha de nacimiento no puede ser una fecha futura" else null
 
