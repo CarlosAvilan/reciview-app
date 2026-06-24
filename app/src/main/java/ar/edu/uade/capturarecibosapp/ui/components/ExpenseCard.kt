@@ -14,30 +14,28 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import ar.edu.uade.capturarecibosapp.ui.theme.Typography
 import coil.compose.SubcomposeAsyncImage
 import java.util.Locale
+
+import androidx.compose.ui.tooling.preview.Preview
+import ar.edu.uade.capturarecibosapp.ui.theme.ReciViewTheme
 
 @Composable
 fun ExpenseCard(
     title: String,
     date: String,
     category: String,
-    categoryIcon: String = "📁",
+    categoryIcon: String? = null,
     amount: Double,
     photoUrl: String? = null,
     onAddTicketClick: () -> Unit = {}
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
+        Modifier
+            .fillMaxWidth(), RoundedCornerShape(24.dp), CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        ), CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
             modifier = Modifier
@@ -91,15 +89,18 @@ fun ExpenseCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    val categoryDisplay = if (categoryIcon != null) "$category " else category
                     Text(
-                        text = "$date • $category ",
+                        text = "$date • $categoryDisplay",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.titleSmall
                     )
-                    Text(
-                        text = categoryIcon,
-                        style = MaterialTheme.typography.titleSmall
-                    )
+                    if (categoryIcon != null) {
+                        Text(
+                            text = categoryIcon,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
                 }
             }
 
@@ -108,6 +109,7 @@ fun ExpenseCard(
                 text = "$${String.format(Locale.getDefault(), "%,.0f", amount).replace(',', '.')}",
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyLarge,
+
             )
         }
     }

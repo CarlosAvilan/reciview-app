@@ -239,6 +239,11 @@ fun AppNavigation(
                                 popUpTo(Screen.Categories.route) { inclusive = false }
                             }
                         }
+                        is CategoryNavigationEvent.NavigateToCreatedSuccess -> {
+                            navController.navigate(Screen.CategoryCreatedSuccess.route) {
+                                popUpTo(Screen.Categories.route) { inclusive = false }
+                            }
+                        }
                         is CategoryNavigationEvent.NavigateToDeleteSuccess -> {}
                     }
                 }
@@ -271,6 +276,7 @@ fun AppNavigation(
                                 popUpTo(Screen.Categories.route) { inclusive = false }
                             }
                         }
+                        is CategoryNavigationEvent.NavigateToCreatedSuccess -> {}
                     }
                 }
             }
@@ -285,6 +291,14 @@ fun AppNavigation(
 
         composable(Screen.CategorySuccess.route) {
             CategorySuccessScreen(
+                onFinish = {
+                    navController.popBackStack(Screen.Categories.route, inclusive = false)
+                }
+            )
+        }
+
+        composable(Screen.CategoryCreatedSuccess.route) {
+            CategoryCreatedSuccessScreen(
                 onFinish = {
                     navController.popBackStack(Screen.Categories.route, inclusive = false)
                 }
