@@ -1,6 +1,6 @@
-package ar.edu.uade.capturarecibosapp.domain.model
+package ar.edu.uade.capturarecibosapp.data.model
 
-data class  User(
+data class  UserAuth(
     val uuid: String,
     val email: String,
     val firstName: String? = null,

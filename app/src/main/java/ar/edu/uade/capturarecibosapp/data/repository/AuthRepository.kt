@@ -4,11 +4,11 @@ import android.util.Log
 import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.remote.AuthApiService
 import ar.edu.uade.capturarecibosapp.data.remote.dto.*
-import ar.edu.uade.capturarecibosapp.domain.model.User
+import ar.edu.uade.capturarecibosapp.data.model.UserAuth
 
 class AuthRepository(private val apiService: AuthApiService) {
 
-    suspend fun login(email: String, pass: String): Result<User> {
+    suspend fun login(email: String, pass: String): Result<UserAuth> {
         return try {
             val response = apiService.login(AuthRequestDTO(email, pass))
             if (response.isSuccessful && response.body() != null) {
@@ -38,7 +38,7 @@ class AuthRepository(private val apiService: AuthApiService) {
         birth: String,
         country: String,
         phone: String = ""
-    ): Result<User> {
+    ): Result<UserAuth> {
         return try {
             val request = AuthRequestDTO(
                 email = email,

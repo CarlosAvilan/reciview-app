@@ -1,7 +1,7 @@
 package ar.edu.uade.capturarecibosapp.domain.usecase
 
 import ar.edu.uade.capturarecibosapp.data.repository.AuthRepository
-import ar.edu.uade.capturarecibosapp.domain.model.User
+import ar.edu.uade.capturarecibosapp.data.model.UserAuth
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -10,7 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import java.time.LocalDate
 
-class RegisterUserUseCaseTest {
+class RegisterUserAuthUseCaseTest {
 
     private lateinit var authRepository: AuthRepository
     private lateinit var useCase: RegisterUserUseCase
@@ -65,8 +65,8 @@ class RegisterUserUseCaseTest {
 
     @Test
     fun RegisterUserUseCaseTest_DatosValidosYRepositorioExitoso_RetornaExitoConEmailCorrecto() = runTest {
-        val user = User(uuid = "uuid-123", email = validEmail)
-        coEvery { authRepository.registerUser(any(), any(), any(), any(), any()) } returns Result.success(user)
+        val userAuth = UserAuth(uuid = "uuid-123", email = validEmail)
+        coEvery { authRepository.registerUser(any(), any(), any(), any(), any()) } returns Result.success(userAuth)
 
         val result = useCase(validEmail, validPassword, validName, validBirth, validCountry, true)
 
