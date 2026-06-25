@@ -23,7 +23,11 @@ class AuthRepository(private val apiService: AuthApiService) {
                 
                 Result.success(user)
             } else {
-                Result.failure(Exception("Error en el login: ${response.code()}"))
+                if (response.code() == 400) {
+                    Result.failure(Exception("Usuario o contraseña incorrecta"))
+                } else {
+                    Result.failure(Exception("Error en el login: ${response.code()}"))
+                }
             }
         } catch (e: Exception) {
             Log.e("AuthRepository", "Login exception", e)
