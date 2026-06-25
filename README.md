@@ -36,7 +36,11 @@ Aplicación móvil desarrollada en **Kotlin** y **Jetpack Compose** para la gest
 *   **`/scanner`**: Módulo especializado para la gestión del escaneo de documentos con Google ML Kit.
 
 ## Links Relevantes del Proyecto
+
 **Figma:** https://figma.com/design/UGaNGMN3RpYT0Ih5KdzVsn/TPO-Desarrollo-de-Apps--ReciView-?node-id=20-195&t=ouQJbVBb5mHUp9tv-0
+
 **Documentación:** https://docs.google.com/document/d/1l8IyWbx-SBBoKI04OLQZTpOVLu7QRUr6EeBFRE1e2PE/edit?usp=sharing
+
 **Supabase:** https://supabase.com/dashboard/project/rzebtxdswubvzbgwkvab/editor/17590?schema=public
+
 **Trello:** https://trello.com/b/ZQ16PSeX/reciview-tpo
