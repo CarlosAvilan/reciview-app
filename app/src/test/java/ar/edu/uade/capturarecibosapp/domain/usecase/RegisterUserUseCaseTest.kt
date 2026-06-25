@@ -93,8 +93,8 @@ class RegisterUserUseCaseTest {
     }
 
     @Test
-    fun RegisterUserUseCaseTest_ContraseniaEsValidadaAntesQueElEmail_RetornaErrorDeContrasenia() = runTest {
+    fun RegisterUserUseCaseTest_EmailEsValidadoAntesQueLaContrasenia_RetornaErrorDeEmail() = runTest {
         val result = useCase("bademail", "123", validName, validBirth, validCountry, true)
-        assertTrue(result is RegisterUserUseCase.Result.PasswordError)
+        assertTrue(result is RegisterUserUseCase.Result.EmailError)
     }
 }

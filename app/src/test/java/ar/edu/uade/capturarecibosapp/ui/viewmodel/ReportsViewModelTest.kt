@@ -1,21 +1,36 @@
 package ar.edu.uade.capturarecibosapp.ui.viewmodel
 
 import android.app.Application
-import ar.edu.uade.capturarecibosapp.data.local.seeders.ExpenseSeeder
-import ar.edu.uade.capturarecibosapp.data.local.seeders.TicketSeeder
+import ar.edu.uade.capturarecibosapp.data.DependencyProvider
+import ar.edu.uade.capturarecibosapp.data.SessionManager
 import ar.edu.uade.capturarecibosapp.data.model.ExpenseItem
 import ar.edu.uade.capturarecibosapp.data.model.MonthlyReport
 import ar.edu.uade.capturarecibosapp.data.model.Ticket
+import ar.edu.uade.capturarecibosapp.data.repository.TicketRepository // Asegúrate de importar tus interfaces/repositorios reales
+import ar.edu.uade.capturarecibosapp.data.repository.ExpenseRepository
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkClass
-import io.mockk.mockkConstructor
+import io.mockk.mockkObject
 import io.mockk.unmockkAll
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ReportsViewModelMockTest {
+
+    // 1. Definimos los mocks de los repositorios reales
+    private val mockTicketRepository = mockk<TicketRepository>()
+    private val mockExpenseRepository = mockk<ExpenseRepository>()
+
     private val mockTickets = listOf(
         Ticket(
             id = 1,
@@ -41,16 +56,20 @@ class ReportsViewModelMockTest {
     )
 
     private lateinit var viewModel: ReportsViewModel
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
     fun setUp() {
-        // Interceptamos los constructores de los seeders
-        mockkConstructor(TicketSeeder::class)
-        mockkConstructor(ExpenseSeeder::class)
+        Dispatchers.setMain(testDispatcher)
 
-        // Definimos qué devolver cuando el ViewModel llame a los seeders
-        every { anyConstructed<TicketSeeder>().provideInitialTickets() } returns mockTickets
-        every { anyConstructed<ExpenseSeeder>().provideInitialExpenses() } returns mockExpenses
+        mockkObject(SessionManager)
+        mockkObject(DependencyProvider)
+
+        every { SessionManager.userId } returns "user1"
+        every { DependencyProvider.provideTicketRepository(any()) } returns mockTicketRepository
+        every { DependencyProvider.provideExpenseRepository(any()) } returns mockExpenseRepository
+        every { mockTicketRepository.getTickets("user1") } returns flowOf(mockTickets)
+        every { mockExpenseRepository.getExpensesForUser("user1") } returns flowOf(mockExpenses)
 
         viewModel = ReportsViewModel(mockkClass(Application::class))
     }
@@ -58,11 +77,12 @@ class ReportsViewModelMockTest {
     @After
     fun tearDown() {
         unmockkAll()
+        Dispatchers.resetMain()
     }
 
     @Test
     fun ReportsViewModelTest_CalculaDatosMockCorrectamente() {
-        // ENE 2024: 1000 (ticket) + 500 (gasto) = 1500
+        assertFalse(viewModel.monthlyEvolution.isEmpty())
         val report = viewModel.monthlyEvolution[0]
         assertEquals("ENE", report.month)
         assertEquals(1500f, report.amount, 0.01f)
@@ -70,7 +90,6 @@ class ReportsViewModelMockTest {
 
     @Test
     fun ReportsViewModelTest_MonthlyEvolution_TieneUnSoloReporte() {
-        // Como solo enviamos datos de Enero, debería haber solo 1
         assertEquals(1, viewModel.monthlyEvolution.size)
     }
 
@@ -86,5 +105,4 @@ class ReportsViewModelMockTest {
         viewModel.onReportSelected(custom)
         assertEquals("FEB", viewModel.selectedReport.month)
     }
-
 }
