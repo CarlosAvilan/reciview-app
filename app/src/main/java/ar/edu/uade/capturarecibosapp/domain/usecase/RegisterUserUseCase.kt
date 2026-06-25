@@ -65,8 +65,9 @@ class RegisterUserUseCase(
             onSuccess = { Result.Success(it.email) },
             onFailure = { error ->
                 val message = error.message ?: ""
-                if (message.contains("already exists", ignoreCase = true)) {
-                    Result.EmailError("El usuario ya existe")
+                if (message.contains("already exists", ignoreCase = true) || 
+                    message.contains("registered", ignoreCase = true)) {
+                    Result.EmailError("El usuario ya está registrado")
                 } else {
                     Result.Failure(message)
                 }
